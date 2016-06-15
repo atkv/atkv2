@@ -1,0 +1,13 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+PROJECT               (ift)
+FIND_PACKAGE          (CUDA)
+INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR})
+SET                   (HDRS ift.h core.h ift_gpu.h)
+#SET                   (CMAKE_C_COMPILER /usr/bin/gcc-4.9)
+#
+SET                   (CMAKE_CXX_COMPILER /usr/bin/g++-4.9)
+#SET                   (CMAKE_C_FLAGS -ansi)
+ADD_LIBRARY           (ift SHARED ${HDRS} ${CMAKE_SOURCE_DIR}/ift.c)
+CUDA_ADD_LIBRARY      (ift_gpu SHARED ${CMAKE_SOURCE_DIR}/ift.cu)
+ADD_EXECUTABLE        (iftdemo ${CMAKE_SOURCE_DIR}/main.c)
+TARGET_LINK_LIBRARIES (iftdemo ift ift_gpu)
