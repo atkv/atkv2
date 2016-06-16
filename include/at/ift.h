@@ -13,7 +13,7 @@
   You should have received a copy of the GNU General Public License along
   with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <core.h>
+#include <at/core.h>
 
 #define at_ift_apply(input) _Generic((input), Array: at_ift_apply_array)
 

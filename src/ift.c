@@ -1,4 +1,4 @@
-#include <ift.h>
+#include <at/ift.h>
 
 IFT*
 at_ift_apply_array(AtArray*             array,
