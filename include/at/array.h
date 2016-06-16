@@ -23,9 +23,9 @@ typedef struct AtArrayHeader{
 #define AtArray(type) AtArray_##type
 
 typedef struct AtArray_uint8_t{
-  AtArrayHeader header;  // 00-39
-  uint8_t      *data;    // 40-47
-}AtArray_uint8_t;        // Total: 48B
+  AtArrayHeader header;  // 00-31
+  uint8_t      *data;    // 32-39
+}AtArray_uint8_t;        // Total: 40B
 typedef struct AtArray_uint16_t{
   AtArrayHeader header;
   uint16_t     *data;
@@ -73,6 +73,9 @@ at_array_header_init(AtArrayHeader* header);
 void
 at_array_header_set(AtArrayHeader* header, uint8_t dim, uint64_t* shape);
 
+void
+at_array_header_dispose(AtArrayHeader* header);
+
 // uint8_t
 // --------
 AtArray_uint8_t*
@@ -82,7 +85,7 @@ AtArray_uint8_t*
 at_array_uint8_t_new(uint8_t dim, uint64_t* shape);
 
 AtArray_uint8_t*
-at_array_uint8_t_new_with_data(uint8_t dim, uint64_t* shape, uint8_t* data, uint8_t copy);
+at_array_uint8_t_new_with_data(uint8_t dim, uint64_t* shape, uint8_t* data, bool copy);
 
 AtArray_uint8_t*
 at_array_uint8_t_zeros(uint8_t dim, uint64_t* shape);
@@ -94,7 +97,7 @@ void
 at_array_uint8_t_fill(AtArray_uint8_t* array, uint8_t value);
 
 void
-at_array_uint8_t_destroy(AtArray_uint8_t* array);
+at_array_uint8_t_destroy(AtArray_uint8_t** array);
 
 // uint64_t
 // --------
@@ -103,12 +106,12 @@ AtArray_uint64_t*
 at_array_uint64_t_create();
 
 AtArray_uint64_t*
-at_array_uint64_t_new_with_data(uint8_t dim, uint64_t* shape, uint64_t* data, uint8_t copy);
+at_array_uint64_t_new_with_data(uint8_t dim, uint64_t* shape, uint64_t* data, bool copy);
 
 void
 at_array_uint64_t_fill(AtArray_uint64_t* array, uint64_t value);
 
 void
-at_array_uint64_t_destroy(AtArray_uint64_t* array);
+at_array_uint64_t_destroy(AtArray_uint64_t** array);
 
 #endif
