@@ -20,7 +20,9 @@ after_success:
 addons:
   apt:
     packages:
-    - libcmocka-dev
-    - libcmocka0
-    - cmake
-    - time
+      #- libcmocka-dev
+      #- libcmocka0
+      - cmake
+      - time
+      - ant
+      - ant-contrib
