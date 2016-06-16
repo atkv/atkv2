@@ -19,6 +19,9 @@ after_success:
 
 addons:
   apt:
+    sources:
+      - sourceline: 'ppa:gnome3-team/gnome3'
+      - sourceline: 'ppa:gnome3-team/gnome3-staging'
     packages:
       #- libcmocka-dev
       #- libcmocka0
