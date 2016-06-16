@@ -27,6 +27,8 @@ ADD_LIBRARY           (atkv    SHARED ${HDRS_ABS} ${SRCS_ABS})
 # ------------------------------------------------------
 IF(BUILD_TESTING)
   FIND_PACKAGE          (CMocka)
+  MESSAGE(STATUS ${CMOCKA_INCLUDE_DIR})
+  MESSAGE(STATUS ${CMOCKA_LIBRARIES})
   INCLUDE_DIRECTORIES   (${CMOCKA_INCLUDE_DIR})
   ENABLE_TESTING        ()
   ADD_EXECUTABLE        (test_array ${CMAKE_SOURCE_DIR}/tests/test_array.c)
