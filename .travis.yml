@@ -1,0 +1,31 @@
+language: c
+sudo: required
+dist: trusty
+compiler: gcc
+before_install:
+  #- sudo pip install cpp-coveralls
+  #- sudo add-apt-repository ppa:gnome3-team/gnome3 -y
+  #- sudo add-apt-repository ppa:gnome3-team/gnome3-staging -y
+  #- sudo apt-get update
+  #- sudo apt-get install libglib2.0-dev libcmocka-dev libcmocka0
+  #- sudo apt-get install -y libcmocka-dev libcmocka0
+script:
+  - mkdir build
+  - cd build
+  - cmake -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Debug ..
+  - make
+after_success:
+  - ctest
+
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:gnome3-team/gnome3'
+      - sourceline: 'ppa:gnome3-team/gnome3-staging'
+    packages:
+      #- libcmocka-dev
+      #- libcmocka0
+      - cmake
+      - time
+      - ant
+      - ant-contrib

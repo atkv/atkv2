@@ -31,3 +31,7 @@
 # Debug files
 *.dSYM/
 *.su
+
+*.user
+build/
+3rdparty
