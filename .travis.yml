@@ -20,6 +20,7 @@ after_success:
 addons:
   apt:
     packages:
-    - cmocka
+    - libcmocka-dev
+    - libcmocka0
     - cmake
     - time
