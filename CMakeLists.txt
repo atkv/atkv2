@@ -5,6 +5,7 @@ SET                   (CMAKE_C_FLAGS          "-pg")
 SET                   (CMAKE_EXE_LINKER_FLAGS "-pg")
 PROJECT               (ift)
 FIND_PACKAGE          (CUDA)
+INCLUDE               (CTest)
 INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
 
 SET                   (SRCS array.c)
@@ -23,11 +24,13 @@ ADD_LIBRARY           (atkv    SHARED ${HDRS_ABS} ${SRCS_ABS})
 # ------------------------------------------------------
 # TESTING
 # ------------------------------------------------------
-FIND_PACKAGE(CMocka)
-ENABLE_TESTING        ()
-ADD_EXECUTABLE        (test_array ${CMAKE_SOURCE_DIR}/tests/test_array.c)
-TARGET_LINK_LIBRARIES (test_array atkv ${CMOCKA_LIBRARIES})
-ADD_TEST              (test_array test_array)
+IF(BUILD_TESTING)
+  FIND_PACKAGE(CMocka)
+  ENABLE_TESTING        ()
+  ADD_EXECUTABLE        (test_array ${CMAKE_SOURCE_DIR}/tests/test_array.c)
+  TARGET_LINK_LIBRARIES (test_array atkv ${CMOCKA_LIBRARIES})
+  ADD_TEST              (test_array test_array)
+ENDIF()
 
 #CUDA_ADD_LIBRARY      (ift_gpu SHARED ${CMAKE_SOURCE_DIR}/src/ift.cu)
 #ADD_EXECUTABLE        (iftdemo ${CMAKE_SOURCE_DIR}/demos/main.c)

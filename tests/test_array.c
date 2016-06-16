@@ -93,7 +93,7 @@ void test_array_64(void** state){
 }
 
 int main(void){
-  print_message("%d %d %d\n", sizeof(AtArray_uint8_t),sizeof(AtArray_uint64_t),sizeof(AtArrayHeader));
+  print_message("%zu %zu %zu\n", sizeof(AtArray_uint8_t),sizeof(AtArray_uint64_t),sizeof(AtArrayHeader));
   const struct CMUnitTest tests[] = {
     cmocka_unit_test(test_array),
     cmocka_unit_test(test_array_64)

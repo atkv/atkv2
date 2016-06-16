@@ -7,7 +7,7 @@ before_install:
   #- sudo add-apt-repository ppa:gnome3-team/gnome3 -y
   #- sudo add-apt-repository ppa:gnome3-team/gnome3-staging -y
   #- sudo apt-get update
-  - sudo apt-get install libglib2.0-dev libcmocka-dev libcmocka0
+  #- sudo apt-get install libglib2.0-dev libcmocka-dev libcmocka0
   - sudo apt-get install libcmocka-dev libcmocka0
 script:
   - mkdir build
