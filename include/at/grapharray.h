@@ -44,6 +44,9 @@ typedef struct AtGraphArray{
 /*=============================================================================
  FUNCTIONS
  ============================================================================*/
+typedef double
+(*AtWeightingFunc_uint8_t) (AtGraphArray* graph, uint64_t s, uint64_t t);
+
 /**
  * @brief at_grapharray_create
  * @return
@@ -57,7 +60,7 @@ at_grapharray_create();
  * @return
  */
 AtGraphArray*
-at_grapharray_new_from_array_uint8_t(AtArray_uint8_t* array, AtAdjacency adjacency);
+at_grapharray_new_from_array_uint8_t(AtArray_uint8_t* array, AtAdjacency adjacency, AtWeightingFunc_uint8_t weighting);
 
 /**
  * @brief at_grapharray_destroy

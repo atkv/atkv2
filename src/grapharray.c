@@ -30,13 +30,35 @@ at_grapharray_create(){
   return grapharray;
 }
 
+static int8_t neighboring_2D[16] = {-1, 0,  1, 0,  0,-1,  0, 1,
+                                    -1,-1,  1,-1, -1, 1,  1, 1};
+static int8_t neighboring_3D[78] = {};
+
 AtGraphArray*
-at_grapharray_new_from_array_uint8_t(AtArray_uint8_t* array, AtAdjacency adjacency){
-  AtGraphArray* grapharray = at_grapharray_create();
-  uint64_t num_elements = array->header.num_elements * adjacency;
+at_grapharray_new_from_array_uint8_t(AtArray_uint8_t* array,
+                                     AtAdjacency adjacency,
+                                     AtWeightingFunc_uint8_t weighting){
+  AtGraphArray* grapharray   = at_grapharray_create();
+  uint64_t      num_elements = array->header.num_elements * adjacency;
   grapharray->neighbors = malloc(num_elements * sizeof(uint64_t));
   grapharray->active    = malloc(num_elements * sizeof(uint8_t));
   grapharray->weights   = malloc(num_elements * sizeof(double));
+
+  // Fill the neighbors and weights by using the weighting function
+  uint64_t s, t, i, ss;
+  for(s = 0; s < array->header.num_elements; s++){
+    ss = s*adjacency;
+    for(i = 0; i < adjacency; i++){
+      tt = ;
+      for(k = 0; k < dim; k++){
+        if(){
+
+        }
+      }
+      t = grapharray->neighbors[ss + i];
+
+    }
+  }
   return grapharray;
 }
 
