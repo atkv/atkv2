@@ -1,3 +1,20 @@
+/**
+ ** This file is part of the atkv project.
+ ** Copyright 2016 Anderson Tavares <nocturne.pe@gmail.com>.
+ **
+ ** This program is free software: you can redistribute it and/or modify
+ ** it under the terms of the GNU General Public License as published by
+ ** the Free Software Foundation, either version 3 of the License, or
+ ** (at your option) any later version.
+ **
+ ** This program is distributed in the hope that it will be useful,
+ ** but WITHOUT ANY WARRANTY; without even the implied warranty of
+ ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ ** GNU General Public License for more details.
+ **
+ ** You should have received a copy of the GNU General Public License
+ ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
 #ifndef AT_ARRAY_H
 #define AT_ARRAY_H
 #include <stdint.h>
@@ -23,7 +40,7 @@ typedef struct AtArrayHeader{
 #define AtArray(type) AtArray_##type
 
 typedef struct AtArray_uint8_t{
-  AtArrayHeader header;  // 00-31
+  AtArrayHeader h;  // 00-31
   uint8_t      *data;    // 32-39
 }AtArray_uint8_t;        // Total: 40B
 typedef struct AtArray_uint16_t{
@@ -95,6 +112,13 @@ at_array_uint8_t_ones(uint8_t dim, uint64_t* shape);
 
 void
 at_array_uint8_t_fill(AtArray_uint8_t* array, uint8_t value);
+
+void
+at_array_index_to_nd(AtArray_uint8_t* array, uint64_t s, uint64_t* s_nd);
+
+void
+at_array_index_to_1d(AtArray_uint8_t* array, int64_t* s_nd, uint64_t* s);
+
 
 void
 at_array_uint8_t_destroy(AtArray_uint8_t** array);
