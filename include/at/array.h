@@ -40,7 +40,7 @@ typedef struct AtArrayHeader{
 #define AtArray(type) AtArray_##type
 
 typedef struct AtArray_uint8_t{
-  AtArrayHeader header;  // 00-31
+  AtArrayHeader h;  // 00-31
   uint8_t      *data;    // 32-39
 }AtArray_uint8_t;        // Total: 40B
 typedef struct AtArray_uint16_t{
@@ -112,6 +112,13 @@ at_array_uint8_t_ones(uint8_t dim, uint64_t* shape);
 
 void
 at_array_uint8_t_fill(AtArray_uint8_t* array, uint8_t value);
+
+void
+at_array_index_to_nd(AtArray_uint8_t* array, uint64_t s, uint64_t* s_nd);
+
+void
+at_array_index_to_1d(AtArray_uint8_t* array, int64_t* s_nd, uint64_t* s);
+
 
 void
 at_array_uint8_t_destroy(AtArray_uint8_t** array);

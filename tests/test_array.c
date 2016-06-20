@@ -72,7 +72,7 @@ void test_array(void** state){
   // Testing
   at_array_header_init(&header);
   at_array_header_set (&header, 2, data_shape);
-  test_header(&array->header, &header);
+  test_header(&(array->h), &header);
   test_array_data(header.num_elements, array->data, data);
 
   memset(data,0,16);

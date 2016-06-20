@@ -30,35 +30,70 @@ at_grapharray_create(){
   return grapharray;
 }
 
-static int8_t neighboring_2D[16] = {-1, 0,  1, 0,  0,-1,  0, 1,
-                                    -1,-1,  1,-1, -1, 1,  1, 1};
-static int8_t neighboring_3D[78] = {};
+static int8_t neighboring_2D[16] = { 0,-1,  0, 1, -1, 0,  1, 0,
+                                    -1,-1, -1, 1,  1,-1,  1, 1};
+static int8_t neighboring_3D[78] = { 0, 0,-1,  0, 0, 1,  0,-1, 0,            // N-6
+                                     0, 1, 0, -1, 0, 0,  1, 0, 0,
+
+                                     0,-1,-1,  0,-1, 1,  0, 1,-1,  0, 1, 1,  // N-18
+                                    -1, 0,-1, -1, 0, 1,  1, 0,-1,  1, 0, 1,
+                                    -1,-1, 0, -1, 1, 0,  1,-1, 0,  1, 1, 0,
+
+                                    -1,-1,-1, -1,-1, 1, -1, 1,-1, -1, 1, 1,  // N-26
+                                     1,-1,-1,  1,-1, 1,  1, 1,-1,  1, 1, 1};
 
 AtGraphArray*
 at_grapharray_new_from_array_uint8_t(AtArray_uint8_t* array,
                                      AtAdjacency adjacency,
                                      AtWeightingFunc_uint8_t weighting){
   AtGraphArray* grapharray   = at_grapharray_create();
-  uint64_t      num_elements = array->header.num_elements * adjacency;
-  grapharray->neighbors = malloc(num_elements * sizeof(uint64_t));
-  grapharray->active    = malloc(num_elements * sizeof(uint8_t));
-  grapharray->weights   = malloc(num_elements * sizeof(double));
+  uint64_t      num_elements = array->h.num_elements * adjacency;
+  uint64_t    * s_nd         = malloc(array->h.dim * sizeof(uint64_t));
+  int64_t     * t_nd         = malloc(array->h.dim * sizeof(int64_t));
+  int8_t      * neighboring;
+  uint64_t    s, t, i, ss;
+  uint8_t     k;
+  bool        out;
+
+  grapharray->neighbors      = malloc(num_elements * sizeof(uint64_t));
+  grapharray->active         = malloc(num_elements * sizeof(uint8_t));
+  grapharray->weights        = malloc(num_elements * sizeof(double));
+  grapharray->dim            = array->h.dim;
+  memset(grapharray->neighbors,0,num_elements*sizeof(uint64_t));
+  memset(grapharray->weights  ,0,num_elements*sizeof(double));
+  memset(grapharray->active   ,0,num_elements*sizeof(uint8_t));
+
+  if(array->h.dim == 2) neighboring = neighboring_2D;
+  else                  neighboring = neighboring_3D;
 
   // Fill the neighbors and weights by using the weighting function
-  uint64_t s, t, i, ss;
-  for(s = 0; s < array->header.num_elements; s++){
+  // for each pixel
+  for(s = 0; s < array->h.num_elements; s++){
+    at_array_index_to_nd(array,s, s_nd);
     ss = s*adjacency;
-    for(i = 0; i < adjacency; i++){
-      tt = ;
-      for(k = 0; k < dim; k++){
-        if(){
 
+    // for each neighbor
+    for(i = 0; i < adjacency; i++){
+      out = false;
+      for(k = 0; k < array->h.dim; k++){
+        // Is the neighbor inside?
+        t_nd[k] = s_nd[k] + neighboring[i*array->h.dim + k];
+        if(t_nd[k] < 0 || t_nd[k] >= array->h.shape[k]){
+          out = true;
+          break;
         }
       }
-      t = grapharray->neighbors[ss + i];
-
+      if(!out){
+        at_array_index_to_1d(array,t_nd,&t);
+        grapharray->active[ss+i]    = 1;
+        grapharray->weights[ss+i]   = weighting(array, s, t);
+        grapharray->neighbors[ss+i] = t;
+      }
     }
   }
+  free(s_nd);
+  free(t_nd);
+
   return grapharray;
 }
 
@@ -72,4 +107,26 @@ at_grapharray_destroy(AtGraphArray** grapharray_ptr){
     free(grapharray);
     *grapharray_ptr = NULL;
   }
+}
+
+void
+at_grapharray_remove_arc(AtGraphArray* grapharray, uint64_t s, uint64_t t){
+  grapharray->active[s*grapharray->adjacency + t] = 0;
+}
+
+void
+at_grapharray_add_arc(AtGraphArray* grapharray, uint64_t s, uint64_t t){
+  grapharray->active[s*grapharray->adjacency + t] = 1;
+}
+
+void
+at_grapharray_remove_edge(AtGraphArray* grapharray, uint64_t s, uint64_t t){
+  at_grapharray_remove_arc(grapharray, s, t);
+  at_grapharray_remove_arc(grapharray, t, s);
+}
+
+void
+at_grapharray_add_edge(AtGraphArray* grapharray, uint64_t s, uint64_t t){
+  at_grapharray_add_arc(grapharray, s, t);
+  at_grapharray_add_arc(grapharray, t, s);
 }

@@ -36,16 +36,19 @@ typedef enum {
  * @brief A directed weighted grid graph
  */
 typedef struct AtGraphArray{
-  uint64_t* neighbors; // 00-07: indices of neighbors for each node
-  double  * weights;   // 08-15: weights of edges <node,neighbor>
-  uint8_t * active;    // 16-23: <node,neighbor> is active?
-}AtGraphArray;         // Total: 24B
+  uint64_t* neighbors; // 00-8: indices of neighbors for each node
+  double  * weights;   // 08-8: weights of edges <node,neighbor>
+  uint8_t * active;    // 16-8: <node,neighbor> is active?
+  uint8_t   adjacency; // 24-1: Neighboring
+  uint8_t   dim;       // 25-1: Dimension of array
+  uint8_t   padding[6];// 26-6: Memory alignment
+}AtGraphArray;         // Total: 32B
 
 /*=============================================================================
  FUNCTIONS
  ============================================================================*/
 typedef double
-(*AtWeightingFunc_uint8_t) (AtGraphArray* graph, uint64_t s, uint64_t t);
+(*AtWeightingFunc_uint8_t) (AtArray_uint8_t* graph, uint64_t s, uint64_t t);
 
 /**
  * @brief at_grapharray_create
@@ -61,6 +64,42 @@ at_grapharray_create();
  */
 AtGraphArray*
 at_grapharray_new_from_array_uint8_t(AtArray_uint8_t* array, AtAdjacency adjacency, AtWeightingFunc_uint8_t weighting);
+
+/**
+ * @brief at_grapharray_remove_arc
+ * @param grapharray
+ * @param s
+ * @param t
+ */
+void
+at_grapharray_remove_arc(AtGraphArray* grapharray, uint64_t s, uint64_t t);
+
+/**
+ * @brief at_grapharray_add_arc
+ * @param grapharray
+ * @param s
+ * @param t
+ */
+void
+at_grapharray_add_arc(AtGraphArray* grapharray, uint64_t s, uint64_t t);
+
+/**
+ * @brief at_grapharray_remove_edge
+ * @param grapharray
+ * @param s
+ * @param t
+ */
+void
+at_grapharray_remove_edge(AtGraphArray* grapharray, uint64_t s, uint64_t t);
+
+/**
+ * @brief at_grapharray_add_edge
+ * @param grapharray
+ * @param s
+ * @param t
+ */
+void
+at_grapharray_add_edge(AtGraphArray* grapharray, uint64_t s, uint64_t t);
 
 /**
  * @brief at_grapharray_destroy

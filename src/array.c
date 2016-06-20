@@ -42,7 +42,7 @@ at_array_header_set(AtArrayHeader* header, uint8_t dim, uint64_t* shape){
 AtArray_uint8_t*
 at_array_uint8_t_create(){
   AtArray_uint8_t* array = malloc(sizeof(AtArray_uint8_t));
-  at_array_header_init(&array->header);
+  at_array_header_init(&array->h);
   array->data = NULL;
   return array;
 }
@@ -57,8 +57,8 @@ at_array_uint64_t_create(){
 AtArray_uint8_t*
 at_array_uint8_t_new(uint8_t dim, uint64_t* shape){
   AtArray_uint8_t* array = at_array_uint8_t_create();
-  at_array_header_set(&array->header, dim, shape);
-  array->data = malloc(array->header.num_elements * sizeof(uint8_t));
+  at_array_header_set(&array->h, dim, shape);
+  array->data = malloc(array->h.num_elements * sizeof(uint8_t));
   return array;
 }
 
@@ -66,12 +66,12 @@ AtArray_uint8_t*
 at_array_uint8_t_new_with_data(uint8_t dim, uint64_t* shape, uint8_t* data, bool copy){
   AtArray_uint8_t* array = at_array_uint8_t_create();
   uint64_t num_bytes;
-  at_array_header_set(&array->header, dim, shape);
+  at_array_header_set(&array->h, dim, shape);
 
   if(!copy)
     array->data = data;
   else{
-    num_bytes   = array->header.num_elements * sizeof(uint8_t);
+    num_bytes   = array->h.num_elements * sizeof(uint8_t);
     array->data = malloc(num_bytes);
     memcpy(array->data, data, num_bytes);
   }
@@ -96,7 +96,7 @@ at_array_uint64_t_new_with_data(uint8_t dim, uint64_t* shape, uint64_t* data, bo
 
 void
 at_array_uint8_t_fill(AtArray_uint8_t* array, uint8_t value){
-  memset(array->data,value,array->header.num_elements * sizeof(uint8_t));
+  memset(array->data,value,array->h.num_elements * sizeof(uint8_t));
 }
 
 void
@@ -127,14 +127,32 @@ at_array_uint8_t_destroy(AtArray_uint8_t** array_ptr){
   if(array_ptr){
     AtArray_uint8_t* array = *array_ptr;
     if(array){
-      if(array->header.owns_data)
+      if(array->h.owns_data)
         free(array->data);
-      at_array_header_dispose(&array->header);
+      at_array_header_dispose(&array->h);
       free(array);
     }
     *array_ptr = NULL;
   }
 }
+
+void
+at_array_index_to_nd(AtArray_uint8_t* array, uint64_t s, uint64_t* s_nd){
+  uint8_t i;
+  for(i = 0; i < array->h.dim; i++){
+    s_nd[i]  = s/array->h.step[i];
+    s       %= array->h.step[i];
+  }
+}
+
+void
+at_array_index_to_1d(AtArray_uint8_t* array, int64_t* s_nd, uint64_t* s){
+  uint8_t i;
+  *s = 0;
+  for(i = 0; i < array->h.dim; i++)
+    *s += s_nd[i] * array->h.step[i];
+}
+
 void
 at_array_uint64_t_destroy(AtArray_uint64_t** array_ptr){
   if(array_ptr){
