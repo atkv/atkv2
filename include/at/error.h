@@ -15,8 +15,16 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
+#ifndef AT_ERROR_H
+#define AT_ERROR_H
+typedef struct AtError{
+  char* message;
+}AtError;
 
+void
+at_error_set(AtError** error, char* msg_pattern, ...);
 
-int main(){
- return 0;
-}
+void
+at_error_destroy(AtError **error_ptr);
+
+#endif

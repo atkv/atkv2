@@ -35,4 +35,11 @@ struct AtList_uint64_t{
 AtList_uint64_t*
 at_list_uint64_t_new_array(uint64_t n_items);
 
+void
+at_list_uint64_t_destroy(AtList_uint64_t** list_ptr);
+
+void
+at_list_uint64_t_destroy_array(AtList_uint64_t** list);
+
+
 #endif

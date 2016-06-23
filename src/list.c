@@ -32,8 +32,22 @@ at_list_uint64_t_new_array(uint64_t n_items){
   return list;
 }
 
+void
+at_list_uint64_t_destroy(AtList_uint64_t** list_ptr){
+  if(*list_ptr){
+    AtList_uint64_t* list = *list_ptr;
+    AtList_uint64_t* next;
+    do{
+      next = list->next;
+      free(list);
+      list = next;
+    }while(list != NULL);
+    *list_ptr = NULL;
+  }
+}
 
-AtList_uint64_t*
-at_list_uint64_t_remove_first_link(){
-
+void
+at_list_uint64_t_destroy_array(AtList_uint64_t** list){
+  if(*list) free(*list);
+  *list = NULL;
 }

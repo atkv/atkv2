@@ -66,3 +66,9 @@ at_queue_uint64_t_remove_first_link(AtQueue_uint64_t* queue){
   }
   return item;
 }
+
+void
+at_queue_uint64_t_destroy_array(AtQueue_uint64_t** queue){
+  if(*queue != NULL) free(*queue);
+  *queue = NULL;
+}
