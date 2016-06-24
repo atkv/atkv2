@@ -60,20 +60,21 @@ void test_array(void** state){
   uint64_t          data_shape[2] = {4,4};    // 16 bytes - 64B
   AtArray(uint8_t)* array;                    //  8 bytes - 88B
 
-  print_message("%p: %d, %zu\n",&header   , is_aligned(    &header,alignof(AtArrayHeader)),alignof(AtArrayHeader));
-  print_message("%p: %d, %zu\n",data      , is_aligned(       data,alignof(data))      ,alignof(data));
-  print_message("%p: %d, %zu\n",data_shape, is_aligned( data_shape,alignof(data_shape)),alignof(data_shape));
+//  print_message("%p: %d, %zu\n",&header   , is_aligned(    &header,alignof(AtArrayHeader)),alignof(AtArrayHeader));
+//  print_message("%p: %d, %zu\n",data      , is_aligned(       data,alignof(data))      ,alignof(data));
+//  print_message("%p: %d, %zu\n",data_shape, is_aligned( data_shape,alignof(data_shape)),alignof(data_shape));
 
   // Array
   array = at_array_uint8_t_new_with_data(2,data_shape,data,true);
 
-  print_message("%p: %d, %zu\n",array     , is_aligned(      array,alignof(array))     ,alignof(array));
+//  print_message("%p: %d, %zu\n",array     , is_aligned(      array,alignof(array))     ,alignof(array));
 
   // Testing
   at_array_header_init(&header);
   at_array_header_set (&header, 2, data_shape);
   test_header(&(array->h), &header);
   test_array_data(header.num_elements, array->data, data);
+  assert_int_equal(at_array_max(array),1);
 
   memset(data,0,16);
   at_array_uint8_t_fill(array,0);

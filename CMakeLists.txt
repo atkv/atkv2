@@ -13,7 +13,7 @@ INCLUDE               (CTest)
 INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
 
 SET                   (SRCS array.c grapharray.c list.c queue.c pqueue.c)
-SET                   (HDRS optimization.h array.h grapharray.h list.h queue.h pqueue.h)
+SET                   (HDRS macro.h optimization.h array.h grapharray.h list.h queue.h pqueue.h)
 
 FOREACH(HDR ${HDRS})
   LIST(APPEND HDRS_ABS ${CMAKE_SOURCE_DIR}/include/at/${HDR})
