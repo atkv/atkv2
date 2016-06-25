@@ -16,7 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 #include <at/array.h>
-
+#include <at/macro.h>
 /*=============================================================================
  PRIVATE API
  ============================================================================*/
@@ -104,6 +104,15 @@ at_array_uint64_t_new_with_data(uint8_t dim, uint64_t* shape, uint64_t* data, bo
 void
 at_array_uint8_t_fill(AtArray_uint8_t* array, uint8_t value){
   memset(array->data,value,array->h.num_elements * sizeof(uint8_t));
+}
+
+uint8_t
+at_array_uint8_t_max(AtArray_uint8_t* array){
+  uint64_t i;
+  uint8_t  value = 0;
+  for(i = 0; i < array->h.num_elements; i++)
+    value = max(value, array->data[i]);
+  return value;
 }
 
 void

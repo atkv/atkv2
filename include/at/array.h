@@ -84,6 +84,9 @@ typedef struct AtArray_double{
  FUNCTIONS
  ============================================================================*/
 
+#define at_array_max(array) _Generic((array), \
+  AtArray_uint8_t*:at_array_uint8_t_max)(array)
+
 void
 at_array_header_init(AtArrayHeader* header);
 
@@ -113,12 +116,14 @@ at_array_uint8_t_ones(uint8_t dim, uint64_t* shape);
 void
 at_array_uint8_t_fill(AtArray_uint8_t* array, uint8_t value);
 
+uint8_t
+at_array_uint8_t_max(AtArray_uint8_t* array);
+
 void
 at_array_index_to_nd(AtArray_uint8_t* array, uint64_t s, uint64_t* s_nd);
 
 void
 at_array_index_to_1d(AtArray_uint8_t* array, int64_t* s_nd, uint64_t* s);
-
 
 void
 at_array_uint8_t_destroy(AtArray_uint8_t** array);
