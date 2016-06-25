@@ -78,3 +78,13 @@ at_pqueue_uint64_t_remove(AtPQueue_uint64_t* queue){
   at_pqueue_find_non_null_priority(queue);
   return at_queue_uint64_t_remove_first_link(&queue->priorities[queue->cur_priority])->value;
 }
+
+void
+at_pqueue_uint64_t_destroy(AtPQueue_uint64_t** queue_ptr){
+  if(*queue_ptr){
+    AtPQueue_uint64_t* queue = *queue_ptr;
+    if(queue->priorities) at_queue_uint64_t_destroy_array(&queue->priorities);
+    if(queue->values) at_list_uint64_t_destroy_array(&queue->values);
+    free(*queue_ptr);
+  }
+}

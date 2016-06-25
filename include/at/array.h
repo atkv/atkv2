@@ -96,6 +96,11 @@ at_array_header_set(AtArrayHeader* header, uint8_t dim, uint64_t* shape);
 void
 at_array_header_dispose(AtArrayHeader* header);
 
+
+#define at_array_destroy(array_ptr) _Generic((array_ptr), \
+  AtArray_uint8_t**: at_array_uint8_t_destroy             \
+)(array_ptr)
+
 // uint8_t
 // --------
 AtArray_uint8_t*

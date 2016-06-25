@@ -7,13 +7,35 @@ SET                   (CMAKE_EXE_LINKER_FLAGS "-pg")
 SET                   (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 SET                   (GLOBAL_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
+#================================================================= DEPENDENCIES
+# ------------------
+# CUDA
+# ------------------
 FIND_PACKAGE          (CUDA)
+# ------------------
+# JPEG
+# ------------------
+#if(BUILD_IMGPROC)
+  FIND_PACKAGE(JPEG QUIET)
+  INCLUDE_DIRECTORIES(${JPEG_INCLUDE_DIRS})
+  ADD_DEFINITIONS(-DHAVE_JPEG)
+#endif()
+
+# ------------------
+# PNG
+# ------------------
+#if(BUILD_IMGPROC)
+  find_package(PNG QUIET)
+  INCLUDE_DIRECTORIES(${PNG_INCLUDE_DIRS})
+  ADD_DEFINITIONS(-DHAVE_PNG)
+#endif()
 
 INCLUDE               (CTest)
 INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
 
-SET                   (SRCS array.c grapharray.c list.c queue.c pqueue.c)
-SET                   (HDRS macro.h optimization.h array.h grapharray.h list.h queue.h pqueue.h)
+SET                   (SRCS array.c grapharray.c list.c queue.c pqueue.c error.c img_io.c)
+SET                   (HDRS macro.h optimization.h array.h grapharray.h list.h queue.h pqueue.h error.h img_io.h)
+SET                   (DEPS ${PNG_LIBRARIES} ${JPEG_LIBRARIES})
 
 FOREACH(HDR ${HDRS})
   LIST(APPEND HDRS_ABS ${CMAKE_SOURCE_DIR}/include/at/${HDR})
@@ -56,10 +78,10 @@ IF(BUILD_TESTING)
   MESSAGE(STATUS ${CMOCKA_LIBRARIES})
   INCLUDE_DIRECTORIES   (${CMOCKA_INCLUDE_DIRS})
   ENABLE_TESTING        ()
-  SET(AT_TESTS array grapharray list queue pqueue)
+  SET(AT_TESTS array grapharray list queue pqueue img_io)
   FOREACH(AT_TEST ${AT_TESTS})
     ADD_EXECUTABLE        (test_${AT_TEST} ${CMAKE_SOURCE_DIR}/tests/test_${AT_TEST}.c)
-    TARGET_LINK_LIBRARIES (test_${AT_TEST} atkv ${CMOCKA_LIBRARIES})
+    TARGET_LINK_LIBRARIES (test_${AT_TEST} atkv ${CMOCKA_LIBRARIES} ${DEPS})
     ADD_TEST              (test_${AT_TEST} test_${AT_TEST})
     if(NOT CMOCKA_FOUND)
       ADD_DEPENDENCIES      (test_${AT_TEST} CMocka)

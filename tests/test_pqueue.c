@@ -31,13 +31,13 @@ void test_pqueue(void** state){
   uint64_t  values_r[5]    = {5,4,3,2,1};
   uint64_t  s;
   uint8_t   i;
-
   for(i = 0; i < 5; i++)
     at_pqueue_uint64_t_add(queue, priorities[i], values[i]);
   for(i = 0; i < 5; i++){
     s = at_pqueue_uint64_t_remove(queue);
     assert_int_equal(s, values_r[i]);
   }
+  at_pqueue_uint64_t_destroy(&queue);
 }
 
 int main(void){
