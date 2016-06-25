@@ -56,7 +56,7 @@ at_array_uint8_t_create(){
 AtArray_uint64_t*
 at_array_uint64_t_create(){
   AtArray_uint64_t* array = malloc(sizeof(AtArray_uint64_t));
-  at_array_header_init(&array->header);
+  at_array_header_init(&array->h);
   array->data = NULL;
   return array;
 }
@@ -89,12 +89,12 @@ AtArray_uint64_t*
 at_array_uint64_t_new_with_data(uint8_t dim, uint64_t* shape, uint64_t* data, bool copy){
   AtArray_uint64_t* array = at_array_uint64_t_create();
   uint64_t num_bytes;
-  at_array_header_set(&array->header, dim, shape);
+  at_array_header_set(&array->h, dim, shape);
 
   if(!copy)
     array->data = data;
   else{
-    num_bytes   = array->header.num_elements * sizeof(uint64_t);
+    num_bytes   = array->h.num_elements * sizeof(uint64_t);
     array->data = malloc(num_bytes);
     memcpy(array->data, data, num_bytes);
   }
@@ -118,9 +118,9 @@ at_array_uint8_t_max(AtArray_uint8_t* array){
 void
 at_array_uint64_t_fill(AtArray_uint64_t* array, uint64_t value){
   uint64_t i;
-  if(value == 0) memset(array->data, 0, array->header.num_elements * sizeof(uint64_t));
+  if(value == 0) memset(array->data, 0, array->h.num_elements * sizeof(uint64_t));
   else
-    for(i = 0; i < array->header.num_elements; i++)
+    for(i = 0; i < array->h.num_elements; i++)
       array->data[i] = value;
 }
 
@@ -153,30 +153,33 @@ at_array_uint8_t_destroy(AtArray_uint8_t** array_ptr){
 }
 
 void
-at_array_index_to_nd(AtArray_uint8_t* array, uint64_t s, uint64_t* s_nd){
+at_index_to_nd(uint8_t dim, uint64_t* step, uint64_t s, uint64_t* s_nd){
   uint8_t i;
-  for(i = 0; i < array->h.dim; i++){
-    s_nd[i]  = s/array->h.step[i];
-    s       %= array->h.step[i];
+  for(i = 0; i < dim; i++){
+    s_nd[i]  = s/step[i];
+    s       %= step[i];
   }
 }
 
 void
-at_array_index_to_1d(AtArray_uint8_t* array, int64_t* s_nd, uint64_t* s){
+at_index_to_1d(uint8_t dim, uint64_t* step, int64_t* s_nd, uint64_t* s){
   uint8_t i;
   *s = 0;
-  for(i = 0; i < array->h.dim; i++)
-    *s += s_nd[i] * array->h.step[i];
+  for(i = 0; i < dim; i++)
+    *s += s_nd[i] * step[i];
 }
+
+#define at_array_index_to_nd(array, s, s_nd) at_index_to_nd(array->h.dim, array->h.step,s,s_nd)
+#define at_array_index_to_1d(array, s_nd, s) at_index_to_1d(array->h.dim, array->h.step,s_nd,s)
 
 void
 at_array_uint64_t_destroy(AtArray_uint64_t** array_ptr){
   if(array_ptr){
     AtArray_uint64_t* array = *array_ptr;
     if(array){
-      if(array->header.owns_data)
+      if(array->h.owns_data)
         free(array->data);
-      at_array_header_dispose(&array->header);
+      at_array_header_dispose(&array->h);
       free(array);
     }
     *array_ptr = NULL;

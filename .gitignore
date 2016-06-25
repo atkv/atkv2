@@ -35,4 +35,4 @@
 *.user
 build/
 3rdparty
-.autosave
+*.autosave

@@ -34,11 +34,6 @@ test_grapharray_values(AtGraphArray* graph1, AtGraphArray* graph2, uint64_t num_
     assert_true(fabs(graph1->weights[i]  - graph2->weights[i]) < delta);
   }
 }
-
-double at_weighting_diff_abs(AtArray_uint8_t* array, uint64_t s, uint64_t t){
-  return abs(array->data[s] - array->data[t]);
-}
-
 void
 test_grapharray(void** state){
   uint64_t          neighbors[16] = {0,1,0,2,0,0,0,3,  // 000-128
@@ -53,7 +48,7 @@ test_grapharray(void** state){
   uint8_t           data[4]       = {0,1,1,1};         // 304-4
 
   array      = at_array_uint8_t_new_with_data(2,data_shape,data,true);
-  grapharray = at_grapharray_new_from_array_uint8_t(array,AT_ADJACENCY_4,at_weighting_diff_abs);
+  grapharray = at_grapharray_uint8_t_new(array,AT_ADJACENCY_4,at_weighting_diff_abs);
   assert_non_null(grapharray);
   assert_non_null(grapharray->active);
   assert_non_null(grapharray->neighbors);

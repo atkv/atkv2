@@ -24,19 +24,21 @@
  STRUCTURE
  ============================================================================*/
 #define AtPQueue(type) AtPQueue##type
-#define at_pqueue_new(queue_ptr,optimization,policy) _Generic((queue_ptr), \
-AtPQueue_uint64_t**: at_pqueue_uint64_t_new_ptr)(queue_ptr, optimization, policy)
-
+#define at_pqueue_new(queue,optimization,policy) queue = _Generic((queue), \
+  AtPQueue_uint64_t*: at_pqueue_uint64_t_new)(optimization, policy)
 
 /**
  * @brief Priority Queue Structure
  */
 typedef struct AtPQueue_uint64_t{
-  AtQueue_uint64_t* priorities;
-  AtList_uint64_t*  values;
-  uint64_t          cur_priority;
-  AtOptimization    optimization;
-  AtPolicy          policy;
+  AtQueue_uint64_t* pr;
+  AtList_uint64_t*  v;
+  uint64_t*         vp;
+  uint64_t          cur_p;
+  uint32_t          ne;
+  uint32_t          np;
+  AtOptimization    o;
+  AtPolicy          po;
 }AtPQueue_uint64_t;
 /*=============================================================================
  PUBLIC API
@@ -48,16 +50,7 @@ typedef struct AtPQueue_uint64_t{
  * @return
  */
 AtPQueue_uint64_t*
-at_pqueue_uint64_t_new(AtOptimization optimization, AtPolicy policy);
-
-/**
- * @brief at_pqueue_uint64_t_new_ptr
- * @param queue_ptr
- * @param optimization
- * @param policy
- */
-void
-at_pqueue_uint64_t_new_ptr(AtPQueue_uint64_t** queue_ptr, AtOptimization optimization, AtPolicy policy);
+at_pqueue_uint64_t_new(AtOptimization o, AtPolicy po);
 
 /**
  * @brief at_pqueue_new_prealloc
@@ -67,7 +60,7 @@ at_pqueue_uint64_t_new_ptr(AtPQueue_uint64_t** queue_ptr, AtOptimization optimiz
  * @return
  */
 AtPQueue_uint64_t*
-at_pqueue_uint64_t_new_prealloc(AtOptimization optimization, AtPolicy policy, uint64_t n_priorities, uint64_t n_values);
+at_pqueue_uint64_t_new_prealloc(AtOptimization o, AtPolicy po, uint64_t np, uint64_t nv);
 
 /**
  * @brief at_pqueue_add
@@ -76,7 +69,7 @@ at_pqueue_uint64_t_new_prealloc(AtOptimization optimization, AtPolicy policy, ui
  * @param value
  */
 void
-at_pqueue_uint64_t_add(AtPQueue_uint64_t* queue, uint64_t priority, uint64_t value);
+at_pqueue_uint64_t_add(AtPQueue_uint64_t* q, uint64_t pr, uint64_t v);
 
 /**
  * @brief at_pqueue_remove
@@ -84,13 +77,39 @@ at_pqueue_uint64_t_add(AtPQueue_uint64_t* queue, uint64_t priority, uint64_t val
  * @return
  */
 uint64_t
-at_pqueue_uint64_t_remove(AtPQueue_uint64_t* queue);
+at_pqueue_uint64_t_remove(AtPQueue_uint64_t* q);
+
+/**
+ * @brief at_pqueue_uint64_t_remove_from
+ * @param q
+ * @param v
+ */
+void
+at_pqueue_uint64_t_remove_from(AtPQueue_uint64_t* q, uint64_t v);
+
+/**
+ * @brief at_pqueue_uint64_t_is_empty
+ * @param q
+ * @return
+ */
+uint8_t
+at_pqueue_uint64_t_is_empty(AtPQueue_uint64_t* q);
+
+/**
+ * @brief at_pqueue_uint64_t_has
+ * @param q
+ * @param pr
+ * @param v
+ * @return
+ */
+uint8_t
+at_pqueue_uint64_t_has(AtPQueue_uint64_t* q, uint64_t v);
 
 /**
  * @brief at_pqueue_destroy
  * @param queue_ptr
  */
 void
-at_pqueue_uint64_t_destroy(AtPQueue_uint64_t** queue_ptr);
+at_pqueue_uint64_t_destroy(AtPQueue_uint64_t** qp);
 
 #endif
