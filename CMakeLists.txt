@@ -29,12 +29,11 @@ FIND_PACKAGE          (CUDA)
   INCLUDE_DIRECTORIES(${PNG_INCLUDE_DIRS})
   ADD_DEFINITIONS(-DHAVE_PNG)
 #endif()
-
-INCLUDE               (CTest)
+#================================================================= SOURCES
 INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
 
-SET                   (SRCS array.c grapharray.c list.c queue.c pqueue.c error.c img_io.c)
-SET                   (HDRS macro.h optimization.h array.h grapharray.h list.h queue.h pqueue.h error.h img_io.h)
+SET                   (HDRS macro.h optimization.h array.h grapharray.h list.h queue.h pqueue.h error.h img_io.h ift.h)
+SET                   (SRCS array.c grapharray.c list.c queue.c pqueue.c error.c img_io.c ift.c)
 SET                   (DEPS ${PNG_LIBRARIES} ${JPEG_LIBRARIES})
 
 FOREACH(HDR ${HDRS})
@@ -44,12 +43,12 @@ FOREACH(SRC ${SRCS})
   LIST(APPEND SRCS_ABS ${CMAKE_SOURCE_DIR}/src/${SRC})
 ENDFOREACH()
 
+#================================================================= LIBRARY
 ADD_LIBRARY           (atkv    SHARED ${HDRS_ABS} ${SRCS_ABS})
 
-# ------------------------------------------------------
-# TESTING
-# ------------------------------------------------------
+#================================================================= TESTING
 IF(BUILD_TESTING)
+  INCLUDE               (CTest)
   FIND_PACKAGE          (CMocka QUIET)
   IF(NOT CMOCKA_FOUND)
     include(ExternalProject)
@@ -78,7 +77,7 @@ IF(BUILD_TESTING)
   MESSAGE(STATUS ${CMOCKA_LIBRARIES})
   INCLUDE_DIRECTORIES   (${CMOCKA_INCLUDE_DIRS})
   ENABLE_TESTING        ()
-  SET(AT_TESTS array grapharray list queue pqueue img_io)
+  SET(AT_TESTS array grapharray list queue pqueue img_io ift)
   FOREACH(AT_TEST ${AT_TESTS})
     ADD_EXECUTABLE        (test_${AT_TEST} ${CMAKE_SOURCE_DIR}/tests/test_${AT_TEST}.c)
     TARGET_LINK_LIBRARIES (test_${AT_TEST} atkv ${CMOCKA_LIBRARIES} ${DEPS})

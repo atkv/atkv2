@@ -32,43 +32,60 @@ at_queue_uint64_t_new_array(uint64_t n_queues){
   return queues;
 }
 void
-at_queue_uint64_t_append_link(AtQueue_uint64_t* queue, AtList_uint64_t* listitem){
-  listitem->prev   = NULL;
-  if(queue->first != NULL){
-    listitem->prev     = queue->first->prev;
-    queue->first->prev = listitem;
+at_queue_uint64_t_prepend_link(AtQueue_uint64_t* q, AtList_uint64_t* l){
+  l->prev   = NULL;
+  if(q->first != NULL){
+    l->prev     = q->first->prev;
+    q->first->prev = l;
   }
-  if(queue->last == NULL)
-    queue->last = listitem;
-  listitem->next = queue->first;
-  queue->first   = listitem;
+  if(q->last == NULL)
+    q->last = l;
+  l->next = q->first;
+  q->first   = l;
 }
 
 void
-at_queue_uint64_t_prepend_link(AtQueue_uint64_t* queue, AtList_uint64_t* listitem){
-  listitem->next  = NULL;
-  if(queue->last != NULL){
-    listitem->next     = queue->last->next;
-    queue->last->next = listitem;
+at_queue_uint64_t_append_link(AtQueue_uint64_t* q, AtList_uint64_t* l){
+  l->next  = NULL;
+  if(q->last != NULL){
+    l->next     = q->last->next;
+    q->last->next = l;
   }
-  if(queue->first == NULL)
-    queue->first = listitem;
-  listitem->prev = queue->last;
-  queue->last   = listitem;
+  if(q->first == NULL)
+    q->first = l;
+  l->prev = q->last;
+  q->last   = l;
 }
 
 AtList_uint64_t*
-at_queue_uint64_t_remove_first_link(AtQueue_uint64_t* queue){
-  AtList_uint64_t* item = queue->first;
-  if(item) {
-    queue->first = item->next;
-    item->next = NULL;
+at_queue_uint64_t_remove_first_link(AtQueue_uint64_t* q){
+  AtList_uint64_t* l = q->first;
+  if(l) {
+    q->first = l->next;
+    l->next = NULL;
   }
-  return item;
+  return l;
 }
 
 void
-at_queue_uint64_t_destroy_array(AtQueue_uint64_t** queue){
-  if(*queue != NULL) free(*queue);
-  *queue = NULL;
+at_queue_uint64_t_remove_link(AtQueue_uint64_t* q, AtList_uint64_t* l){
+  if(l != NULL){
+    if(q->first == l) q->first = l->next;
+    if(q->last == l)  q->last  = l->prev;
+
+    // Previous node link to next one and vice-versa
+    if(l->prev) l->prev->next = l->next;
+    if(l->next) l->next->prev = l->prev;
+
+    // Same as:
+    // l->prev = NULL;
+    // l->next = NULL;
+    memset(l,0,(sizeof(AtList_uint64_t*)<<1));
+  }
+}
+
+void
+at_queue_uint64_t_destroy_array(AtQueue_uint64_t** qp){
+  if(*qp != NULL) free(*qp);
+  *qp = NULL;
 }

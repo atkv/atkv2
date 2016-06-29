@@ -24,6 +24,14 @@
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
+double
+at_weighting_diff_abs(AtArray_uint8_t* array, uint64_t s, uint64_t t){
+  return abs(array->data[s] - array->data[t]);
+}
+double
+at_weighting_diff_absc(AtArray_uint8_t* array, uint64_t s, uint64_t t){
+  return UINT8_MAX-abs(array->data[s] - array->data[t]);
+}
 
 void
 at_grapharray_init(AtGraphArray* grapharray){
@@ -50,9 +58,9 @@ static int8_t neighboring_3D[78] = { 0, 0,-1,  0, 0, 1,  0,-1, 0,            // 
                                      1,-1,-1,  1,-1, 1,  1, 1,-1,  1, 1, 1};
 
 AtGraphArray*
-at_grapharray_new_from_array_uint8_t(AtArray_uint8_t* array,
-                                     AtAdjacency adjacency,
-                                     AtWeightingFunc_uint8_t weighting){
+at_grapharray_uint8_t_new(AtArray_uint8_t* array,
+                          AtAdjacency adjacency,
+                          AtWeightingFunc_uint8_t weighting){
   AtGraphArray* grapharray   = at_grapharray_create();
   uint64_t      num_elements = array->h.num_elements * adjacency;
   uint64_t    * s_nd         = malloc(array->h.dim * sizeof(uint64_t));
@@ -65,7 +73,7 @@ at_grapharray_new_from_array_uint8_t(AtArray_uint8_t* array,
   grapharray->neighbors      = malloc(num_elements * sizeof(uint64_t));
   grapharray->active         = malloc(num_elements * sizeof(uint8_t));
   grapharray->weights        = malloc(num_elements * sizeof(double));
-  grapharray->dim            = array->h.dim;
+  grapharray->h              = &array->h;
   memset(grapharray->neighbors,0,num_elements*sizeof(uint64_t));
   memset(grapharray->weights  ,0,num_elements*sizeof(double));
   memset(grapharray->active   ,0,num_elements*sizeof(uint8_t));
@@ -136,4 +144,15 @@ void
 at_grapharray_add_edge(AtGraphArray* grapharray, uint64_t s, uint64_t t){
   at_grapharray_add_arc(grapharray, s, t);
   at_grapharray_add_arc(grapharray, t, s);
+}
+
+double
+at_grapharray_get(AtGraphArray* graph, uint64_t s, uint64_t t){
+  uint64_t off = s * graph->adjacency;
+  uint64_t offn = off+graph->adjacency;
+  uint64_t i;
+  for(i = off; i < offn; i++)
+    if(graph->neighbors[i] == t)
+      return graph->weights[i];
+  return 5;
 }

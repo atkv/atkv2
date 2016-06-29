@@ -25,7 +25,10 @@
  STRUCTURE
  ============================================================================*/
 /**
- * Multidimensional Array
+ * @brief @~Brazilian Cabeçalho do Vetor Multidimensional
+ *
+ *
+ * Multidimensional Array (
  */
 typedef struct AtArrayHeader{
   uint64_t* shape;       // 00-07: size of each dimension
@@ -39,50 +42,67 @@ typedef struct AtArrayHeader{
 
 #define AtArray(type) AtArray_##type
 
+/**
+ * @brief @~Brazilian Vetor Multidimensional
+ *
+ * Para criar um vetor, é necessário saber a dimensão (`dim`) e o tamanho
+ * (`shape`) de cada uma. Por exemplo, podemos criar uma matriz bidimensional
+ * 5x4: dim = 2 e `shape={5,4}`. Note-se que o tamanho é {Y,X} e não {X,Y}, e
+ * dimensões adicionais devem ser colocadas primeiro ({Z,Y,X} por exemplo).
+ * dimensão é uint8 e shape é um array de uint64.
+ */
 typedef struct AtArray_uint8_t{
   AtArrayHeader h;  // 00-31
   uint8_t      *data;    // 32-39
 }AtArray_uint8_t;        // Total: 40B
 typedef struct AtArray_uint16_t{
-  AtArrayHeader header;
+  AtArrayHeader h;
   uint16_t     *data;
 }AtArray_uint16_t;
 typedef struct AtArray_uint32_t{
-  AtArrayHeader header;
+  AtArrayHeader h;
   uint32_t     *data;
 }AtArray_uint32_t;
 typedef struct AtArray_uint64_t{
-  AtArrayHeader header;
+  AtArrayHeader h;
   uint64_t     *data;
 }AtArray_uint64_t;
 typedef struct AtArray_int8_t{
-  AtArrayHeader header;
+  AtArrayHeader h;
   int8_t       *data;
 }AtArray_int8_t;
 typedef struct AtArray_int16_t{
-  AtArrayHeader header;
+  AtArrayHeader h;
   int16_t      *data;
 }AtArray_int16_t;
 typedef struct AtArray_int32_t{
-  AtArrayHeader header;
+  AtArrayHeader h;
   int32_t      *data;
 }AtArray_int32_t;
 typedef struct AtArray_int64_t{
-  AtArrayHeader header;
+  AtArrayHeader h;
   int64_t      *data;
 }AtArray_int64_t;
 typedef struct AtArray_float{
-  AtArrayHeader header;
+  AtArrayHeader h;
   float        *data;
 }AtArray_float;
 typedef struct AtArray_double{
-  AtArrayHeader header;
+  AtArrayHeader h;
   double       *data;
 }AtArray_double;
 
 /*=============================================================================
  FUNCTIONS
  ============================================================================*/
+
+void
+at_index_to_nd(uint8_t dim, uint64_t* step, uint64_t s, uint64_t* s_nd);
+
+void
+at_index_to_1d(uint8_t dim, uint64_t* step, int64_t* s_nd, uint64_t* s);
+#define at_array_index_to_nd(array, s, s_nd) at_index_to_nd(array->h.dim, array->h.step,s,s_nd)
+#define at_array_index_to_1d(array, s_nd, s) at_index_to_1d(array->h.dim, array->h.step,s_nd,s)
 
 #define at_array_max(array) _Generic((array), \
   AtArray_uint8_t*:at_array_uint8_t_max)(array)
@@ -123,12 +143,6 @@ at_array_uint8_t_fill(AtArray_uint8_t* array, uint8_t value);
 
 uint8_t
 at_array_uint8_t_max(AtArray_uint8_t* array);
-
-void
-at_array_index_to_nd(AtArray_uint8_t* array, uint64_t s, uint64_t* s_nd);
-
-void
-at_array_index_to_1d(AtArray_uint8_t* array, int64_t* s_nd, uint64_t* s);
 
 void
 at_array_uint8_t_destroy(AtArray_uint8_t** array);
