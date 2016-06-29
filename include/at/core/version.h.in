@@ -1,0 +1,35 @@
+/**
+ ** This file is part of the atkv project.
+ ** Copyright 2016 Anderson Tavares <nocturne.pe@gmail.com>.
+ **
+ ** This program is free software: you can redistribute it and/or modify
+ ** it under the terms of the GNU General Public License as published by
+ ** the Free Software Foundation, either version 3 of the License, or
+ ** (at your option) any later version.
+ **
+ ** This program is distributed in the hope that it will be useful,
+ ** but WITHOUT ANY WARRANTY; without even the implied warranty of
+ ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ ** GNU General Public License for more details.
+ **
+ ** You should have received a copy of the GNU General Public License
+ ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
+#ifndef AT_VERSION_H
+#define AT_VERSION_H
+
+#define AT_VERSION_MAJOR @AT_VERSION_MAJOR@
+#define AT_VERSION_MINOR @AT_VERSION_MINOR@
+#define AT_VERSION_RELEASE @AT_VERSION_RELEASE@
+#define AT_VERSION_STRING "@AT_VERSION_STRING@"
+#define AT_WEBSITE "http://atkv.io"
+#define AT_INSTALL_PATH "@AT_INSTALL_PATH@"
+#define AT_RESOURCE_PATH "@AT_RESOURCE_PATH@"
+#define GETTEXT_PACKAGE "atkv"
+
+#define AT_CHECK_VERSION(major, minor, release) (AT_VERSION_MAJOR > (major) || \
+     (AT_VERSION_MAJOR == (major) && AT_VERSION_MINOR > (minor)) || \
+     (AT_VERSION_MAJOR == (major) && AT_VERSION_MINOR == (minor) && \
+      AT_VERSION_RELEASE >= (release)))
+#define AT_ENCODE_VERSION(major,minor) ((major) << 16 | (minor) << 8)
+#endif
