@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <at/macro.h>
+AT_BEGIN_DECLS
 /*=============================================================================
  STRUCTURE
  ============================================================================*/
@@ -161,5 +163,5 @@ at_array_uint64_t_fill(AtArray_uint64_t* array, uint64_t value);
 
 void
 at_array_uint64_t_destroy(AtArray_uint64_t** array);
-
+AT_END_DECLS
 #endif

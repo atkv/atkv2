@@ -17,6 +17,8 @@
  **/
 #ifndef AT_ERROR_H
 #define AT_ERROR_H
+#include <at/macro.h>
+AT_BEGIN_DECLS
 typedef struct AtError{
   char* message;
 }AtError;
@@ -26,5 +28,5 @@ at_error_set(AtError** error, char* msg_pattern, ...);
 
 void
 at_error_destroy(AtError **error_ptr);
-
+AT_END_DECLS
 #endif

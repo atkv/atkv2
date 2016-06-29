@@ -19,7 +19,8 @@
 #define AT_IMGIO_H
 #include <at/array.h>
 #include <at/error.h>
-
+#include <at/macro.h>
+AT_BEGIN_DECLS
 /*=============================================================================
  MACROS (PUBLIC API)
  ============================================================================*/
@@ -108,5 +109,5 @@ at_array_uint8_t_write_pgm(AtArray_uint8_t* image, const char* filename, AtError
 void
 at_array_uint8_t_write_ppm(AtArray_uint8_t* image, const char* filename, AtError **error);
 
-
+AT_END_DECLS
 #endif

@@ -17,7 +17,8 @@
  **/
 #ifndef AT_LIST_H
 #define AT_LIST_H
-
+#include <at/macro.h>
+AT_BEGIN_DECLS
 #include <stdint.h>
 /*=============================================================================
  STRUCTURE
@@ -41,5 +42,5 @@ at_list_uint64_t_destroy(AtList_uint64_t** list_ptr);
 void
 at_list_uint64_t_destroy_array(AtList_uint64_t** list);
 
-
+AT_END_DECLS
 #endif
