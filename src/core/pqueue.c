@@ -16,7 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/pqueue.h>
+#include <at/core/pqueue.h>
 #include <stdlib.h>
 /*=============================================================================
  PRIVATE API
@@ -46,20 +46,21 @@ at_pqueue_uint64_t_new(AtOptimization o, AtPolicy po){
 
 AtPQueue_uint64_t*
 at_pqueue_uint64_t_new_prealloc(AtOptimization o, AtPolicy po, uint64_t np, uint64_t nv){
-  AtPQueue_uint64_t* queue     = at_pqueue_uint64_t_new(o, po);
+  AtPQueue_uint64_t* q     = at_pqueue_uint64_t_new(o, po);
   uint64_t  i;
-  queue->pr = at_queue_uint64_t_new_array(np);
-  queue->np = np;
-  queue->v  = at_list_uint64_t_new_array(nv);
-  queue->vp = malloc(nv * sizeof(uint64_t));
+  q->pr = at_queue_uint64_t_new_array(np);
+  q->np = np;
+  q->v  = at_list_uint64_t_new_array(nv);
+  q->vp = malloc(nv * sizeof(uint64_t));
   for(i = 0; i < nv; i++){
-    queue->v[i].value = i;
-    queue->vp[i]      = UINT64_MAX;
+    q->v[i].value = i;
+    q->vp[i]      = UINT64_MAX;
   }
   switch(o){
-    case AT_MINIMIZATION: queue->cur_p = 0;break;
-    case AT_MAXIMIZATION: queue->cur_p = np-1;break;
+    case AT_MINIMIZATION: q->cur_p = 0;break;
+    case AT_MAXIMIZATION: q->cur_p = np-1;break;
   }
+  return q;
 }
 uint8_t
 at_pqueue_uint64_t_has(AtPQueue_uint64_t* q, uint64_t v){

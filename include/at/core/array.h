@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <at/macro.h>
+#include <at/core/macro.h>
 AT_BEGIN_DECLS
 /*=============================================================================
  STRUCTURE

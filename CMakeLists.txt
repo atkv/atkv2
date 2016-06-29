@@ -2,8 +2,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 PROJECT               (atkv)
 SET                   (CMAKE_CXX_STANDARD 11)
 SET                   (CMAKE_C_STANDARD 11)
-SET                   (CMAKE_C_FLAGS          "-pg")
-SET                   (CMAKE_EXE_LINKER_FLAGS "-pg")
+SET                   (CMAKE_C_FLAGS          "-pg -O3")
+#SET                   (CMAKE_EXE_LINKER_FLAGS "-pg")
 SET                   (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 SET                   (GLOBAL_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
@@ -31,21 +31,41 @@ FIND_PACKAGE          (CUDA)
   ADD_DEFINITIONS(-DHAVE_PNG)
 #endif()
 #================================================================= SOURCES
+MACRO(AT_MAKE_MODULE MODULE)
+  STRING(TOUPPER ${MODULE} MODULEUPPER)
+  # HEADERS
+  SET(HDRS_ABS)
+  FOREACH(MDLFILE ${${MODULEUPPER}_HDRS})
+    LIST(APPEND HDRS_ABS ${CMAKE_SOURCE_DIR}/include/at/${MODULE}/${MDLFILE})
+  ENDFOREACH()
+
+  # SOURCES
+  SET(SRCS_ABS)
+  FOREACH(MDLFILE ${${MODULEUPPER}_SRCS})
+    LIST(APPEND SRCS_ABS ${CMAKE_SOURCE_DIR}/src/${MODULE}/${MDLFILE})
+  ENDFOREACH()
+
+  ADD_LIBRARY           (atkv_${MODULE} SHARED ${HDRS_ABS} ${SRCS_ABS})
+  LIST(APPEND ATKV_LIBRARIES atkv_${MODULE} ${${MODULEUPPER}_DEPS})
+ENDMACRO(AT_MAKE_MODULE)
+
+MACRO(AT_MAKE_MODULES MODULES)
+  FOREACH(MODULE ${MODULES})
+    AT_MAKE_MODULE("${MODULE}")
+  ENDFOREACH()
+ENDMACRO(AT_MAKE_MODULES)
+
 INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
-
-SET                   (HDRS macro.h optimization.h array.h grapharray.h list.h queue.h pqueue.h error.h img_io.h ift.h)
-SET                   (SRCS array.c grapharray.c list.c queue.c pqueue.c error.c img_io.c ift.c)
-SET                   (DEPS ${PNG_LIBRARIES} ${JPEG_LIBRARIES})
-
-FOREACH(HDR ${HDRS})
-  LIST(APPEND HDRS_ABS ${CMAKE_SOURCE_DIR}/include/at/${HDR})
-ENDFOREACH()
-FOREACH(SRC ${SRCS})
-  LIST(APPEND SRCS_ABS ${CMAKE_SOURCE_DIR}/src/${SRC})
-ENDFOREACH()
+SET                   (MDLS core imgproc)
+SET                   (CORE_HDRS    macro.h optimization.h array.h grapharray.h list.h queue.h pqueue.h error.h)
+SET                   (CORE_SRCS    array.c grapharray.c list.c queue.c pqueue.c error.c)
+SET                   (IMGPROC_HDRS img_io.h ift.h)
+SET                   (IMGPROC_SRCS img_io.c ift.c)
+SET                   (CORE_DEPS)
+SET                   (IMGPROC_DEPS ${PNG_LIBRARIES} ${JPEG_LIBRARIES} atkv_core)
 
 #================================================================= LIBRARY
-ADD_LIBRARY           (atkv    SHARED ${HDRS_ABS} ${SRCS_ABS})
+AT_MAKE_MODULES       ("${MDLS}")
 
 #================================================================= TESTING
 IF(BUILD_TESTING)
@@ -55,12 +75,12 @@ IF(BUILD_TESTING)
     include(ExternalProject)
     ExternalProject_Add(CMocka
       GIT_REPOSITORY "git://git.cryptomilk.org/projects/cmocka.git"
-      GIT_TAG "master"
+      GIT_TAG        "master"
       UPDATE_COMMAND ""
-      PATCH_COMMAND ""
-      SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/cmocka"
+      PATCH_COMMAND  ""
+      SOURCE_DIR     "${CMAKE_SOURCE_DIR}/3rdparty/cmocka"
       CMAKE_ARGS -DBuildShared=ON -DBuildExamples=OFF -DCMAKE_INSTALL_PREFIX=${GLOBAL_OUTPUT_PATH}/cmocka
-      TEST_COMMAND ""
+      TEST_COMMAND   ""
     )
     ExternalProject_Add_Step(
       CMocka CopyToBin
@@ -74,18 +94,24 @@ IF(BUILD_TESTING)
     link_directories(${GLOBAL_OUTPUT_PATH})
   ENDIF()
 
-  MESSAGE(STATUS ${CMOCKA_INCLUDE_DIRS})
-  MESSAGE(STATUS ${CMOCKA_LIBRARIES})
   INCLUDE_DIRECTORIES   (${CMOCKA_INCLUDE_DIRS})
   ENABLE_TESTING        ()
-  SET(AT_TESTS array grapharray list queue pqueue img_io ift)
+  SET(AT_CORE_TESTS array grapharray list queue pqueue)
+  SET(AT_IMGPROC_TESTS img_io ift)
+  FOREACH(MODULE ${MDLS})
+    STRING(TOUPPER ${MODULE} MODULEUPPER)
+    MESSAGE(STATUS ${MODULEUPPER})
+    FOREACH(AT_TEST ${AT_${MODULEUPPER}_TESTS})
+      ADD_EXECUTABLE        (test_${AT_TEST} ${CMAKE_SOURCE_DIR}/tests/${MODULE}/test_${AT_TEST}.c)
+      TARGET_LINK_LIBRARIES (test_${AT_TEST} atkv_${MODULE} ${${MODULEUPPER}_DEPS} ${CMOCKA_LIBRARIES})
+      ADD_TEST              (test_${AT_TEST} test_${AT_TEST})
+      if(NOT CMOCKA_FOUND)
+        ADD_DEPENDENCIES      (test_${AT_TEST} CMocka)
+      endif()
+    ENDFOREACH()
+  ENDFOREACH()
   FOREACH(AT_TEST ${AT_TESTS})
-    ADD_EXECUTABLE        (test_${AT_TEST} ${CMAKE_SOURCE_DIR}/tests/test_${AT_TEST}.c)
-    TARGET_LINK_LIBRARIES (test_${AT_TEST} atkv ${CMOCKA_LIBRARIES} ${DEPS})
-    ADD_TEST              (test_${AT_TEST} test_${AT_TEST})
-    if(NOT CMOCKA_FOUND)
-      ADD_DEPENDENCIES      (test_${AT_TEST} CMocka)
-    endif()
+
   ENDFOREACH()
 
 ENDIF()

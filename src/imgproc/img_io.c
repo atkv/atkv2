@@ -16,8 +16,8 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/img_io.h>
-#include <at/error.h>
+#include <at/imgproc/img_io.h>
+#include <at/core/error.h>
 #include <png.h>
 #include <jpeglib.h>
 

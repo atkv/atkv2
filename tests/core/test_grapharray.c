@@ -16,7 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/grapharray.h>
+#include <at/core/grapharray.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdalign.h>

@@ -1,7 +1,7 @@
-#include <at/ift.h>
-#include <at/pqueue.h>
+#include <at/imgproc/ift.h>
+#include <at/core/pqueue.h>
 #include <math.h>
-#include <at/macro.h>
+#include <at/core/macro.h>
 
 /*=============================================================================
  PRIVATE API

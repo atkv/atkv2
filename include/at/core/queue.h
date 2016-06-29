@@ -17,9 +17,9 @@
  **/
 #ifndef AT_QUEUE_H
 #define AT_QUEUE_H
-#include <at/macro.h>
+#include <at/core/macro.h>
 AT_BEGIN_DECLS
-#include <at/list.h>
+#include <at/core/list.h>
 
 /*=============================================================================
  STRUCTURE

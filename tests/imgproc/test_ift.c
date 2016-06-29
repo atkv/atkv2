@@ -16,7 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/ift.h>
+#include <at/imgproc/ift.h>
 #include <math.h>
 #include <setjmp.h>
 #include <stdarg.h>

@@ -18,8 +18,8 @@
 #ifndef AT_GRAPHARRAY_H
 #define AT_GRAPHARRAY_H
 #include <stdint.h>
-#include <at/array.h>
-#include <at/macro.h>
+#include <at/core/array.h>
+#include <at/core/macro.h>
 AT_BEGIN_DECLS
 /*=============================================================================
  STRUCTURE

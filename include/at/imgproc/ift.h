@@ -17,10 +17,10 @@
  **/
 #ifndef AT_IFT_H
 #define AT_IFT_H
-#include <at/array.h>
-#include <at/grapharray.h>
-#include <at/optimization.h>
-#include <at/macro.h>
+#include <at/core/array.h>
+#include <at/core/grapharray.h>
+#include <at/core/optimization.h>
+#include <at/core/macro.h>
 AT_BEGIN_DECLS
 /**
  * Necessary info for IFT

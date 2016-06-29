@@ -15,18 +15,22 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#ifndef AT_ERROR_H
-#define AT_ERROR_H
-#include <at/macro.h>
+#ifndef AT_OPTIMIZATION_H
+#define AT_OPTIMIZATION_H
+#include <at/core/macro.h>
 AT_BEGIN_DECLS
-typedef struct AtError{
-  char* message;
-}AtError;
+/*=============================================================================
+ PUBLIC API
+ ============================================================================*/
 
-void
-at_error_set(AtError** error, char* msg_pattern, ...);
+typedef enum{
+  AT_MAXIMIZATION=0,
+  AT_MINIMIZATION=1
+}AtOptimization;
 
-void
-at_error_destroy(AtError **error_ptr);
+typedef enum{
+  AT_FIFO=0,
+  AT_LIFO=1
+}AtPolicy;
 AT_END_DECLS
 #endif

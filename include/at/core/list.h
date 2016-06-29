@@ -15,22 +15,32 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#ifndef AT_OPTIMIZATION_H
-#define AT_OPTIMIZATION_H
-#include <at/macro.h>
+#ifndef AT_LIST_H
+#define AT_LIST_H
+#include <at/core/macro.h>
 AT_BEGIN_DECLS
+#include <stdint.h>
+/*=============================================================================
+ STRUCTURE
+ ============================================================================*/
+typedef struct AtList_uint64_t AtList_uint64_t;
+struct AtList_uint64_t{
+  AtList_uint64_t* prev;
+  AtList_uint64_t* next;
+  uint64_t value;
+};
+
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
+AtList_uint64_t*
+at_list_uint64_t_new_array(uint64_t n_items);
 
-typedef enum{
-  AT_MAXIMIZATION=0,
-  AT_MINIMIZATION=1
-}AtOptimization;
+void
+at_list_uint64_t_destroy(AtList_uint64_t** list_ptr);
 
-typedef enum{
-  AT_FIFO=0,
-  AT_LIFO=1
-}AtPolicy;
+void
+at_list_uint64_t_destroy_array(AtList_uint64_t** list);
+
 AT_END_DECLS
 #endif
