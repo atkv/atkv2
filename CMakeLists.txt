@@ -66,8 +66,8 @@ INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
 SET                   (MDLS core imgproc)
 SET                   (CORE_HDRS    version.h macro.h optimization.h array.h grapharray.h list.h queue.h pqueue.h error.h)
 SET                   (CORE_SRCS    array.c grapharray.c list.c queue.c pqueue.c error.c)
-SET                   (IMGPROC_HDRS img_io.h ift.h)
-SET                   (IMGPROC_SRCS img_io.c ift.c)
+SET                   (IMGPROC_HDRS img_io.h ift.h dicom.h)
+SET                   (IMGPROC_SRCS img_io.c ift.c dicom.c)
 SET                   (CORE_DEPS)
 SET                   (IMGPROC_DEPS ${PNG_LIBRARIES} ${JPEG_LIBRARIES} atkv_core)
 
@@ -105,8 +105,12 @@ IF(BUILD_TESTING)
 
   INCLUDE_DIRECTORIES   (${CMOCKA_INCLUDE_DIRS})
   ENABLE_TESTING        ()
+
+  # Defining tests
   SET(AT_CORE_TESTS array grapharray list queue pqueue)
-  SET(AT_IMGPROC_TESTS img_io ift)
+  SET(AT_IMGPROC_TESTS img_io dicom ift)
+
+  # Compiling tests
   FOREACH(MODULE ${MDLS})
     STRING(TOUPPER ${MODULE} MODULEUPPER)
     MESSAGE(STATUS ${MODULEUPPER})

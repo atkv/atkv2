@@ -149,6 +149,14 @@ at_array_uint8_t_max(AtArray_uint8_t* array);
 void
 at_array_uint8_t_destroy(AtArray_uint8_t** array);
 
+// uint16_t
+// --------
+AtArray_uint16_t*
+at_array_uint16_t_new(uint8_t dim, uint64_t* shape);
+
+void
+at_array_uint16_t_destroy(AtArray_uint16_t** arp);
+
 // uint64_t
 // --------
 
