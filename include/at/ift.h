@@ -20,7 +20,8 @@
 #include <at/array.h>
 #include <at/grapharray.h>
 #include <at/optimization.h>
-
+#include <at/macro.h>
+AT_BEGIN_DECLS
 /**
  * Necessary info for IFT
  */
@@ -68,5 +69,5 @@ at_ift_apply_array_uint8_t(AtArray_uint8_t*           array,
                            AtWeightingFunc_uint8_t    w,
                            AtArray_uint64_t*          seeds,
                            AtPolicy                   po);
-
+AT_END_DECLS
 #endif

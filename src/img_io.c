@@ -301,7 +301,11 @@ at_array_uint8_t_write_png(AtArray_uint8_t* array, const char* filename, AtError
   shape = array->h.shape;
   step  = array->h.step;
 
-  int color_type = (dim > 2 && shape[2] == 3)?PNG_COLOR_TYPE_RGB:PNG_COLOR_TYPE_GRAY;
+  int color_type;
+  if(dim == 2 || shape[2] < 3) color_type = PNG_COLOR_TYPE_GRAY;
+  else if(shape[2] == 3) color_type = PNG_COLOR_TYPE_RGB;
+  else color_type = PNG_COLOR_TYPE_RGBA;
+
   png_set_IHDR(png_ptr, info_ptr, shape[1], shape[0],
                sizeof(uint8_t) << 3, color_type, PNG_INTERLACE_NONE,
                PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);

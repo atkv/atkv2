@@ -40,8 +40,8 @@ void test_png(void** state){
   assert_null(error);
   assert_non_null(image);
   assert_int_equal(image->h.dim,3);
-  assert_int_equal(image->h.shape[0], 1150);
-  assert_int_equal(image->h.shape[1], 906);
+  assert_int_equal(image->h.shape[0], 965);//1150);
+  assert_int_equal(image->h.shape[1], 800);//906);
   at_error_destroy(&error);
 
   at_array_write_png(image,"teste_w.png",&error);

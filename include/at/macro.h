@@ -28,4 +28,12 @@
        __typeof__ (b) _b = (b); \
      _a < _b ? _a : _b; })
 
+#ifdef __cplusplus
+ #define AT_BEGIN_DECLS	extern "C" {
+ #define AT_END_DECLS	}
+#else
+ #define AT_BEGIN_DECLS
+ #define AT_END_DECLS
+#endif /* __cplusplus */
+
 #endif

@@ -17,7 +17,8 @@
  **/
 #ifndef AT_QUEUE_H
 #define AT_QUEUE_H
-
+#include <at/macro.h>
+AT_BEGIN_DECLS
 #include <at/list.h>
 
 /*=============================================================================
@@ -88,5 +89,5 @@ at_queue_uint64_t_remove_link(AtQueue_uint64_t* q, AtList_uint64_t* l);
  */
 void
 at_queue_uint64_t_destroy_array(AtQueue_uint64_t** qp);
-
+AT_END_DECLS
 #endif

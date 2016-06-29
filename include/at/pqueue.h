@@ -17,6 +17,8 @@
  **/
 #ifndef AT_PQUEUE_H
 #define AT_PQUEUE_H
+#include <at/macro.h>
+AT_BEGIN_DECLS
 #include <stdint.h>
 #include <at/optimization.h>
 #include <at/queue.h>
@@ -111,5 +113,5 @@ at_pqueue_uint64_t_has(AtPQueue_uint64_t* q, uint64_t v);
  */
 void
 at_pqueue_uint64_t_destroy(AtPQueue_uint64_t** qp);
-
+AT_END_DECLS
 #endif

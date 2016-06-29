@@ -17,6 +17,8 @@
  **/
 #ifndef AT_OPTIMIZATION_H
 #define AT_OPTIMIZATION_H
+#include <at/macro.h>
+AT_BEGIN_DECLS
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
@@ -30,4 +32,5 @@ typedef enum{
   AT_FIFO=0,
   AT_LIFO=1
 }AtPolicy;
+AT_END_DECLS
 #endif

@@ -8,6 +8,7 @@ SET                   (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DI
 SET                   (GLOBAL_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 #================================================================= DEPENDENCIES
+INCLUDE               (CTest)
 # ------------------
 # CUDA
 # ------------------
@@ -48,8 +49,8 @@ ADD_LIBRARY           (atkv    SHARED ${HDRS_ABS} ${SRCS_ABS})
 
 #================================================================= TESTING
 IF(BUILD_TESTING)
-  INCLUDE               (CTest)
   FIND_PACKAGE          (CMocka QUIET)
+  FILE(COPY ${CMAKE_SOURCE_DIR}/data/ DESTINATION ${CMAKE_BINARY_DIR})
   IF(NOT CMOCKA_FOUND)
     include(ExternalProject)
     ExternalProject_Add(CMocka

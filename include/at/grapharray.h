@@ -19,6 +19,8 @@
 #define AT_GRAPHARRAY_H
 #include <stdint.h>
 #include <at/array.h>
+#include <at/macro.h>
+AT_BEGIN_DECLS
 /*=============================================================================
  STRUCTURE
  ============================================================================*/
@@ -132,5 +134,5 @@ at_grapharray_get(AtGraphArray* graph, uint64_t s, uint64_t t);
  */
 void
 at_grapharray_destroy(AtGraphArray** grapharray);
-
+AT_END_DECLS
 #endif
