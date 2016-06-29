@@ -172,6 +172,36 @@ at_index_to_1d(uint8_t dim, uint64_t* step, int64_t* s_nd, uint64_t* s){
 #define at_array_index_to_nd(array, s, s_nd) at_index_to_nd(array->h.dim, array->h.step,s,s_nd)
 #define at_array_index_to_1d(array, s_nd, s) at_index_to_1d(array->h.dim, array->h.step,s_nd,s)
 
+AtArray_uint16_t*
+at_array_uint16_t_create(){
+  AtArray_uint16_t* array = malloc(sizeof(AtArray_uint16_t));
+  at_array_header_init(&array->h);
+  array->data = NULL;
+  return array;
+}
+AtArray_uint16_t*
+at_array_uint16_t_new(uint8_t dim, uint64_t* shape){
+  AtArray_uint16_t* array = at_array_uint16_t_create();
+  at_array_header_set(&array->h, dim, shape);
+  array->data = malloc(array->h.num_elements * sizeof(uint16_t));
+  return array;
+}
+
+void
+at_array_uint16_t_destroy(AtArray_uint16_t** arp){
+  if(arp){
+    AtArray_uint16_t* ar = *arp;
+    if(ar){
+      if(ar->h.owns_data)
+        free(ar->data);
+      at_array_header_dispose(&ar->h);
+      free(ar);
+    }
+    *arp = NULL;
+  }
+}
+
+
 void
 at_array_uint64_t_destroy(AtArray_uint64_t** array_ptr){
   if(array_ptr){
