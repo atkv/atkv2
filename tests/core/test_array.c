@@ -16,7 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/array.h>
+#include <at/core/array.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdalign.h>

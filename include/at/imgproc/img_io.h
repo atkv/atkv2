@@ -17,9 +17,9 @@
  **/
 #ifndef AT_IMGIO_H
 #define AT_IMGIO_H
-#include <at/array.h>
-#include <at/error.h>
-#include <at/macro.h>
+#include <at/core/array.h>
+#include <at/core/error.h>
+#include <at/core/macro.h>
 AT_BEGIN_DECLS
 /*=============================================================================
  MACROS (PUBLIC API)

@@ -16,7 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/pqueue.h>
+#include <at/core/pqueue.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdalign.h>
@@ -25,12 +25,13 @@
 #include <math.h>
 
 void test_pqueue(void** state){
-  AtPQueue_uint64_t* queue = at_pqueue_uint64_t_new_prealloc(AT_MINIMIZATION,AT_FIFO,10,6);
+  AtPQueue_uint64_t* queue;
   uint64_t  priorities[5]  = {9,8,7,6,5};
   uint64_t  values[5]      = {1,2,3,4,5};
   uint64_t  values_r[5]    = {5,4,3,2,1};
   uint64_t  s;
   uint8_t   i;
+  queue = at_pqueue_uint64_t_new_prealloc(AT_MINIMIZATION,AT_FIFO,10,6);
   for(i = 0; i < 5; i++)
     at_pqueue_uint64_t_add(queue, priorities[i], values[i]);
   for(i = 0; i < 5; i++){

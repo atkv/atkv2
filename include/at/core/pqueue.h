@@ -17,11 +17,11 @@
  **/
 #ifndef AT_PQUEUE_H
 #define AT_PQUEUE_H
-#include <at/macro.h>
+#include <at/core/macro.h>
 AT_BEGIN_DECLS
 #include <stdint.h>
-#include <at/optimization.h>
-#include <at/queue.h>
+#include <at/core/optimization.h>
+#include <at/core/queue.h>
 /*=============================================================================
  STRUCTURE
  ============================================================================*/

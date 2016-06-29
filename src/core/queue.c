@@ -15,7 +15,7 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#include <at/queue.h>
+#include <at/core/queue.h>
 #include <stdlib.h>
 #include <string.h>
 

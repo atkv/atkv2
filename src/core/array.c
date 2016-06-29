@@ -15,8 +15,8 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#include <at/array.h>
-#include <at/macro.h>
+#include <at/core/array.h>
+#include <at/core/macro.h>
 /*=============================================================================
  PRIVATE API
  ============================================================================*/
