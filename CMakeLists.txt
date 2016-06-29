@@ -2,7 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 PROJECT               (atkv)
 SET                   (CMAKE_CXX_STANDARD 11)
 SET                   (CMAKE_C_STANDARD 11)
-SET                   (CMAKE_C_FLAGS          "-pg -O3")
+SET                   (CMAKE_C_FLAGS          "-pg")
 #SET                   (CMAKE_EXE_LINKER_FLAGS "-pg")
 SET                   (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 SET                   (GLOBAL_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
@@ -13,13 +13,30 @@ SET                   (AT_VERSION_RELEASE 1)
 SET                   (AT_VERSION_STRING "${AT_VERSION_MAJOR}.${AT_VERSION_MINOR}.${AT_VERSION_RELEASE}")
 SET                   (AT_INSTALL_PATH ${CMAKE_INSTALL_PREFIX})
 SET                   (AT_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/share/at")
-
+#====================================================================== OPTIONS
+option(BUILD_CORE    "" ON)
+option(BUILD_IMGPROC "" ON)
+option(BUILD_DOCS    "Build doxygen documentation" OFF)
+option(COVERALLS     "Generate coveralls data" OFF)
+option(COVERALLS_UPLOAD "Upload the generated coveralls json" ON)
 #================================================================= DEPENDENCIES
 INCLUDE               (CTest)
 # ------------------
 # CUDA
 # ------------------
 FIND_PACKAGE          (CUDA)
+
+# ------------------
+# Zlib
+# ------------------
+if(BUILD_IMGPROC)
+  FIND_PACKAGE(ZLIB REQUIRED)
+  IF(${ZLIB_FOUND})
+    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
+    ADD_DEFINITIONS(-DHAVE_ZLIB)
+  ENDIF()
+endif()
+
 # ------------------
 # JPEG
 # ------------------
@@ -66,8 +83,8 @@ INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
 SET                   (MDLS core imgproc)
 SET                   (CORE_HDRS    version.h macro.h optimization.h array.h grapharray.h list.h queue.h pqueue.h error.h)
 SET                   (CORE_SRCS    array.c grapharray.c list.c queue.c pqueue.c error.c)
-SET                   (IMGPROC_HDRS img_io.h ift.h dicom.h)
-SET                   (IMGPROC_SRCS img_io.c ift.c dicom.c)
+SET                   (IMGPROC_HDRS img_io.h ift.h dicom.h znzfile.h nifti.h)
+SET                   (IMGPROC_SRCS img_io.c ift.c dicom.c znzfile.c nifti.c)
 SET                   (CORE_DEPS)
 SET                   (IMGPROC_DEPS ${PNG_LIBRARIES} ${JPEG_LIBRARIES} atkv_core)
 
@@ -108,7 +125,7 @@ IF(BUILD_TESTING)
 
   # Defining tests
   SET(AT_CORE_TESTS array grapharray list queue pqueue)
-  SET(AT_IMGPROC_TESTS img_io dicom ift)
+  SET(AT_IMGPROC_TESTS img_io dicom nifti ift)
 
   # Compiling tests
   FOREACH(MODULE ${MDLS})
