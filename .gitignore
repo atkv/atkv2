@@ -36,3 +36,5 @@
 build/
 3rdparty
 *.autosave
+
+include/at/core/version.h

@@ -7,6 +7,13 @@ SET                   (CMAKE_C_FLAGS          "-pg -O3")
 SET                   (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 SET                   (GLOBAL_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
+SET                   (AT_VERSION_MAJOR   0)
+SET                   (AT_VERSION_MINOR   0)
+SET                   (AT_VERSION_RELEASE 1)
+SET                   (AT_VERSION_STRING "${AT_VERSION_MAJOR}.${AT_VERSION_MINOR}.${AT_VERSION_RELEASE}")
+SET                   (AT_INSTALL_PATH ${CMAKE_INSTALL_PREFIX})
+SET                   (AT_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/share/at")
+
 #================================================================= DEPENDENCIES
 INCLUDE               (CTest)
 # ------------------
@@ -57,12 +64,14 @@ ENDMACRO(AT_MAKE_MODULES)
 
 INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
 SET                   (MDLS core imgproc)
-SET                   (CORE_HDRS    macro.h optimization.h array.h grapharray.h list.h queue.h pqueue.h error.h)
+SET                   (CORE_HDRS    version.h macro.h optimization.h array.h grapharray.h list.h queue.h pqueue.h error.h)
 SET                   (CORE_SRCS    array.c grapharray.c list.c queue.c pqueue.c error.c)
 SET                   (IMGPROC_HDRS img_io.h ift.h)
 SET                   (IMGPROC_SRCS img_io.c ift.c)
 SET                   (CORE_DEPS)
 SET                   (IMGPROC_DEPS ${PNG_LIBRARIES} ${JPEG_LIBRARIES} atkv_core)
+
+CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/include/at/core/version.h.in" "${CMAKE_SOURCE_DIR}/include/at/core/version.h")
 
 #================================================================= LIBRARY
 AT_MAKE_MODULES       ("${MDLS}")
