@@ -17,6 +17,7 @@
  **/
 #include <at/core/array.h>
 #include <at/core/macro.h>
+#include <at/core/znzfile.h>
 /*=============================================================================
  PRIVATE API
  ============================================================================*/
@@ -51,6 +52,7 @@ at_array_uint8_t_create(){
   AtArray_uint8_t* array = malloc(sizeof(AtArray_uint8_t));
   at_array_header_init(&array->h);
   array->data = NULL;
+  array->h.elemsize = sizeof(uint8_t);
   return array;
 }
 AtArray_uint64_t*
@@ -58,6 +60,7 @@ at_array_uint64_t_create(){
   AtArray_uint64_t* array = malloc(sizeof(AtArray_uint64_t));
   at_array_header_init(&array->h);
   array->data = NULL;
+  array->h.elemsize = sizeof(uint64_t);
   return array;
 }
 
@@ -176,6 +179,7 @@ AtArray_uint16_t*
 at_array_uint16_t_create(){
   AtArray_uint16_t* array = malloc(sizeof(AtArray_uint16_t));
   at_array_header_init(&array->h);
+  array->h.elemsize = sizeof(uint16_t);
   array->data = NULL;
   return array;
 }
@@ -185,6 +189,86 @@ at_array_uint16_t_new(uint8_t dim, uint64_t* shape){
   at_array_header_set(&array->h, dim, shape);
   array->data = malloc(array->h.num_elements * sizeof(uint16_t));
   return array;
+}
+
+void
+at_array_uint8_t_save(AtArray_uint8_t** arrays, char** names, uint8_t num, const char* filename){
+  AtZnzFile* fp = at_znzfile_open(filename, "wb", true);
+  uint8_t i,len;
+
+  // write number of arrays
+  at_znzfile_write(fp,&num,sizeof(uint8_t),1);
+
+  // write names
+  for(i = 0; i < num; i++){
+    len = strlen(names[i]);
+    at_znzfile_write(fp,&len,sizeof(uint8_t),1);
+    at_znzfile_write(fp,names[i],sizeof(char),len);
+  }
+
+  // write proper arrays
+  for(i = 0; i < num; i++){
+    // write num_elements, dim, owns_data and elemsize
+    at_znzfile_write(fp,&arrays[i]->h.num_elements, sizeof(uint64_t)+(sizeof(uint8_t)<<1)+sizeof(uint8_t),1);
+
+    // write shape and step
+    at_znzfile_write(fp,arrays[i]->h.shape, sizeof(uint64_t),arrays[i]->h.dim);
+    at_znzfile_write(fp,arrays[i]->h.step, sizeof(uint64_t),arrays[i]->h.dim);
+
+    // write data
+    at_znzfile_write(fp,arrays[i]->data, arrays[i]->h.elemsize,arrays[i]->h.num_elements);
+  }
+
+  // close the file
+  at_znzfile_close(fp);
+}
+
+AtArray_uint8_t*
+at_array_load(char*** namesp, uint8_t *nump, const char* filename){
+  char            ** names;
+  AtArray_uint8_t  * ar;
+  AtZnzFile        * fp;
+  uint8_t            i;
+  uint8_t            len;
+  uint8_t            num;
+
+  // open the file
+  fp = at_znzfile_open(filename, "rb", true);
+
+  // read number of arrays
+  at_znzfile_read(fp,nump,sizeof(uint8_t),1);
+  num = *nump;
+
+  // read names
+  *namesp =(char**) malloc(num*sizeof(char*));
+  names = *namesp;
+  for(i = 0; i < num; i++){
+    at_znzfile_read(fp,&len,sizeof(uint8_t),1);
+    names[i] = (char*)malloc(sizeof(char)*(len+1));
+    at_znzfile_read(fp,names[i],sizeof(char),len);
+    names[i][len] = '\0';
+  }
+
+  // read proper arrays
+  ar = malloc(sizeof(AtArray_uint8_t)*num);
+  for(i = 0; i < num; i++){
+    // read num_elements, dim, owns_data and elemsize
+    at_znzfile_read(fp,&ar[i].h.num_elements,sizeof(uint64_t)+(sizeof(uint8_t)<<1)+sizeof(uint8_t),1);
+
+    // read shape and step
+    ar[i].h.shape = malloc(sizeof(uint64_t)*ar[i].h.dim);
+    ar[i].h.step  = malloc(sizeof(uint64_t)*ar[i].h.dim);
+    at_znzfile_read(fp,ar[i].h.shape,sizeof(uint64_t),ar[i].h.dim);
+    at_znzfile_read(fp,ar[i].h.step ,sizeof(uint64_t),ar[i].h.dim);
+
+    // read data
+    ar[i].data = malloc(ar[i].h.elemsize*ar[i].h.num_elements);
+    at_znzfile_read(fp,ar[i].data,ar[i].h.elemsize,ar[i].h.num_elements);
+  }
+
+  // close the file
+  at_znzfile_close(fp);
+  return ar;
 }
 
 void

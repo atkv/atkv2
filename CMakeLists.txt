@@ -13,6 +13,30 @@ SET                   (AT_VERSION_RELEASE 1)
 SET                   (AT_VERSION_STRING "${AT_VERSION_MAJOR}.${AT_VERSION_MINOR}.${AT_VERSION_RELEASE}")
 SET                   (AT_INSTALL_PATH ${CMAKE_INSTALL_PREFIX})
 SET                   (AT_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/share/at")
+#======================================================================= MACROS
+MACRO(AT_MAKE_MODULE MODULE)
+  STRING(TOUPPER ${MODULE} MODULEUPPER)
+  # HEADERS
+  SET(HDRS_ABS)
+  FOREACH(MDLFILE ${${MODULEUPPER}_HDRS})
+    LIST(APPEND HDRS_ABS ${CMAKE_SOURCE_DIR}/include/at/${MODULE}/${MDLFILE})
+  ENDFOREACH()
+
+  # SOURCES
+  SET(SRCS_ABS)
+  FOREACH(MDLFILE ${${MODULEUPPER}_SRCS})
+    LIST(APPEND SRCS_ABS ${CMAKE_SOURCE_DIR}/src/${MODULE}/${MDLFILE})
+  ENDFOREACH()
+
+  ADD_LIBRARY           (atkv_${MODULE} SHARED ${HDRS_ABS} ${SRCS_ABS})
+  LIST(APPEND ATKV_LIBRARIES atkv_${MODULE} ${${MODULEUPPER}_DEPS})
+ENDMACRO(AT_MAKE_MODULE)
+
+MACRO(AT_MAKE_MODULES MODULES)
+  FOREACH(MODULE ${MODULES})
+    AT_MAKE_MODULE("${MODULE}")
+  ENDFOREACH()
+ENDMACRO(AT_MAKE_MODULES)
 #====================================================================== OPTIONS
 option(BUILD_CORE    "" ON)
 option(BUILD_IMGPROC "" ON)
@@ -55,38 +79,14 @@ endif()
   ADD_DEFINITIONS(-DHAVE_PNG)
 #endif()
 #================================================================= SOURCES
-MACRO(AT_MAKE_MODULE MODULE)
-  STRING(TOUPPER ${MODULE} MODULEUPPER)
-  # HEADERS
-  SET(HDRS_ABS)
-  FOREACH(MDLFILE ${${MODULEUPPER}_HDRS})
-    LIST(APPEND HDRS_ABS ${CMAKE_SOURCE_DIR}/include/at/${MODULE}/${MDLFILE})
-  ENDFOREACH()
-
-  # SOURCES
-  SET(SRCS_ABS)
-  FOREACH(MDLFILE ${${MODULEUPPER}_SRCS})
-    LIST(APPEND SRCS_ABS ${CMAKE_SOURCE_DIR}/src/${MODULE}/${MDLFILE})
-  ENDFOREACH()
-
-  ADD_LIBRARY           (atkv_${MODULE} SHARED ${HDRS_ABS} ${SRCS_ABS})
-  LIST(APPEND ATKV_LIBRARIES atkv_${MODULE} ${${MODULEUPPER}_DEPS})
-ENDMACRO(AT_MAKE_MODULE)
-
-MACRO(AT_MAKE_MODULES MODULES)
-  FOREACH(MODULE ${MODULES})
-    AT_MAKE_MODULE("${MODULE}")
-  ENDFOREACH()
-ENDMACRO(AT_MAKE_MODULES)
-
 INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
 SET                   (MDLS core imgproc)
-SET                   (CORE_HDRS    version.h macro.h optimization.h array.h grapharray.h list.h queue.h pqueue.h error.h)
-SET                   (CORE_SRCS    array.c grapharray.c list.c queue.c pqueue.c error.c)
-SET                   (IMGPROC_HDRS img_io.h ift.h dicom.h znzfile.h nifti.h)
-SET                   (IMGPROC_SRCS img_io.c ift.c dicom.c znzfile.c nifti.c)
-SET                   (CORE_DEPS)
-SET                   (IMGPROC_DEPS ${PNG_LIBRARIES} ${JPEG_LIBRARIES} atkv_core)
+SET                   (CORE_HDRS    version.h macro.h optimization.h znzfile.h array.h grapharray.h list.h queue.h pqueue.h error.h)
+SET                   (CORE_SRCS    znzfile.c array.c grapharray.c list.c queue.c pqueue.c error.c)
+SET                   (IMGPROC_HDRS img_io.h ift.h dicom.h nifti.h)
+SET                   (IMGPROC_SRCS img_io.c ift.c dicom.c nifti.c)
+SET                   (CORE_DEPS ${ZLIB_LIBRARIES})
+SET                   (IMGPROC_DEPS ${CORE_DEPS} ${PNG_LIBRARIES} ${JPEG_LIBRARIES} atkv_core)
 
 CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/include/at/core/version.h.in" "${CMAKE_SOURCE_DIR}/include/at/core/version.h")
 

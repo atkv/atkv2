@@ -22,6 +22,7 @@
 #include <stdalign.h>
 #include <setjmp.h>
 #include <cmocka.h>
+#include <unistd.h>
 
 void
 test_header(AtArrayHeader* header1, AtArrayHeader* header2){
@@ -83,6 +84,52 @@ void test_array(void** state){
   at_array_header_dispose(&header);
 }
 
+void test_array_save_load(){
+  char             * names[4]     = {"Anderson", "Carlos","Moreira","Tavares"};
+  char            ** nameso;
+  AtArray_uint16_t * arrays[4];
+  AtArray_uint16_t * arrayso;
+  uint64_t           shapes[4][3] = {{100,150,0},{100,123,140},{30,42,130},{45,12,0}};
+  uint64_t           k;
+  uint16_t           dims[4]      = {2,3,3,2};
+  char             * filename     = "array_uint16_t.atz";
+  uint8_t            num;
+  uint8_t            i;
+
+  // Writing an array to the file
+  for(i = 0; i < 4; i++){
+    arrays[i] = at_array_uint16_t_new(dims[i],shapes[i]);
+    for(k = 0; k < arrays[i]->h.num_elements; k++)
+      arrays[i]->data[k] = rand();
+  }
+  unlink(filename);
+  at_array_save(arrays,names,4,filename);
+  assert_int_not_equal(access(filename, F_OK),-1);
+
+  // Reading the file
+  arrayso = (AtArray(uint16_t)*) at_array_load(&nameso,&num,filename);
+  for(i = 0; i < 4; i++){
+    assert_string_equal(names[i],nameso[i]);
+    assert_int_equal(arrayso[i].h.dim, arrays[i]->h.dim);
+    assert_int_equal(arrayso[i].h.num_elements, arrays[i]->h.num_elements);
+    assert_int_equal(arrayso[i].h.owns_data, arrays[i]->h.owns_data);
+    for(k = 0; k < arrays[i]->h.dim; k++){
+      assert_int_equal(arrayso[i].h.shape[k], arrays[i]->h.shape[k]);
+      assert_int_equal(arrayso[i].h.step[k], arrays[i]->h.step[k]);
+    }
+    for(k = 0; k < arrays[i]->h.num_elements; k++){
+      assert_int_equal(arrayso[i].data[k], arrays[i]->data[k]);
+    }
+    at_array_uint16_t_destroy(&arrays[i]);
+    free(arrayso[i].h.shape);
+    free(arrayso[i].h.step);
+    free(arrayso[i].data);
+    free(nameso[i]);
+  }
+  free(arrayso);
+  free(nameso);
+}
+
 
 void test_array_64(void** state){
   // Variables
@@ -112,9 +159,10 @@ void test_array_64(void** state){
 }
 
 int main(void){
-  const struct CMUnitTest tests[2] = {
+  const struct CMUnitTest tests[3] = {
     cmocka_unit_test(test_array),
-    cmocka_unit_test(test_array_64)
+    cmocka_unit_test(test_array_64),
+    cmocka_unit_test(test_array_save_load)
   };
   return cmocka_run_group_tests(tests, NULL, NULL);
 }

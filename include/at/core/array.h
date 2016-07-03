@@ -33,13 +33,14 @@ AT_BEGIN_DECLS
  * Multidimensional Array (
  */
 typedef struct AtArrayHeader{
-  uint64_t* shape;       // 00-07: size of each dimension
-  uint64_t* step;        // 08-15: offset between consecutive elements
+  uint64_t* shape;       // 00+8: size of each dimension
+  uint64_t* step;        // 08+8: offset between consecutive elements
                          //              of each dimension
-  uint64_t  num_elements;// 16-23: total number of elements
-  uint8_t   dim;         // 24-24: dimension
-  uint8_t   owns_data;   // 25-25: true if they can delete its own data
-  uint8_t   alignment[6];// 26-31: explicit padding
+  uint64_t  num_elements;// 16+8: total number of elements
+  uint8_t   dim;         // 24+1: dimension
+  uint8_t   owns_data;   // 25+1: true if they can delete its own data
+  uint8_t   elemsize;    // 26+1: size of element
+  uint8_t   alignment[5];// 27+5: explicit padding
 }AtArrayHeader;          // Total: 32B
 
 #define AtArray(type) AtArray_##type
@@ -154,6 +155,14 @@ at_array_uint8_t_destroy(AtArray_uint8_t** array);
 AtArray_uint16_t*
 at_array_uint16_t_new(uint8_t dim, uint64_t* shape);
 
+#define at_array_save(arrays,names,num,filename) at_array_uint8_t_save((AtArray_uint8_t**)arrays,names,num,filename);
+
+void
+at_array_uint8_t_save(AtArray_uint8_t** arrays, char** names, uint8_t num, const char* filename);
+
+AtArray_uint8_t*
+at_array_load(char*** namesp, uint8_t *nump, const char* filename);
+
 void
 at_array_uint16_t_destroy(AtArray_uint16_t** arp);
 
@@ -171,5 +180,7 @@ at_array_uint64_t_fill(AtArray_uint64_t* array, uint64_t value);
 
 void
 at_array_uint64_t_destroy(AtArray_uint64_t** array);
+
+
 AT_END_DECLS
 #endif

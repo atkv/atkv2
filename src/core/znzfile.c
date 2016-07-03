@@ -15,7 +15,7 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#include <at/imgproc/znzfile.h>
+#include <at/core/znzfile.h>
 #include <string.h>
 #include <stdlib.h>
 
