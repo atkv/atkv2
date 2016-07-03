@@ -16,7 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 #include <at/imgproc/nifti.h>
-#include <at/imgproc/znzfile.h>
+#include <at/core/znzfile.h>
 #include <sys/stat.h>
 #include <endian.h>
 #include <math.h>
