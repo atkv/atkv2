@@ -41,14 +41,14 @@ test_grapharray(void** state){
   double            weights[16]   = {0,1,0,1,1,0,0,0,  // 128-128
                                      0,0,1,0,0,0,0,0};
   uint64_t          data_shape[2] = {2,2};             // 256-16
-  AtArray(uint8_t) *array;                             // 272-8
+  AtArrayU8        *array;                             // 272-8
   AtGraphArray     *grapharray;                        // 280-8
   uint8_t           active[16]    = {0,1,0,1,1,0,0,1,  // 288-16
                                      0,1,1,0,1,0,1,0};
   uint8_t           data[4]       = {0,1,1,1};         // 304-4
 
-  array      = at_array_uint8_t_new_with_data(2,data_shape,data,true);
-  grapharray = at_grapharray_uint8_t_new(array,AT_ADJACENCY_4,at_weighting_diff_abs);
+  array      = at_arrayu8_new_with_data(2,data_shape,data,true);
+  grapharray = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_weighting_diff_abs);
   assert_non_null(grapharray);
   assert_non_null(grapharray->active);
   assert_non_null(grapharray->neighbors);
@@ -62,7 +62,7 @@ test_grapharray(void** state){
   test_grapharray_values(grapharray, &grapharray_t, array->h.num_elements * AT_ADJACENCY_4);
 
   at_grapharray_destroy(&grapharray);
-  at_array_uint8_t_destroy(&array);
+  at_arrayu8_destroy(&array);
 }
 
 int main(void){

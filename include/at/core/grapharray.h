@@ -50,10 +50,10 @@ typedef struct AtGraphArray{
  FUNCTIONS
  ============================================================================*/
 #define at_grapharray_new(array, adjacency, weighting) _Generic((array), \
-  AtArray_uint8_t*: at_grapharray_uint8_t_new)(array, adjacency, weighting)
+  AtArrayU8*: at_grapharrayu8_new)(array, adjacency, weighting)
 
 typedef double
-(*AtWeightingFunc_uint8_t) (AtArray_uint8_t* graph, uint64_t s, uint64_t t);
+(*AtWeightingFuncu8) (AtArrayU8* graph, uint64_t s, uint64_t t);
 
 /**
  * @brief at_weighting_diff_abs
@@ -63,9 +63,9 @@ typedef double
  * @return
  */
 double
-at_weighting_diff_abs(AtArray_uint8_t* array, uint64_t s, uint64_t t);
+at_weighting_diff_abs(AtArrayU8* array, uint64_t s, uint64_t t);
 double
-at_weighting_diff_absc(AtArray_uint8_t* array, uint64_t s, uint64_t t);
+at_weighting_diff_absc(AtArrayU8* array, uint64_t s, uint64_t t);
 
 /**
  * @brief at_grapharray_create
@@ -75,12 +75,12 @@ AtGraphArray*
 at_grapharray_create();
 
 /**
- * @brief at_grapharray_new_from_array_uint8_t
+ * @brief at_grapharray_new_from_arrayu8
  * @param array
  * @return
  */
 AtGraphArray*
-at_grapharray_uint8_t_new(AtArray_uint8_t* array, AtAdjacency adjacency, AtWeightingFunc_uint8_t weighting);
+at_grapharrayu8_new(AtArrayU8* array, AtAdjacency adjacency, AtWeightingFuncu8 weighting);
 
 /**
  * @brief at_grapharray_remove_arc

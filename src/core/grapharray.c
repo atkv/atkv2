@@ -25,11 +25,11 @@
  PUBLIC API
  ============================================================================*/
 double
-at_weighting_diff_abs(AtArray_uint8_t* array, uint64_t s, uint64_t t){
+at_weighting_diff_abs(AtArrayU8* array, uint64_t s, uint64_t t){
   return abs(array->data[s] - array->data[t]);
 }
 double
-at_weighting_diff_absc(AtArray_uint8_t* array, uint64_t s, uint64_t t){
+at_weighting_diff_absc(AtArrayU8* array, uint64_t s, uint64_t t){
   return UINT8_MAX-abs(array->data[s] - array->data[t]);
 }
 
@@ -58,9 +58,9 @@ static int8_t neighboring_3D[78] = { 0, 0,-1,  0, 0, 1,  0,-1, 0,            // 
                                      1,-1,-1,  1,-1, 1,  1, 1,-1,  1, 1, 1};
 
 AtGraphArray*
-at_grapharray_uint8_t_new(AtArray_uint8_t* array,
+at_grapharrayu8_new(AtArrayU8* array,
                           AtAdjacency adjacency,
-                          AtWeightingFunc_uint8_t weighting){
+                          AtWeightingFuncu8 weighting){
   AtGraphArray* grapharray   = at_grapharray_create();
   uint64_t      num_elements = array->h.num_elements * adjacency;
   uint64_t    * s_nd         = malloc(array->h.dim * sizeof(uint64_t));

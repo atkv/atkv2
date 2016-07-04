@@ -23,8 +23,8 @@
 #include <cmocka.h>
 static void
 test_ift(){
-  AtArray(uint8_t) * array;
-  AtArray(uint64_t)* seeds;
+  AtArrayU8 * array;
+  AtArrayU64* seeds;
   AtIFT              * ift;
 
   uint64_t seeds_data[4]={  0,  0,
@@ -39,10 +39,10 @@ test_ift(){
   uint64_t  ans_pred [16]  ={0,0,1,2, 0,9,10,3, 4,13,14,7, 13,14,15,15};
   double    ans_conn [16]  ={-INFINITY,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,-INFINITY};
 
-  array = at_array_uint8_t_new_with_data(2,shape,data,false);
+  array = at_arrayu8_new_with_data(2,shape,data,false);
   seeds = at_seeds_new(2,seeds_data);
 
-  ift   = at_ift_apply_array_uint8_t(array, AT_ADJACENCY_4,AT_MINIMIZATION,
+  ift   = at_ift_apply_arrayu8(array, AT_ADJACENCY_4,AT_MINIMIZATION,
                                      at_conn_max,at_weighting_diff_abs, seeds,
                                      AT_FIFO);
   uint8_t i;

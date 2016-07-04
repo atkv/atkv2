@@ -59,14 +59,14 @@ void test_array(void** state){
                                      0,1,1,1,
                                      1,1,1,1};
   uint64_t          data_shape[2] = {4,4};    // 16 bytes - 64B
-  AtArray(uint8_t)* array;                    //  8 bytes - 88B
+  AtArrayU8* array;                    //  8 bytes - 88B
 
 //  print_message("%p: %d, %zu\n",&header   , is_aligned(    &header,alignof(AtArrayHeader)),alignof(AtArrayHeader));
 //  print_message("%p: %d, %zu\n",data      , is_aligned(       data,alignof(data))      ,alignof(data));
 //  print_message("%p: %d, %zu\n",data_shape, is_aligned( data_shape,alignof(data_shape)),alignof(data_shape));
 
   // Array
-  array = at_array_uint8_t_new_with_data(2,data_shape,data,true);
+  array = at_arrayu8_new_with_data(2,data_shape,data,true);
 
 //  print_message("%p: %d, %zu\n",array     , is_aligned(      array,alignof(array))     ,alignof(array));
 
@@ -78,27 +78,27 @@ void test_array(void** state){
   assert_int_equal(at_array_max(array),1);
 
   memset(data,0,16);
-  at_array_uint8_t_fill(array,0);
+  at_arrayu8_fill(array,0);
   test_array_data(header.num_elements, array->data, data);
-  at_array_uint8_t_destroy(&array);
+  at_arrayu8_destroy(&array);
   at_array_header_dispose(&header);
 }
 
 void test_array_save_load(){
   char             * names[4]     = {"Anderson", "Carlos","Moreira","Tavares"};
   char            ** nameso;
-  AtArray_uint16_t * arrays[4];
-  AtArray_uint16_t * arrayso;
+  AtArrayU16 * arrays[4];
+  AtArrayU16 * arrayso;
   uint64_t           shapes[4][3] = {{100,150,0},{100,123,140},{30,42,130},{45,12,0}};
   uint64_t           k;
   uint16_t           dims[4]      = {2,3,3,2};
-  char             * filename     = "array_uint16_t.atz";
+  char             * filename     = "arrayu16.atz";
   uint8_t            num;
   uint8_t            i;
 
   // Writing an array to the file
   for(i = 0; i < 4; i++){
-    arrays[i] = at_array_uint16_t_new(dims[i],shapes[i]);
+    arrays[i] = at_arrayu16_new(dims[i],shapes[i]);
     for(k = 0; k < arrays[i]->h.num_elements; k++)
       arrays[i]->data[k] = rand();
   }
@@ -107,7 +107,7 @@ void test_array_save_load(){
   assert_int_not_equal(access(filename, F_OK),-1);
 
   // Reading the file
-  arrayso = (AtArray(uint16_t)*) at_array_load(&nameso,&num,filename);
+  arrayso = (AtArrayU16*) at_array_load(&nameso,&num,filename);
   for(i = 0; i < 4; i++){
     assert_string_equal(names[i],nameso[i]);
     assert_int_equal(arrayso[i].h.dim, arrays[i]->h.dim);
@@ -120,7 +120,7 @@ void test_array_save_load(){
     for(k = 0; k < arrays[i]->h.num_elements; k++){
       assert_int_equal(arrayso[i].data[k], arrays[i]->data[k]);
     }
-    at_array_uint16_t_destroy(&arrays[i]);
+    at_arrayu16_destroy(&arrays[i]);
     free(arrayso[i].h.shape);
     free(arrayso[i].h.step);
     free(arrayso[i].data);
@@ -139,10 +139,10 @@ void test_array_64(void** state){
                                      0,1,1,1,
                                      1,1,1,1};
   uint64_t          data_shape[2] = {4,4};    // 16 bytes - 64B
-  AtArray(uint64_t)* array;                   //  8 bytes - 88B
+  AtArrayU64* array;                   //  8 bytes - 88B
 
   // Array
-  array = at_array_uint64_t_new_with_data(2,data_shape,data,true);
+  array = at_arrayu64_new_with_data(2,data_shape,data,true);
 
   // Testing
   at_array_header_init(&header);
@@ -151,10 +151,10 @@ void test_array_64(void** state){
   test_array_data_64(header.num_elements, array->data, data);
 
   memset(data,0,16*sizeof(uint64_t));
-  at_array_uint64_t_fill(array,0);
+  at_arrayu64_fill(array,0);
   test_array_data_64(header.num_elements, array->data, data);
 
-  at_array_uint64_t_destroy(&array);
+  at_arrayu64_destroy(&array);
   at_array_header_dispose(&header);
 }
 

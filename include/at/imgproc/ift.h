@@ -34,17 +34,17 @@ typedef struct AtIFT{
 }AtIFT;
 
 typedef void
-(*AtConnInit_uint8_t)(AtIFT* ift, AtArray_uint8_t* array);
+(*AtConnInitu8)(AtIFT* ift, AtArrayU8* array);
 typedef void
-(*AtConnInitSeeds)(AtIFT* ift, AtArray_uint64_t* seeds);
+(*AtConnInitSeeds)(AtIFT* ift, AtArrayU64* seeds);
 typedef double
-(*AtConnFunc_uint8_t) (AtIFT* ift, AtGraphArray* graph,
+(*AtConnFuncu8) (AtIFT* ift, AtGraphArray* graph,
                        uint64_t s, uint64_t t, uint64_t i);
 
 typedef struct AtConnectivity{
-  AtConnInit_uint8_t init;
+  AtConnInitu8 init;
   AtConnInitSeeds    seeds;
-  AtConnFunc_uint8_t func;
+  AtConnFuncu8 func;
 }AtConnectivity;
 
 AtConnectivity at_conn_max;
@@ -57,17 +57,17 @@ AtConnectivity at_conn_euc;
  ============================================================================*/
 #define at_ift_apply(input) _Generic((input), Array: at_ift_apply_array)
 
-AtArray_uint64_t*
+AtArrayU64*
 at_seeds_new(uint64_t n, uint64_t* data);
 
 
 AtIFT*
-at_ift_apply_array_uint8_t(AtArray_uint8_t*           array,
+at_ift_apply_arrayu8(AtArrayU8*           array,
                            AtAdjacency                adj,
                            AtOptimization             o,
                            AtConnectivity             connectivity,
-                           AtWeightingFunc_uint8_t    w,
-                           AtArray_uint64_t*          seeds,
+                           AtWeightingFuncu8    w,
+                           AtArrayU64*          seeds,
                            AtPolicy                   po);
 AT_END_DECLS
 #endif

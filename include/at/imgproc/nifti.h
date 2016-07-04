@@ -83,7 +83,7 @@ typedef struct AtNifti1Extension{
 
 typedef struct AtNiftiImage{
   AtNifti1Extension    *ext_list;
-  AtArray_uint16_t     *ar;
+  AtArrayU16     *ar;
   char                 *fname;
   char                 *iname;
   float                 qto_xyz[16];

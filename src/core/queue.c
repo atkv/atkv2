@@ -25,14 +25,14 @@
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
-AtQueue_uint64_t*
-at_queue_uint64_t_new_array(uint64_t n_queues){
-  AtQueue_uint64_t* queues = malloc(n_queues*sizeof(AtQueue_uint64_t));
-  memset(queues, 0, n_queues*sizeof(AtQueue_uint64_t));
+AtQueueu64*
+at_queueu64_new_array(uint64_t n_queues){
+  AtQueueu64* queues = malloc(n_queues*sizeof(AtQueueu64));
+  memset(queues, 0, n_queues*sizeof(AtQueueu64));
   return queues;
 }
 void
-at_queue_uint64_t_prepend_link(AtQueue_uint64_t* q, AtList_uint64_t* l){
+at_queueu64_prepend_link(AtQueueu64* q, AtListU64* l){
   l->prev   = NULL;
   if(q->first != NULL){
     l->prev     = q->first->prev;
@@ -45,7 +45,7 @@ at_queue_uint64_t_prepend_link(AtQueue_uint64_t* q, AtList_uint64_t* l){
 }
 
 void
-at_queue_uint64_t_append_link(AtQueue_uint64_t* q, AtList_uint64_t* l){
+at_queueu64_append_link(AtQueueu64* q, AtListU64* l){
   l->next  = NULL;
   if(q->last != NULL){
     l->next     = q->last->next;
@@ -57,9 +57,9 @@ at_queue_uint64_t_append_link(AtQueue_uint64_t* q, AtList_uint64_t* l){
   q->last   = l;
 }
 
-AtList_uint64_t*
-at_queue_uint64_t_remove_first_link(AtQueue_uint64_t* q){
-  AtList_uint64_t* l = q->first;
+AtListU64*
+at_queueu64_remove_first_link(AtQueueu64* q){
+  AtListU64* l = q->first;
   if(l) {
     q->first = l->next;
     l->next = NULL;
@@ -68,7 +68,7 @@ at_queue_uint64_t_remove_first_link(AtQueue_uint64_t* q){
 }
 
 void
-at_queue_uint64_t_remove_link(AtQueue_uint64_t* q, AtList_uint64_t* l){
+at_queueu64_remove_link(AtQueueu64* q, AtListU64* l){
   if(l != NULL){
     if(q->first == l) q->first = l->next;
     if(q->last == l)  q->last  = l->prev;
@@ -80,12 +80,12 @@ at_queue_uint64_t_remove_link(AtQueue_uint64_t* q, AtList_uint64_t* l){
     // Same as:
     // l->prev = NULL;
     // l->next = NULL;
-    memset(l,0,(sizeof(AtList_uint64_t*)<<1));
+    memset(l,0,(sizeof(AtListU64*)<<1));
   }
 }
 
 void
-at_queue_uint64_t_destroy_array(AtQueue_uint64_t** qp){
+at_queueu64_destroy_array(AtQueueu64** qp){
   if(*qp != NULL) free(*qp);
   *qp = NULL;
 }

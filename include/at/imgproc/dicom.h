@@ -37,23 +37,23 @@ typedef struct AtDicomBase{
                                    // Total: 56 bytes
 }AtDicomBase;
 
-typedef struct AtDicom_uint16_t{
+typedef struct AtDicomU16{
   AtDicomBase       base; //00+56
-  AtArray_uint16_t* luts; //56+08
-  AtArray_uint16_t* image;//64+08
+  AtArrayU16* luts; //56+08
+  AtArrayU16* image;//64+08
                           //72 bytes
-}AtDicom_uint16_t;
+}AtDicomU16;
 
-AtDicom_uint16_t*
-at_dicom_uint16_t_read(const char* fname, AtError **error);
+AtDicomU16*
+at_dicomu16_read(const char* fname, AtError **error);
 
 void
-at_dicom_uint16_t_write(AtDicom_uint16_t* dicom, const char* filename);
+at_dicomu16_write(AtDicomU16* dicom, const char* filename);
 
 #define at_dicom_read(dicom, filename, error) dicom = _Generic((dicom), \
- AtDicom_uint16_t*: at_dicom_uint16_t_read)(filename, error)
+ AtDicomU16*: at_dicomu16_read)(filename, error)
 #define at_dicom_write(dicom, filename) _Generic((dicom), \
- AtDicom_uint16_t*: at_dicom_uint16_t_write)(dicom, filename)
+ AtDicomU16*: at_dicomu16_write)(dicom, filename)
 
 AT_END_DECLS
 #endif

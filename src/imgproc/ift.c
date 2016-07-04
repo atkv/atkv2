@@ -24,13 +24,13 @@
  PRIVATE API
  ============================================================================*/
 void
-at_conn_max_array_uint8_t(AtIFT* ift, AtArray_uint8_t* array);
+at_conn_max_arrayu8(AtIFT* ift, AtArrayU8* array);
 void
-at_conn_min_array_uint8_t(AtIFT* ift, AtArray_uint8_t* array);
+at_conn_min_arrayu8(AtIFT* ift, AtArrayU8* array);
 void
-at_ift_add_seeds_conn_max(AtIFT* ift, AtArray_uint64_t* seeds);
+at_ift_add_seeds_conn_max(AtIFT* ift, AtArrayU64* seeds);
 void
-at_ift_add_seeds_conn_min(AtIFT* ift, AtArray_uint64_t* seeds);
+at_ift_add_seeds_conn_min(AtIFT* ift, AtArrayU64* seeds);
 double
 at_conn_max_func(AtIFT* ift, AtGraphArray* graph,uint64_t s, uint64_t t, uint64_t i);
 double
@@ -40,8 +40,8 @@ at_conn_sum_func(AtIFT* ift, AtGraphArray* graph,uint64_t s, uint64_t t, uint64_
 double
 at_conn_euc_func(AtIFT* ift, AtGraphArray* graph,uint64_t s, uint64_t t, uint64_t i);
 
-#define at_conn_sum_array_uint8_t at_conn_max_array_uint8_t
-#define at_conn_euc_array_uint8_t at_conn_max_array_uint8_t
+#define at_conn_sum_arrayu8 at_conn_max_arrayu8
+#define at_conn_euc_arrayu8 at_conn_max_arrayu8
 #define at_ift_add_seeds_conn_sum at_ift_add_seeds_conn_max
 #define at_ift_add_seeds_conn_euc at_ift_add_seeds_conn_max
 
@@ -53,7 +53,7 @@ at_conn_euc_func(AtIFT* ift, AtGraphArray* graph,uint64_t s, uint64_t t, uint64_
  * @return
  */
 static AtIFT*
-at_ift_new_init_uint8_t(AtArray_uint8_t* array){
+at_ift_new_initu8(AtArrayU8* array){
 
   // Allocating data
   size_t   num_bytes = sizeof(AtIFT) + array->h.num_elements*(
@@ -84,8 +84,8 @@ at_ift_new(){
   return malloc(sizeof(AtIFT));
 }
 static void
-at_ift_init_uint8_t(AtIFT* ift, AtArray_uint8_t array, AtAdjacency adjacency,
-                    AtConnFunc_uint8_t connectivity){
+at_ift_initu8(AtIFT* ift, AtArrayU8 array, AtAdjacency adjacency,
+                    AtConnFuncu8 connectivity){
   ift->p = malloc(array.h.num_elements * sizeof(uint64_t));
   ift->r = malloc(array.h.num_elements * sizeof(uint64_t));
   ift->c = malloc(array.h.num_elements * sizeof(double));
@@ -95,19 +95,19 @@ at_ift_init_uint8_t(AtIFT* ift, AtArray_uint8_t array, AtAdjacency adjacency,
 __attribute__((constructor))
 static void
 at_conn_constructor(){
-  at_conn_max.init  = at_conn_max_array_uint8_t;
+  at_conn_max.init  = at_conn_max_arrayu8;
   at_conn_max.seeds = at_ift_add_seeds_conn_max;
   at_conn_max.func       = at_conn_max_func;
 
-  at_conn_min.init  = at_conn_min_array_uint8_t;
+  at_conn_min.init  = at_conn_min_arrayu8;
   at_conn_min.seeds = at_ift_add_seeds_conn_min;
   at_conn_min.func       = at_conn_min_func;
 
-  at_conn_sum.init  = at_conn_sum_array_uint8_t;
+  at_conn_sum.init  = at_conn_sum_arrayu8;
   at_conn_sum.seeds = at_ift_add_seeds_conn_sum;
   at_conn_sum.func       = at_conn_sum_func;
 
-  at_conn_euc.init  = at_conn_euc_array_uint8_t;
+  at_conn_euc.init  = at_conn_euc_arrayu8;
   at_conn_euc.seeds = at_ift_add_seeds_conn_euc;
   at_conn_euc.func       = at_conn_euc_func;
 }
@@ -116,29 +116,29 @@ at_conn_constructor(){
  PUBLIC API
  ============================================================================*/
 void
-at_ift_add_seeds_to_pqueue(AtIFT* ift, AtPQueue_uint64_t* queue, AtArray_uint64_t* seeds){
+at_ift_add_seeds_to_pqueue(AtIFT* ift, AtPQueueU64* queue, AtArrayU64* seeds){
   uint64_t i;
   for(i = 0; i < seeds->h.num_elements; i+=2){
     double conn = ift->c[seeds->data[i]];
     if(conn == -INFINITY)
-      at_pqueue_uint64_t_add(queue,0,seeds->data[i]);
+      at_pqueueu64_add(queue,0,seeds->data[i]);
     else if(conn == INFINITY)
-      at_pqueue_uint64_t_add(queue,queue->np-1,seeds->data[i]);
+      at_pqueueu64_add(queue,queue->np-1,seeds->data[i]);
     else
-      at_pqueue_uint64_t_add(queue,(uint8_t)conn,seeds->data[i]);
+      at_pqueueu64_add(queue,(uint8_t)conn,seeds->data[i]);
   }
 }
 
 // Connectivity Init functions (without seeds)
 //--------------------------------------------
 void
-at_conn_max_array_uint8_t(AtIFT* ift, AtArray_uint8_t* array){
+at_conn_max_arrayu8(AtIFT* ift, AtArrayU8* array){
   uint64_t i;
   for(i = 0; i < array->h.num_elements; i++)
     ift->c[i] = INFINITY;
 }
 void
-at_conn_min_array_uint8_t(AtIFT* ift,AtArray_uint8_t* array){
+at_conn_min_arrayu8(AtIFT* ift,AtArrayU8* array){
   uint64_t i;
   for(i = 0; i < array->h.num_elements; i++)
     ift->c[i] = -INFINITY;
@@ -147,7 +147,7 @@ at_conn_min_array_uint8_t(AtIFT* ift,AtArray_uint8_t* array){
 // Adding seeds initially (changing label)
 //--------------------------------------------
 void
-at_ift_add_seeds_labels(AtIFT* ift, AtArray_uint64_t* seeds){
+at_ift_add_seeds_labels(AtIFT* ift, AtArrayU64* seeds){
   uint8_t *lb = ift->l;
   register uint64_t nelem  = seeds->h.num_elements;
   register uint64_t i, v, l;
@@ -160,7 +160,7 @@ at_ift_add_seeds_labels(AtIFT* ift, AtArray_uint64_t* seeds){
 // Adding seeds initially (changing connectivity)
 //--------------------------------------------
 void
-at_ift_add_seeds_conn_max(AtIFT* ift, AtArray_uint64_t* seeds){
+at_ift_add_seeds_conn_max(AtIFT* ift, AtArrayU64* seeds){
   double   *conn = ift->c;
   uint64_t *data = seeds->data;
   register uint64_t nelem  = seeds->h.num_elements;
@@ -170,7 +170,7 @@ at_ift_add_seeds_conn_max(AtIFT* ift, AtArray_uint64_t* seeds){
   }
 }
 void
-at_ift_add_seeds_conn_min(AtIFT* ift, AtArray_uint64_t* seeds){
+at_ift_add_seeds_conn_min(AtIFT* ift, AtArrayU64* seeds){
   // find max value
   double   *conn = ift->c;
   uint64_t *data = seeds->data;
@@ -217,23 +217,23 @@ double at_conn_euc_func(AtIFT* ift, AtGraphArray* graph,
   return sqrt(sum);
 }
 
-AtArray_uint64_t*
+AtArrayU64*
 at_seeds_new(uint64_t n, uint64_t* data){
   uint64_t shape[2] = {n,2};
-  return at_array_uint64_t_new_with_data(2,shape,data,true);
+  return at_arrayu64_new_with_data(2,shape,data,true);
 }
 
 AtIFT*
-at_ift_apply_array_uint8_t(AtArray_uint8_t*           ar,
+at_ift_apply_arrayu8(AtArrayU8*           ar,
                            AtAdjacency                adj,
                            AtOptimization             o,
                            AtConnectivity             c,
-                           AtWeightingFunc_uint8_t    w,
-                           AtArray_uint64_t*          seeds,
+                           AtWeightingFuncu8    w,
+                           AtArrayU64*          seeds,
                            AtPolicy                   po){
   AtIFT            * ift;         // 00+08: ift structure (the result)
   AtGraphArray     * g;           // 08+08: graph array structure
-  AtPQueue_uint64_t* q;           // 16+08: priority queue structure
+  AtPQueueU64* q;           // 16+08: priority queue structure
   uint8_t          * r;           // 24+08
   double             newc;        // 32+08: new neighbor connectivity (if better)
   uint64_t           s;           // 40+08: index of current node in array
@@ -248,9 +248,9 @@ at_ift_apply_array_uint8_t(AtArray_uint8_t*           ar,
                            
   // Create the auxiliary structures
   r     = calloc(ar->h.num_elements,sizeof(uint8_t));
-  ift   = at_ift_new_init_uint8_t(ar);
+  ift   = at_ift_new_initu8(ar);
   g     = at_grapharray_new(ar,adj,w);
-  vmax  = at_array_uint8_t_max(ar);
+  vmax  = at_arrayu8_max(ar);
 
   // Initialize IFT structure values and add seeds
   c.init (ift,ar);
@@ -258,13 +258,13 @@ at_ift_apply_array_uint8_t(AtArray_uint8_t*           ar,
   at_ift_add_seeds_labels(ift, seeds);
 
   // Create priority queue and add seeds
-  q = at_pqueue_uint64_t_new_prealloc(o,po,(uint64_t)vmax+2,ar->h.num_elements);
+  q = at_pqueueu64_new_prealloc(o,po,(uint64_t)vmax+2,ar->h.num_elements);
   at_ift_add_seeds_to_pqueue(ift,q,seeds);
 
   // Main loop
-  while(!at_pqueue_uint64_t_is_empty(q)){
+  while(!at_pqueueu64_is_empty(q)){
     // get best node
-    s    = at_pqueue_uint64_t_remove(q);
+    s    = at_pqueueu64_remove(q);
     r[s] = 1;
     // loop through neighbors
     off  = s   * adj;
@@ -277,15 +277,15 @@ at_ift_apply_array_uint8_t(AtArray_uint8_t*           ar,
           newc = c.func(ift, g, s, t, i);
           if((o == AT_MAXIMIZATION && ift->c[t] < newc)||
              (o == AT_MINIMIZATION && ift->c[t] > newc)){
-            if(at_pqueue_uint64_t_has(q,t))
-              at_pqueue_uint64_t_remove_from(q,t);
+            if(at_pqueueu64_has(q,t))
+              at_pqueueu64_remove_from(q,t);
             ift->c[t] = newc;
             ift->p[t] = s;
             ift->r[t] = ift->r[s];
             ift->l[t] = ift->l[s];
             pr = (uint16_t)ift->c[t];
             if(o == AT_MINIMIZATION) pr++;
-            at_pqueue_uint64_t_add(q, pr, t);
+            at_pqueueu64_add(q, pr, t);
           }
         }
       }
@@ -293,7 +293,7 @@ at_ift_apply_array_uint8_t(AtArray_uint8_t*           ar,
   }
 
   // Clear memory
-  at_pqueue_uint64_t_destroy(&q);
+  at_pqueueu64_destroy(&q);
   at_grapharray_destroy(&g);
   free(r);
   return ift;

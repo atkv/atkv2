@@ -24,7 +24,7 @@
 
 static
 void test_png(void** state){
-  AtArray(uint8_t)* image;
+  AtArrayU8* image;
   AtError         * error = NULL;
 
   at_array_read_png(image,"nao_existe.png",&error);

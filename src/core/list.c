@@ -26,17 +26,17 @@
  PRIVATE API
  ============================================================================*/
 
-AtList_uint64_t*
-at_list_uint64_t_new_array(uint64_t n_items){
-  AtList_uint64_t* list = calloc(n_items, sizeof(AtList_uint64_t));
+AtListU64*
+at_listu64_new_array(uint64_t n_items){
+  AtListU64* list = calloc(n_items, sizeof(AtListU64));
   return list;
 }
 
 void
-at_list_uint64_t_destroy(AtList_uint64_t** list_ptr){
+at_listu64_destroy(AtListU64** list_ptr){
   if(*list_ptr){
-    AtList_uint64_t* list = *list_ptr;
-    AtList_uint64_t* next;
+    AtListU64* list = *list_ptr;
+    AtListU64* next;
     do{
       next = list->next;
       free(list);
@@ -47,7 +47,7 @@ at_list_uint64_t_destroy(AtList_uint64_t** list_ptr){
 }
 
 void
-at_list_uint64_t_destroy_array(AtList_uint64_t** list){
+at_listu64_destroy_array(AtListU64** list){
   if(*list) free(*list);
   *list = NULL;
 }
