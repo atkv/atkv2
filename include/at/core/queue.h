@@ -28,10 +28,10 @@ AT_BEGIN_DECLS
 /**
  * Queue for 64bit unsigned integers
  */
-typedef struct AtQueue_uint64_t{
-  AtList_uint64_t* first;// First
-  AtList_uint64_t* last;// Last
-}AtQueue_uint64_t;
+typedef struct AtQueueu64{
+  AtListU64* first;// First
+  AtListU64* last;// Last
+}AtQueueu64;
 
 /*=============================================================================
  PUBLIC API
@@ -40,16 +40,16 @@ typedef struct AtQueue_uint64_t{
  * @brief at_queue_new
  * @return
  */
-AtQueue_uint64_t*
-at_queue_uint64_t_new();
+AtQueueu64*
+at_queueu64_new();
 
 /**
  * @brief at_queue_new_array
  * @param n_queues
  * @return
  */
-AtQueue_uint64_t*
-at_queue_uint64_t_new_array(uint64_t n_queues);
+AtQueueu64*
+at_queueu64_new_array(uint64_t n_queues);
 
 /**
  * @brief at_queue_append_link
@@ -57,7 +57,7 @@ at_queue_uint64_t_new_array(uint64_t n_queues);
  * @param listitem
  */
 void
-at_queue_uint64_t_append_link(AtQueue_uint64_t* q, AtList_uint64_t* l);
+at_queueu64_append_link(AtQueueu64* q, AtListU64* l);
 
 /**
  * @brief at_queue_prepend_link
@@ -65,29 +65,29 @@ at_queue_uint64_t_append_link(AtQueue_uint64_t* q, AtList_uint64_t* l);
  * @param listitem
  */
 void
-at_queue_uint64_t_prepend_link(AtQueue_uint64_t* q, AtList_uint64_t* l);
+at_queueu64_prepend_link(AtQueueu64* q, AtListU64* l);
 
 /**
  * @brief at_queue_remove_first_link
  * @param queue
  * @return
  */
-AtList_uint64_t*
-at_queue_uint64_t_remove_first_link(AtQueue_uint64_t* q);
+AtListU64*
+at_queueu64_remove_first_link(AtQueueu64* q);
 
 /**
- * @brief at_queue_uint64_t_remove_link
+ * @brief at_queueu64_remove_link
  * @param q
  * @param l
  */
 void
-at_queue_uint64_t_remove_link(AtQueue_uint64_t* q, AtList_uint64_t* l);
+at_queueu64_remove_link(AtQueueu64* q, AtListU64* l);
 
 /**
  * @brief at_queue_destroy
  * @param queue
  */
 void
-at_queue_uint64_t_destroy_array(AtQueue_uint64_t** qp);
+at_queueu64_destroy_array(AtQueueu64** qp);
 AT_END_DECLS
 #endif

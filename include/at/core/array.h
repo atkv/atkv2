@@ -43,8 +43,6 @@ typedef struct AtArrayHeader{
   uint8_t   alignment[5];// 27+5: explicit padding
 }AtArrayHeader;          // Total: 32B
 
-#define AtArray(type) AtArray_##type
-
 /**
  * @brief @~Brazilian Vetor Multidimensional
  *
@@ -54,46 +52,46 @@ typedef struct AtArrayHeader{
  * dimensões adicionais devem ser colocadas primeiro ({Z,Y,X} por exemplo).
  * dimensão é uint8 e shape é um array de uint64.
  */
-typedef struct AtArray_uint8_t{
+typedef struct AtArrayU8{
   AtArrayHeader h;  // 00-31
   uint8_t      *data;    // 32-39
-}AtArray_uint8_t;        // Total: 40B
-typedef struct AtArray_uint16_t{
+}AtArrayU8;        // Total: 40B
+typedef struct AtArrayU16{
   AtArrayHeader h;
   uint16_t     *data;
-}AtArray_uint16_t;
-typedef struct AtArray_uint32_t{
+}AtArrayU16;
+typedef struct AtArrayU32{
   AtArrayHeader h;
   uint32_t     *data;
-}AtArray_uint32_t;
-typedef struct AtArray_uint64_t{
+}AtArrayU32;
+typedef struct AtArrayU64{
   AtArrayHeader h;
   uint64_t     *data;
-}AtArray_uint64_t;
-typedef struct AtArray_int8_t{
+}AtArrayU64;
+typedef struct AtArrayI8{
   AtArrayHeader h;
   int8_t       *data;
-}AtArray_int8_t;
-typedef struct AtArray_int16_t{
+}AtArrayI8;
+typedef struct AtArrayI16{
   AtArrayHeader h;
   int16_t      *data;
-}AtArray_int16_t;
-typedef struct AtArray_int32_t{
+}AtArrayI16;
+typedef struct AtArrayI32{
   AtArrayHeader h;
   int32_t      *data;
-}AtArray_int32_t;
-typedef struct AtArray_int64_t{
+}AtArrayI32;
+typedef struct AtArrayI64{
   AtArrayHeader h;
   int64_t      *data;
-}AtArray_int64_t;
-typedef struct AtArray_float{
+}AtArrayI64;
+typedef struct AtArrayF32{
   AtArrayHeader h;
   float        *data;
-}AtArray_float;
-typedef struct AtArray_double{
+}AtArrayF32;
+typedef struct AtArrayD64{
   AtArrayHeader h;
   double       *data;
-}AtArray_double;
+}AtArrayD64;
 
 /*=============================================================================
  FUNCTIONS
@@ -108,7 +106,7 @@ at_index_to_1d(uint8_t dim, uint64_t* step, int64_t* s_nd, uint64_t* s);
 #define at_array_index_to_1d(array, s_nd, s) at_index_to_1d(array->h.dim, array->h.step,s_nd,s)
 
 #define at_array_max(array) _Generic((array), \
-  AtArray_uint8_t*:at_array_uint8_t_max)(array)
+  AtArrayU8*:at_arrayu8_max)(array)
 
 void
 at_array_header_init(AtArrayHeader* header);
@@ -121,65 +119,65 @@ at_array_header_dispose(AtArrayHeader* header);
 
 
 #define at_array_destroy(array_ptr) _Generic((array_ptr), \
-  AtArray_uint8_t**: at_array_uint8_t_destroy             \
+  AtArrayU8**: at_arrayu8_destroy             \
 )(array_ptr)
 
 // uint8_t
 // --------
-AtArray_uint8_t*
-at_array_uint8_t_create();
+AtArrayU8*
+at_arrayu8_create();
 
-AtArray_uint8_t*
-at_array_uint8_t_new(uint8_t dim, uint64_t* shape);
+AtArrayU8*
+at_arrayu8_new(uint8_t dim, uint64_t* shape);
 
-AtArray_uint8_t*
-at_array_uint8_t_new_with_data(uint8_t dim, uint64_t* shape, uint8_t* data, bool copy);
+AtArrayU8*
+at_arrayu8_new_with_data(uint8_t dim, uint64_t* shape, uint8_t* data, bool copy);
 
-AtArray_uint8_t*
-at_array_uint8_t_zeros(uint8_t dim, uint64_t* shape);
+AtArrayU8*
+at_arrayu8_zeros(uint8_t dim, uint64_t* shape);
 
-AtArray_uint8_t*
-at_array_uint8_t_ones(uint8_t dim, uint64_t* shape);
+AtArrayU8*
+at_arrayu8_ones(uint8_t dim, uint64_t* shape);
 
 void
-at_array_uint8_t_fill(AtArray_uint8_t* array, uint8_t value);
+at_arrayu8_fill(AtArrayU8* array, uint8_t value);
 
 uint8_t
-at_array_uint8_t_max(AtArray_uint8_t* array);
+at_arrayu8_max(AtArrayU8* array);
 
 void
-at_array_uint8_t_destroy(AtArray_uint8_t** array);
+at_arrayu8_destroy(AtArrayU8** array);
 
 // uint16_t
 // --------
-AtArray_uint16_t*
-at_array_uint16_t_new(uint8_t dim, uint64_t* shape);
+AtArrayU16*
+at_arrayu16_new(uint8_t dim, uint64_t* shape);
 
-#define at_array_save(arrays,names,num,filename) at_array_uint8_t_save((AtArray_uint8_t**)arrays,names,num,filename);
+#define at_array_save(arrays,names,num,filename) at_arrayu8_save((AtArrayU8**)arrays,names,num,filename);
 
 void
-at_array_uint8_t_save(AtArray_uint8_t** arrays, char** names, uint8_t num, const char* filename);
+at_arrayu8_save(AtArrayU8** arrays, char** names, uint8_t num, const char* filename);
 
-AtArray_uint8_t*
+AtArrayU8*
 at_array_load(char*** namesp, uint8_t *nump, const char* filename);
 
 void
-at_array_uint16_t_destroy(AtArray_uint16_t** arp);
+at_arrayu16_destroy(AtArrayU16** arp);
 
 // uint64_t
 // --------
 
-AtArray_uint64_t*
-at_array_uint64_t_create();
+AtArrayU64*
+at_arrayu64_create();
 
-AtArray_uint64_t*
-at_array_uint64_t_new_with_data(uint8_t dim, uint64_t* shape, uint64_t* data, bool copy);
-
-void
-at_array_uint64_t_fill(AtArray_uint64_t* array, uint64_t value);
+AtArrayU64*
+at_arrayu64_new_with_data(uint8_t dim, uint64_t* shape, uint64_t* data, bool copy);
 
 void
-at_array_uint64_t_destroy(AtArray_uint64_t** array);
+at_arrayu64_fill(AtArrayU64* array, uint64_t value);
+
+void
+at_arrayu64_destroy(AtArrayU64** array);
 
 
 AT_END_DECLS

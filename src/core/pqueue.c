@@ -22,7 +22,7 @@
  PRIVATE API
  ============================================================================*/
 static void
-at_pqueue_find_non_null_priority(AtPQueue_uint64_t* queue){
+at_pqueue_find_non_null_priority(AtPQueueU64* queue){
   while(queue->pr[queue->cur_p].first == NULL){
     switch(queue->o){
       case AT_MINIMIZATION: queue->cur_p++;break;
@@ -35,22 +35,22 @@ at_pqueue_find_non_null_priority(AtPQueue_uint64_t* queue){
  PUBLIC API
  ============================================================================*/
 
-AtPQueue_uint64_t*
-at_pqueue_uint64_t_new(AtOptimization o, AtPolicy po){
-  AtPQueue_uint64_t* queue     = malloc(sizeof(AtPQueue_uint64_t));
+AtPQueueU64*
+at_pqueueu64_new(AtOptimization o, AtPolicy po){
+  AtPQueueU64* queue     = malloc(sizeof(AtPQueueU64));
   queue->o     = o;
   queue->po    = po;
   queue->ne = 0;
   return queue;
 }
 
-AtPQueue_uint64_t*
-at_pqueue_uint64_t_new_prealloc(AtOptimization o, AtPolicy po, uint64_t np, uint64_t nv){
-  AtPQueue_uint64_t* q     = at_pqueue_uint64_t_new(o, po);
+AtPQueueU64*
+at_pqueueu64_new_prealloc(AtOptimization o, AtPolicy po, uint64_t np, uint64_t nv){
+  AtPQueueU64* q     = at_pqueueu64_new(o, po);
   uint64_t  i;
-  q->pr = at_queue_uint64_t_new_array(np);
+  q->pr = at_queueu64_new_array(np);
   q->np = np;
-  q->v  = at_list_uint64_t_new_array(nv);
+  q->v  = at_listu64_new_array(nv);
   q->vp = malloc(nv * sizeof(uint64_t));
   for(i = 0; i < nv; i++){
     q->v[i].value = i;
@@ -63,23 +63,23 @@ at_pqueue_uint64_t_new_prealloc(AtOptimization o, AtPolicy po, uint64_t np, uint
   return q;
 }
 uint8_t
-at_pqueue_uint64_t_has(AtPQueue_uint64_t* q, uint64_t v){
+at_pqueueu64_has(AtPQueueU64* q, uint64_t v){
   return q->vp[v] != UINT64_MAX;
 }
 void
-at_pqueue_uint64_t_remove_from(AtPQueue_uint64_t* q, uint64_t v){
-  at_queue_uint64_t_remove_link(&q->pr[q->vp[v]],&q->v[v]);
+at_pqueueu64_remove_from(AtPQueueU64* q, uint64_t v){
+  at_queueu64_remove_link(&q->pr[q->vp[v]],&q->v[v]);
   q->ne--;
 }
 
 void
-at_pqueue_uint64_t_add(AtPQueue_uint64_t* q, uint64_t pr, uint64_t v){
+at_pqueueu64_add(AtPQueueU64* q, uint64_t pr, uint64_t v){
   switch(q->po){
     case AT_FIFO:
-      at_queue_uint64_t_append_link(&q->pr[pr],&q->v[v]);
+      at_queueu64_append_link(&q->pr[pr],&q->v[v]);
     break;
     case AT_LIFO:
-      at_queue_uint64_t_prepend_link(&q->pr[pr],&q->v[v]);
+      at_queueu64_prepend_link(&q->pr[pr],&q->v[v]);
     break;
   }
   // Set in which priority is the element
@@ -88,27 +88,27 @@ at_pqueue_uint64_t_add(AtPQueue_uint64_t* q, uint64_t pr, uint64_t v){
 }
 
 uint64_t
-at_pqueue_uint64_t_remove(AtPQueue_uint64_t* q){
+at_pqueueu64_remove(AtPQueueU64* q){
   // Find filled queue
   at_pqueue_find_non_null_priority(q);
   // Update number of elements and erase element priority
   q->ne--;
   q->vp[q->pr[q->cur_p].first->value] = UINT64_MAX;
   // Remove the element from queue
-  return at_queue_uint64_t_remove_first_link(&q->pr[q->cur_p])->value;
+  return at_queueu64_remove_first_link(&q->pr[q->cur_p])->value;
 }
 uint8_t
-at_pqueue_uint64_t_is_empty(AtPQueue_uint64_t* q){
+at_pqueueu64_is_empty(AtPQueueU64* q){
   return q->ne == 0;
 }
 
 
 void
-at_pqueue_uint64_t_destroy(AtPQueue_uint64_t** qp){
+at_pqueueu64_destroy(AtPQueueU64** qp){
   if(*qp){
-    AtPQueue_uint64_t* q = *qp;
-    if(q->pr) at_queue_uint64_t_destroy_array(&q->pr);
-    if(q->v)  at_list_uint64_t_destroy_array(&q->v);
+    AtPQueueU64* q = *qp;
+    if(q->pr) at_queueu64_destroy_array(&q->pr);
+    if(q->v)  at_listu64_destroy_array(&q->v);
     if(q->vp) free(q->vp);
     free(*qp);
   }

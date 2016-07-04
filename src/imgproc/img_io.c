@@ -44,7 +44,7 @@ at_pgm_skip_comm(char* s, size_t m, FILE* fp){
 }
 
 static void
-at_array_uint8_t_write_pgm_ppm(AtArray_uint8_t *array, const char *filename, AtError **error, uint8_t format){
+at_arrayu8_write_pgm_ppm(AtArrayU8 *array, const char *filename, AtError **error, uint8_t format){
   FILE    * fp;
   uint64_t* shape;
   uint8_t * data;
@@ -73,9 +73,9 @@ at_array_uint8_t_write_pgm_ppm(AtArray_uint8_t *array, const char *filename, AtE
  ============================================================================*/
 
 
-AtArray_uint8_t*
-at_array_uint8_t_read_png(const char* filename, AtError** error){
-  AtArray_uint8_t* array;
+AtArrayU8*
+at_arrayu8_read_png(const char* filename, AtError** error){
+  AtArrayU8* array;
   uint8_t*         data;
   png_structp      png_ptr;
   png_infop        info_ptr;
@@ -124,7 +124,7 @@ at_array_uint8_t_read_png(const char* filename, AtError** error){
   size[1] = png_get_image_width(png_ptr, info_ptr);
   size[2] = png_get_channels(png_ptr, info_ptr);
   //uint8_t bit_depth = png_get_bit_depth(png_ptr, info_ptr);
-  array = at_array_uint8_t_new(3, size);
+  array = at_arrayu8_new(3, size);
 
   png_read_update_info(png_ptr, info_ptr);
 
@@ -148,9 +148,9 @@ at_array_uint8_t_read_png(const char* filename, AtError** error){
   return array;
 }
 
-AtArray_uint8_t*
-at_array_uint8_t_read_jpg(const char* filename, AtError **error){
-  AtArray_uint8_t*              array = NULL;
+AtArrayU8*
+at_arrayu8_read_jpg(const char* filename, AtError **error){
+  AtArrayU8*              array = NULL;
   FILE*                         infile;
   uint8_t**                     buffer;
   struct jpeg_decompress_struct cinfo;
@@ -177,7 +177,7 @@ at_array_uint8_t_read_jpg(const char* filename, AtError **error){
   shape[0] = cinfo.output_height;
   shape[1] = cinfo.output_width;
   shape[2] = cinfo.output_components;
-  array = at_array_uint8_t_new(3, shape);
+  array = at_arrayu8_new(3, shape);
   row_stride = array->h.step[0];
   buffer = (uint8_t**) malloc(sizeof(uint8_t*) * shape[0]);
   for(i = 0; i < shape[0];i++)
@@ -193,9 +193,9 @@ at_array_uint8_t_read_jpg(const char* filename, AtError **error){
   return array;
 }
 
-AtArray_uint8_t*
-at_array_uint8_t_read_ppm_pgm(const char* filename, AtError** error){
-  AtArray_uint8_t* array = NULL;
+AtArrayU8*
+at_arrayu8_read_ppm_pgm(const char* filename, AtError** error){
+  AtArrayU8* array = NULL;
   FILE*    fp;
   uint64_t i;
   uint64_t max_gray;
@@ -225,7 +225,7 @@ at_array_uint8_t_read_ppm_pgm(const char* filename, AtError** error){
     shape[0]     = height;
     shape[1]     = width;
     shape[2]     = 3;
-    array        = at_array_uint8_t_new(dim, shape);
+    array        = at_arrayu8_new(dim, shape);
     data         = array->data;
     num_elements = array->h.num_elements;
     if(version[1] == '2')
@@ -240,18 +240,18 @@ at_array_uint8_t_read_ppm_pgm(const char* filename, AtError** error){
   return array;
 }
 
-AtArray_uint8_t*
-at_array_uint8_t_read_pgm(const char* filename, AtError** error){
-  return at_array_uint8_t_read_ppm_pgm(filename, error);
+AtArrayU8*
+at_arrayu8_read_pgm(const char* filename, AtError** error){
+  return at_arrayu8_read_ppm_pgm(filename, error);
 }
 
-AtArray_uint8_t*
-at_array_uint8_t_read_ppm(const char* filename, AtError** error){
-  return at_array_uint8_t_read_ppm_pgm(filename, error);
+AtArrayU8*
+at_arrayu8_read_ppm(const char* filename, AtError** error){
+  return at_arrayu8_read_ppm_pgm(filename, error);
 }
 
 void
-at_array_uint8_t_write_png(AtArray_uint8_t* array, const char* filename, AtError** error){
+at_arrayu8_write_png(AtArrayU8* array, const char* filename, AtError** error){
   uint64_t*   shape;
   uint64_t*   step;
   uint8_t*    data;
@@ -342,7 +342,7 @@ at_array_uint8_t_write_png(AtArray_uint8_t* array, const char* filename, AtError
 }
 
 void
-at_array_uint8_t_write_jpg(AtArray_uint8_t* array, const char* filename, AtError** error){
+at_arrayu8_write_jpg(AtArrayU8* array, const char* filename, AtError** error){
   FILE                      * outfile;
   uint8_t                   * row_pointer[1];
   uint8_t                   * data  = array->data;
@@ -379,11 +379,11 @@ at_array_uint8_t_write_jpg(AtArray_uint8_t* array, const char* filename, AtError
 }
 
 void
-at_array_uint8_t_write_pgm(AtArray_uint8_t *array, const char *filename, AtError **error){
-  at_array_uint8_t_write_pgm_ppm(array, filename, error, 5);
+at_arrayu8_write_pgm(AtArrayU8 *array, const char *filename, AtError **error){
+  at_arrayu8_write_pgm_ppm(array, filename, error, 5);
 }
 
 void
-at_array_uint8_t_write_ppm(AtArray_uint8_t *array, const char *filename, AtError **error){
-  at_array_uint8_t_write_pgm_ppm(array, filename, error, 6);
+at_arrayu8_write_ppm(AtArrayU8 *array, const char *filename, AtError **error){
+  at_arrayu8_write_pgm_ppm(array, filename, error, 6);
 }

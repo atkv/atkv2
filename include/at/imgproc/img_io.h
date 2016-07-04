@@ -25,14 +25,14 @@ AT_BEGIN_DECLS
  MACROS (PUBLIC API)
  ============================================================================*/
 #define at_array_read_image(format, array, filename, error) array = _Generic((array), \
-  AtArray_uint8_t*:at_array_uint8_t_read_##format)(filename,error)
+  AtArrayU8*:at_arrayu8_read_##format)(filename,error)
 #define at_array_read_png(array, filename, error) at_array_read_image(png,array,filename,error)
 #define at_array_read_jpg(array, filename, error) at_array_read_image(jpg,array,filename,error)
 #define at_array_read_pgm(array, filename, error) at_array_read_image(pgm,array,filename,error)
 #define at_array_read_ppm(array, filename, error) at_array_read_image(ppm,array,filename,error)
 
 #define at_array_write_image(format, array, filename, error) _Generic((array), \
-  AtArray_uint8_t*: at_array_uint8_t_write_##format)(array,filename,error)
+  AtArrayU8*: at_arrayu8_write_##format)(array,filename,error)
 #define at_array_write_png(array, filename, error) at_array_write_image(png, array, filename, error)
 #define at_array_write_jpg(array, filename, error) at_array_write_image(jpg, array, filename, error)
 #define at_array_write_pgm(array, filename, error) at_array_write_image(pgm, array, filename, error)
@@ -42,72 +42,72 @@ AT_BEGIN_DECLS
  PUBLIC API
  ============================================================================*/
 /**
- * @brief at_array_uint8_t_read_png
+ * @brief at_arrayu8_read_png
  * @param filename
  * @return
  */
-AtArray_uint8_t*
-at_array_uint8_t_read_png(const char* filename, AtError** error);
+AtArrayU8*
+at_arrayu8_read_png(const char* filename, AtError** error);
 
 /**
- * @brief at_array_uint8_t_read_jpg
+ * @brief at_arrayu8_read_jpg
  * @param filename
  * @return
  */
-AtArray_uint8_t*
-at_array_uint8_t_read_jpg(const char* filename, AtError** error);
+AtArrayU8*
+at_arrayu8_read_jpg(const char* filename, AtError** error);
 
 /**
- * @brief at_array_uint8_t_read_pgm
+ * @brief at_arrayu8_read_pgm
  * @param filename
  * @param error
  * @return
  */
-AtArray_uint8_t*
-at_array_uint8_t_read_pgm(const char* filename, AtError** error);
+AtArrayU8*
+at_arrayu8_read_pgm(const char* filename, AtError** error);
 
 /**
- * @brief at_array_uint8_t_read_ppm
+ * @brief at_arrayu8_read_ppm
  * @param filename
  * @param error
  * @return
  */
-AtArray_uint8_t*
-at_array_uint8_t_read_ppm(const char* filename, AtError** error);
+AtArrayU8*
+at_arrayu8_read_ppm(const char* filename, AtError** error);
 
 /**
- * @brief at_array_uint8_t_write_png
+ * @brief at_arrayu8_write_png
  * @param image
  * @param filename
  */
 void
-at_array_uint8_t_write_png(AtArray_uint8_t* image, const char *filename, AtError **error);
+at_arrayu8_write_png(AtArrayU8* image, const char *filename, AtError **error);
 
 /**
- * @brief at_array_uint8_t_write_jpg
+ * @brief at_arrayu8_write_jpg
  * @param image
  * @param filename
  */
 void
-at_array_uint8_t_write_jpg(AtArray_uint8_t* image, const char* filename, AtError **error);
+at_arrayu8_write_jpg(AtArrayU8* image, const char* filename, AtError **error);
 
 /**
- * @brief at_array_uint8_t_write_pgm
- * @param image
- * @param filename
- * @param error
- */
-void
-at_array_uint8_t_write_pgm(AtArray_uint8_t* image, const char* filename, AtError **error);
-
-/**
- * @brief at_array_uint8_t_write_ppm
+ * @brief at_arrayu8_write_pgm
  * @param image
  * @param filename
  * @param error
  */
 void
-at_array_uint8_t_write_ppm(AtArray_uint8_t* image, const char* filename, AtError **error);
+at_arrayu8_write_pgm(AtArrayU8* image, const char* filename, AtError **error);
+
+/**
+ * @brief at_arrayu8_write_ppm
+ * @param image
+ * @param filename
+ * @param error
+ */
+void
+at_arrayu8_write_ppm(AtArrayU8* image, const char* filename, AtError **error);
 
 AT_END_DECLS
 #endif
