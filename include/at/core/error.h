@@ -19,13 +19,23 @@
 #define AT_ERROR_H
 #include <at/core/macro.h>
 AT_BEGIN_DECLS
+/**
+ * @brief error
+ */
 typedef struct AtError{
-  char* message;
+  char* message; /*!< error message */
 }AtError;
-
+/**
+ * @brief at_error_set
+ * @param error
+ * @param msg_pattern
+ */
 void
 at_error_set(AtError** error, char* msg_pattern, ...);
-
+/**
+ * @brief at_error_destroy
+ * @param error_ptr
+ */
 void
 at_error_destroy(AtError **error_ptr);
 AT_END_DECLS

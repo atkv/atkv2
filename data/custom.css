@@ -1,0 +1,19 @@
+#projectname{
+  font-size: 200%;
+}
+p,li{
+    color:#3D578C;
+}
+
+h1,h2,h3,h4,h5,h6{
+    color:#283A5D;
+}
+#nav-tree{
+    background: inherit;
+}
+body{
+    background: radial-gradient(white,#ddddff);
+}
+div.header{
+    background: inherit;
+}

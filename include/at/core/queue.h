@@ -29,8 +29,8 @@ AT_BEGIN_DECLS
  * Queue for 64bit unsigned integers
  */
 typedef struct AtQueueu64{
-  AtListU64* first;// First
-  AtListU64* last;// Last
+  AtListU64* first;/*!< First */
+  AtListU64* last;/*!< Last */
 }AtQueueu64;
 
 /*=============================================================================

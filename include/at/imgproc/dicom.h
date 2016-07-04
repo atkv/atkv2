@@ -22,31 +22,45 @@
 #include <at/core/error.h>
 #include <stdint.h>
 AT_BEGIN_DECLS
+/**
+ * @brief Dicom Base
+ */
 typedef struct AtDicomBase{
-  const char* filename;            // 00+08
-  char      * modality;            // 08+08
-  char      * unit;                // 16+08
-  uint8_t   * photo_interpretation;// 24+08
-  float       intercept;           // 32+08
-  float       slope;               // 40+08
-  uint16_t    samples_per_pixel;   // 48+02
-  uint16_t    bits_allocated;      // 50+02
-  uint16_t    pixel_representation;// 52+02
-  uint8_t     pixel_data_tag_found;// 53+01
-  uint8_t     pd[2];               // 54+02
+  const char* filename;            /*00+08*//*!< */
+  char      * modality;            /*08+08*//*!< */
+  char      * unit;                /*16+08*//*!< */
+  uint8_t   * photo_interpretation;/*24+08*//*!< */
+  float       intercept;           /*32+08*//*!< */
+  float       slope;               /*40+08*//*!< */
+  uint16_t    samples_per_pixel;   /*48+02*//*!< */
+  uint16_t    bits_allocated;      /*50+02*//*!< */
+  uint16_t    pixel_representation;/*52+02*//*!< */
+  uint8_t     pixel_data_tag_found;/*53+01*//*!< */
+  uint8_t     pd[2];               /*54+02*//*!< */
                                    // Total: 56 bytes
 }AtDicomBase;
-
+/**
+ * @brief Dicom 16 bits
+ */
 typedef struct AtDicomU16{
   AtDicomBase       base; //00+56
   AtArrayU16* luts; //56+08
   AtArrayU16* image;//64+08
                           //72 bytes
 }AtDicomU16;
-
+/**
+ * @brief at_dicomu16_read
+ * @param fname
+ * @param error
+ * @return
+ */
 AtDicomU16*
 at_dicomu16_read(const char* fname, AtError **error);
-
+/**
+ * @brief at_dicomu16_write
+ * @param dicom
+ * @param filename
+ */
 void
 at_dicomu16_write(AtDicomU16* dicom, const char* filename);
 
