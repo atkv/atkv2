@@ -27,10 +27,11 @@ AT_BEGIN_DECLS
  */
 typedef struct AtIFT{
   // Output
-  uint64_t* p;// 00+08
-  uint64_t* r;// 08+08
-  double  * c;// 16+08
-  uint8_t * l;// 24+08 = 32
+  uint64_t* p;/*00+08*//*!< Predecessors */
+  uint64_t* r;/*08+08*//*!< Roots */
+  double  * c;/*16+08*//*!< Connectivities */
+  uint8_t * l;/*24+08*//*!< Labels */
+              // Total: 32 bytes
 }AtIFT;
 
 typedef void
@@ -56,18 +57,33 @@ AtConnectivity at_conn_euc;
  FUNCTIONS
  ============================================================================*/
 #define at_ift_apply(input) _Generic((input), Array: at_ift_apply_array)
-
+/**
+ * @brief at_seeds_new
+ * @param n
+ * @param data
+ * @return
+ */
 AtArrayU64*
 at_seeds_new(uint64_t n, uint64_t* data);
 
-
+/**
+ * @brief at_ift_apply_arrayu8
+ * @param array
+ * @param adj
+ * @param o
+ * @param connectivity
+ * @param w
+ * @param seeds
+ * @param po
+ * @return
+ */
 AtIFT*
-at_ift_apply_arrayu8(AtArrayU8*           array,
-                           AtAdjacency                adj,
-                           AtOptimization             o,
-                           AtConnectivity             connectivity,
+at_ift_apply_arrayu8(AtArrayU8*                 array,
+                           AtAdjacency          adj,
+                           AtOptimization       o,
+                           AtConnectivity       connectivity,
                            AtWeightingFuncu8    w,
                            AtArrayU64*          seeds,
-                           AtPolicy                   po);
+                           AtPolicy             po);
 AT_END_DECLS
 #endif

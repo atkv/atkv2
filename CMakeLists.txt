@@ -51,6 +51,13 @@ INCLUDE               (CTest)
 FIND_PACKAGE          (CUDA)
 
 # ------------------
+# Doxygen
+# ------------------
+#if(BUILD_IMGPROC)
+  FIND_PACKAGE(Doxygen QUIET)
+#endif()
+
+# ------------------
 # Zlib
 # ------------------
 if(BUILD_IMGPROC)
@@ -145,6 +152,21 @@ IF(BUILD_TESTING)
   ENDFOREACH()
 
 ENDIF()
+#==================================================================== DOCS
+if(Doxygen_FOUND)
+  option(BUILD_DOCS      "Build doxygen documentation" ON)
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/doc/)
+  configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.in ${CMAKE_BINARY_DIR}/doc/Doxyfile @ONLY)
+    add_custom_target(doc ALL
+      ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/doc/Doxyfile
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc
+      COMMENT "Generating API documentation with Doxygen" VERBATIM
+    )
+    add_custom_command(TARGET doc PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc)
+endif(Doxygen_FOUND)
+
 
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include)
 INSTALL(TARGETS atkv_core      LIBRARY DESTINATION lib)

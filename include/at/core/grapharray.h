@@ -38,20 +38,19 @@ typedef enum {
  * @brief A directed weighted grid graph
  */
 typedef struct AtGraphArray{
-  uint64_t* neighbors;   // 00-8: indices of neighbors for each node
-  AtArrayHeader* h;      // 08-8: dim, shape, step...
-  double  * weights;     // 16-8: weights of edges <node,neighbor>
-  uint8_t * active;      // 24-8: <node,neighbor> is active?
-  uint8_t   adjacency;   // 32-1: Neighboring
-  uint8_t   padding[6];  // 33-7: Memory alignment
-}AtGraphArray;           // Total: 40B
+  uint64_t* neighbors;   /*!< indices of neighbors for each node *//*00-8*/
+  AtArrayHeader* h;      /*!< dim, shape, step... */               /*08-8*/
+  double  * weights;     /*!< weights of edges <node,neighbor> */  /*16-8*/
+  uint8_t * active;      /*!< <node,neighbor> is active? */        /*24-8*/
+  uint8_t   adjacency;   /*!< Neighboring */                       /*32-1*/
+  uint8_t   padding[6];  /*!< Memory alignment */                  /*33-7*/
+}AtGraphArray;           /* Total: 40B
 
 /*=============================================================================
  FUNCTIONS
  ============================================================================*/
 #define at_grapharray_new(array, adjacency, weighting) _Generic((array), \
   AtArrayU8*: at_grapharrayu8_new)(array, adjacency, weighting)
-
 typedef double
 (*AtWeightingFuncu8) (AtArrayU8* graph, uint64_t s, uint64_t t);
 
@@ -64,6 +63,13 @@ typedef double
  */
 double
 at_weighting_diff_abs(AtArrayU8* array, uint64_t s, uint64_t t);
+/**
+ * @brief at_weighting_diff_absc
+ * @param array
+ * @param s
+ * @param t
+ * @return
+ */
 double
 at_weighting_diff_absc(AtArrayU8* array, uint64_t s, uint64_t t);
 

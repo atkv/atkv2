@@ -33,14 +33,14 @@ AT_BEGIN_DECLS
  * @brief Priority Queue Structure
  */
 typedef struct AtPQueueU64{
-  AtQueueu64* pr;
-  AtListU64*  v;
-  uint64_t*         vp;
-  uint64_t          cur_p;
-  uint32_t          ne;
-  uint32_t          np;
-  AtOptimization    o;
-  AtPolicy          po;
+  AtQueueu64*       pr;   /*!< List of priorities */                              /*00+8*/
+  AtListU64*        v;    /*!< List of values */                                  /*08+8*/
+  uint64_t*         vp;   /*!< Link between priority and value (for lookup)*/     /*16+8*/
+  uint64_t          cur_p;/*!< Current best priority */                           /*24+8*/
+  uint32_t          ne;   /*!< Number of values */                                /*32+4*/
+  uint32_t          np;   /*!< Number of priorities */                            /*36+4*/
+  AtOptimization    o;    /*!< Optimization (AT_MAXIMIZATION, AT_MINIMIZATION) */ /*40+1*/
+  AtPolicy          po;   /*!< Policy (AT_FIFO, AT_LIFO) */                       /*41+1*/
 }AtPQueueU64;
 /*=============================================================================
  PUBLIC API
