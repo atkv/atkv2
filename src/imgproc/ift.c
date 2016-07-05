@@ -19,6 +19,8 @@
 #include <at/core/pqueue.h>
 #include <math.h>
 #include <at/core/macro.h>
+#include <time.h>
+#include <stdio.h>
 
 /*=============================================================================
  PRIVATE API
@@ -73,7 +75,7 @@ at_ift_new_initu8(AtArrayU8* array){
     ift->p[i] = i;
     ift->r[i] = i;
   }
-  memset(ift->l, 0, (size >> 3));
+  memset(ift->l, 0, array->h.num_elements);
 
   // Returning
   return ift;
@@ -233,18 +235,18 @@ at_ift_apply_arrayu8(AtArrayU8*           ar,
                            AtPolicy                   po){
   AtIFT            * ift;         // 00+08: ift structure (the result)
   AtGraphArray     * g;           // 08+08: graph array structure
-  AtPQueueU64* q;           // 16+08: priority queue structure
+  AtPQueueU64* q;                 // 16+08: priority queue structure
   uint8_t          * r;           // 24+08
   double             newc;        // 32+08: new neighbor connectivity (if better)
   uint64_t           s;           // 40+08: index of current node in array
   uint64_t           t;           // 48+08: index of current neighbor in array
   uint64_t           off;         // 56+08: index of current node in grapharray (for loop)
   uint64_t           offn;        // 64+08: index of next node in grapharray (for loop)
-  uint16_t           pr;          // 72+02: priority
-  uint8_t            i;           // 74+01: counter
-  uint8_t            vmax;        // 75+01: max array value (for allocating the queue)
-  uint8_t            pd[4];       // 76+04: padding for alignment
-                                  // Total: 80 bytes
+  uint64_t           i;           // 72+08: counter
+  uint16_t           pr;          // 80+02: priority
+  uint8_t            vmax;        // 82+01: max array value (for allocating the queue)
+  uint8_t            pd[5];       // 83+05: padding for alignment
+                                  // Total: 88 bytes
                            
   // Create the auxiliary structures
   r     = calloc(ar->h.num_elements,sizeof(uint8_t));

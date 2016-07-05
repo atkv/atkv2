@@ -2,7 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 PROJECT               (atkv)
 SET                   (CMAKE_CXX_STANDARD 11)
 SET                   (CMAKE_C_STANDARD 11)
-SET                   (CMAKE_C_FLAGS          "-pg")
+#SET                   (CMAKE_C_FLAGS          "-pg")
 #SET                   (CMAKE_EXE_LINKER_FLAGS "-pg")
 SET                   (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 SET                   (GLOBAL_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
@@ -16,20 +16,22 @@ SET                   (AT_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/share/at")
 #======================================================================= MACROS
 MACRO(AT_MAKE_MODULE MODULE)
   STRING(TOUPPER ${MODULE} MODULEUPPER)
-  # HEADERS
-  SET(HDRS_ABS)
-  FOREACH(MDLFILE ${${MODULEUPPER}_HDRS})
-    LIST(APPEND HDRS_ABS ${CMAKE_SOURCE_DIR}/include/at/${MODULE}/${MDLFILE})
-  ENDFOREACH()
+  IF(BUILD_${MODULEUPPER})
+    # HEADERS
+    SET(HDRS_ABS)
+    FOREACH(MDLFILE ${${MODULEUPPER}_HDRS})
+      LIST(APPEND HDRS_ABS ${CMAKE_SOURCE_DIR}/include/at/${MODULE}/${MDLFILE})
+    ENDFOREACH()
 
-  # SOURCES
-  SET(SRCS_ABS)
-  FOREACH(MDLFILE ${${MODULEUPPER}_SRCS})
-    LIST(APPEND SRCS_ABS ${CMAKE_SOURCE_DIR}/src/${MODULE}/${MDLFILE})
-  ENDFOREACH()
+    # SOURCES
+    SET(SRCS_ABS)
+    FOREACH(MDLFILE ${${MODULEUPPER}_SRCS})
+      LIST(APPEND SRCS_ABS ${CMAKE_SOURCE_DIR}/src/${MODULE}/${MDLFILE})
+    ENDFOREACH()
 
-  ADD_LIBRARY           (atkv_${MODULE} SHARED ${HDRS_ABS} ${SRCS_ABS})
-  LIST(APPEND ATKV_LIBRARIES atkv_${MODULE} ${${MODULEUPPER}_DEPS})
+    ADD_LIBRARY           (atkv_${MODULE} SHARED ${HDRS_ABS} ${SRCS_ABS})
+    LIST(APPEND ATKV_LIBRARIES atkv_${MODULE} ${${MODULEUPPER}_DEPS})
+  ENDIF()
 ENDMACRO(AT_MAKE_MODULE)
 
 MACRO(AT_MAKE_MODULES MODULES)
@@ -40,11 +42,13 @@ ENDMACRO(AT_MAKE_MODULES)
 #====================================================================== OPTIONS
 option(BUILD_CORE    "" ON)
 option(BUILD_IMGPROC "" ON)
+option(BUILD_GUI     "" ON)
 option(BUILD_DOCS    "Build doxygen documentation" OFF)
 option(COVERALLS     "Generate coveralls data" OFF)
 option(COVERALLS_UPLOAD "Upload the generated coveralls json" ON)
 #================================================================= DEPENDENCIES
 INCLUDE               (CTest)
+FIND_PACKAGE          (PkgConfig)
 # ------------------
 # CUDA
 # ------------------
@@ -56,6 +60,14 @@ FIND_PACKAGE          (CUDA)
 #if(BUILD_IMGPROC)
   FIND_PACKAGE(Doxygen QUIET)
 #endif()
+
+# ------------------
+# GTK 3
+# ------------------
+if(BUILD_GUI)
+  PKG_CHECK_MODULES(GTK3 REQUIRED gtk+-3.0)
+  INCLUDE_DIRECTORIES(${GTK3_INCLUDE_DIRS})
+endif()
 
 # ------------------
 # Zlib
@@ -87,13 +99,16 @@ endif()
 #endif()
 #================================================================= SOURCES
 INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
-SET                   (MDLS core imgproc)
-SET                   (CORE_HDRS    version.h macro.h optimization.h znzfile.h vec.h array.h grapharray.h list.h queue.h pqueue.h error.h)
+SET                   (MDLS core imgproc gui)
+SET                   (CORE_HDRS    i18n-lib.h version.h macro.h optimization.h znzfile.h vec.h array.h grapharray.h list.h queue.h pqueue.h error.h)
 SET                   (CORE_SRCS    znzfile.c vec.c array.c grapharray.c list.c queue.c pqueue.c error.c)
 SET                   (IMGPROC_HDRS color.h img_io.h ift.h dicom.h nifti.h drawing.h)
 SET                   (IMGPROC_SRCS color.c img_io.c ift.c dicom.c nifti.c drawing.c)
+SET                   (GUI_HDRS type.h imageviewer.h imagewindow.h trackbar.h display.h)
+SET                   (GUI_SRCS imageviewer.c imagewindow.c trackbar.c display.c)
 SET                   (CORE_DEPS ${ZLIB_LIBRARIES})
 SET                   (IMGPROC_DEPS ${CORE_DEPS} ${PNG_LIBRARIES} ${JPEG_LIBRARIES} atkv_core)
+SET                   (GUI_DEPS ${GTK3_LIBRARIES} ${CORE_DEPS} atkv_core)
 
 CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/include/at/core/version.h.in" "${CMAKE_SOURCE_DIR}/include/at/core/version.h")
 
@@ -153,6 +168,13 @@ IF(BUILD_TESTING)
   ENDFOREACH()
 
 ENDIF()
+#=================================================================== DEMOS
+IF(BUILD_GUI)
+  ADD_EXECUTABLE(at_imagewindow ${CMAKE_SOURCE_DIR}/demo/imagewindow.c)
+  ADD_EXECUTABLE(at_display ${CMAKE_SOURCE_DIR}/demo/display.c)
+  TARGET_LINK_LIBRARIES(at_imagewindow atkv_gui ${GUI_DEPS} atkv_imgproc ${IMGPROC_DEPS})
+  TARGET_LINK_LIBRARIES(at_display atkv_gui ${GUI_DEPS} atkv_imgproc ${IMGPROC_DEPS})
+ENDIF()
 #==================================================================== DOCS
 if(Doxygen_FOUND)
   option(BUILD_DOCS      "Build doxygen documentation" ON)
@@ -168,7 +190,7 @@ if(Doxygen_FOUND)
         ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc)
 endif(Doxygen_FOUND)
 
-
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/data/ DESTINATION share/at)
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include)
 INSTALL(TARGETS atkv_core      LIBRARY DESTINATION lib)
 INSTALL(TARGETS atkv_imgproc   LIBRARY DESTINATION lib)
