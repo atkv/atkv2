@@ -88,8 +88,8 @@ endif()
 #================================================================= SOURCES
 INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
 SET                   (MDLS core imgproc)
-SET                   (CORE_HDRS    version.h macro.h optimization.h znzfile.h array.h grapharray.h list.h queue.h pqueue.h error.h)
-SET                   (CORE_SRCS    znzfile.c array.c grapharray.c list.c queue.c pqueue.c error.c)
+SET                   (CORE_HDRS    version.h macro.h optimization.h znzfile.h vec.h array.h grapharray.h list.h queue.h pqueue.h error.h)
+SET                   (CORE_SRCS    znzfile.c vec.c array.c grapharray.c list.c queue.c pqueue.c error.c)
 SET                   (IMGPROC_HDRS color.h img_io.h ift.h dicom.h nifti.h)
 SET                   (IMGPROC_SRCS color.c img_io.c ift.c dicom.c nifti.c)
 SET                   (CORE_DEPS ${ZLIB_LIBRARIES})
@@ -131,7 +131,7 @@ IF(BUILD_TESTING)
   ENABLE_TESTING        ()
 
   # Defining tests
-  SET(AT_CORE_TESTS array grapharray list queue pqueue)
+  SET(AT_CORE_TESTS array grapharray list queue pqueue vec)
   SET(AT_IMGPROC_TESTS img_io dicom nifti ift)
 
   # Compiling tests
