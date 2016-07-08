@@ -65,12 +65,13 @@ typedef union{                                    \
   struct{ type r; type g; type b;};               \
 }AtVec3##uniontype;
 
-#define AT_DECLARE_VEC4(vectype, uniontype, type) \
-typedef union{                                    \
-  v4##vectype  v;                                 \
-  type d[4];                                      \
-  struct{ type x; type y; type z; type w;};        \
-  struct{ type r; type g; type b; type a;};        \
+#define AT_DECLARE_VEC4(vectype, uniontype, type)   \
+typedef union{                                      \
+  v4##vectype  v;                                   \
+  type d[4];                                        \
+  struct{ type x; type y; union{struct{type z; type w;};struct{type width; type height;};};};        \
+  struct{ type x0; type y0; type x1; type y1;};     \
+  struct{ type r; type g; type b; type a;};         \
 }AtVec4##uniontype;
 
 AT_DECLARE_VEC2(u8, U8, uint8_t)
