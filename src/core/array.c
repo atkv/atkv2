@@ -272,6 +272,22 @@ at_array_load(char*** namesp, uint8_t *nump, const char* filename){
 }
 
 void
+at_arrayu8_set_nd(AtArrayU8* ar, uint64_t *coords, uint8_t value){
+  uint64_t coord = 0;
+  at_array_index_to_1d(ar,coords,&coord);
+  ar->data[coord] = value;
+}
+
+void
+at_arrayu8_set_nd_many(AtArrayU8* ar, uint64_t *coords, uint8_t* value){
+  uint64_t coord = 0;
+  uint8_t lim = ar->h.dim-1;
+  uint8_t i;
+  for(i = 0; i < lim; i++) coord += coords[i] * ar->h.step[i];
+  memcpy(&ar->data[coord],value,sizeof(uint8_t)*ar->h.shape[lim]);
+}
+
+void
 at_arrayu16_destroy(AtArrayU16** arp){
   if(arp){
     AtArrayU16* ar = *arp;

@@ -313,6 +313,23 @@ at_arrayu64_new_with_data(uint8_t dim, uint64_t* shape, uint64_t* data, bool cop
 void
 at_arrayu64_fill(AtArrayU64* array, uint64_t value);
 /**
+ * @brief at_arrayu8_set_nd
+ * @param ar
+ * @param coords
+ * @param value
+ */
+void
+at_arrayu8_set_nd(AtArrayU8* ar, uint64_t* coords, uint8_t value);
+/**
+ * @brief at_arrayu8_set_nd_many
+ * @param ar
+ * @param coords
+ * @param value
+ */
+void
+at_arrayu8_set_nd_many(AtArrayU8* ar, uint64_t *coords, uint8_t* value);
+
+/**
  * @brief at_arrayu64_destroy
  * @param array
  */
