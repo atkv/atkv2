@@ -184,6 +184,11 @@ at_arrayu8_draw_circle_filled(AtArrayU8* array, AtVec2I16 c, uint16_t r, AtVec4U
 }
 #undef draw_line
 
+#define set_pixel(vx,vy)                                                \
+coords[1] = vx; coords[0] = vy;                                         \
+if(array->h.dim != 2)      at_arrayu8_set_nd_many(array,coords,color.d);\
+else                       at_arrayu8_set_nd(array,coords,color.r);
+
 static void
 at_arrayu8_draw_line_thick(AtArrayU8* array, AtVec2I16 p0, AtVec2I16 p1, AtVec4U8 color, uint8_t thickness)
 {
@@ -197,27 +202,25 @@ at_arrayu8_draw_line_thick(AtArrayU8* array, AtVec2I16 p0, AtVec2I16 p1, AtVec4U
   coords[2] = 1;
 
   for (thickness = (thickness+1)>>1; ; ) {                                   /* pixel loop */
-    coords[1] = p0.x; coords[0] = p0.y;
-    at_arrayu8_set_nd_many(array,coords,color.d);
+    set_pixel(p0.x, p0.y);
     e2 = err; x2 = p0.x;
     if ((e2<<1) >= -dx) {                                           /* x step */
       for (e2 += dy, y2 = p0.y; e2 < cond && (p1.y != y2 || dx > dy); e2 += dx){
-        coords[1] = p0.x; coords[0] = y2 += sy;
-        at_arrayu8_set_nd_many(array,coords,color.d);
+        set_pixel(p0.x, y2 += sy);
       }
       if (p0.x == p1.x) break;
       e2 = err; err -= dy; p0.x += sx;
     }
     if ((e2<<1) <= dy) {                                            /* y step */
       for (e2 = dx-e2; e2 < cond && (p1.x != x2 || dx < dy); e2 += dy){
-        coords[1] = x2+=sx; coords[0] = p0.y;
-        at_arrayu8_set_nd_many(array,coords,color.d);
+        set_pixel(x2+=sx, p0.y);
       }
       if (p0.y == p1.y) break;
       err += dx; p0.y += sy;
     }
-   }
+  }
 }
+#undef set_pixel
 
 
 /*=============================================================================
