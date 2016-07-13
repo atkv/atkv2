@@ -16,14 +16,15 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/core/grapharray.h>
+#include <at/core/scc.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdalign.h>
 #include <setjmp.h>
 #include <cmocka.h>
 #include <math.h>
-
+#include <time.h>
+#include <at/core/type.h>
 void
 test_grapharray_values(AtGraphArray* graph1, AtGraphArray* graph2, uint64_t num_elements){
   uint64_t i;
@@ -53,6 +54,7 @@ test_grapharray(void** state){
   assert_non_null(grapharray->active);
   assert_non_null(grapharray->neighbors);
   assert_non_null(grapharray->weights);
+  assert_int_equal(grapharray->adjacency, AT_ADJACENCY_4);
 
   AtGraphArray grapharray_t;
   grapharray_t.active    = active;
@@ -65,9 +67,44 @@ test_grapharray(void** state){
   at_arrayu8_destroy(&array);
 }
 
+
+
+static void
+test_grapharray_tarjan(void** state){
+  // Create our structures
+  uint64_t      shape[2]   = {3,3}, i;
+  AtArrayU8   * array      = at_arrayu8_new(2, shape);
+  AtGraphArray* g = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_weighting_diff_abs);
+
+  // Remove some edges
+  uint64_t arcs_removed[]  = {1,0, 0,3, 4,1, 3,4, 2,5, 5,2, 7,8, 7,6, 6,3, 3,6,
+                              7,4, 4,7, 4,5, 5,4};
+  at_grapharray_remove_arcs(g, arcs_removed, 28);
+
+  // Call Tarjan
+  AtSCC       * scc        = at_grapharrayu8_scc(g, AT_SCC_TARJAN);
+  uint32_t      l[9]      = {0,0,0, 0,0,1, 2,3,1};
+  for(i = 0; i < 9; i++) assert_int_equal(l[i],scc->l[i]);
+  assert_int_equal(scc->n, 4);
+  free(scc->l);free(scc);
+
+  // Add some edge
+  at_grapharray_add_arc(g, 3, 6);
+  at_grapharray_add_arc(g, 6, 3);
+  scc = at_grapharrayu8_scc(g, AT_SCC_TARJAN);
+  l[6] = 0;
+  l[7] = 2;
+  for(i = 0; i < 9; i++) assert_int_equal(l[i],scc->l[i]);
+  assert_int_equal(scc->n, 3);
+  free(scc->l);free(scc);
+  at_grapharray_destroy(&g);
+  at_arrayu8_destroy(&array);
+}
+
 int main(void){
-  const struct CMUnitTest tests[1] = {
-    cmocka_unit_test(test_grapharray)
+  const struct CMUnitTest tests[2] = {
+    cmocka_unit_test(test_grapharray),
+    cmocka_unit_test(test_grapharray_tarjan)
   };
   return cmocka_run_group_tests(tests, NULL, NULL);
 }
