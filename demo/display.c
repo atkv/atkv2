@@ -40,23 +40,6 @@ AtVec4U8         color[2] = {{127, 0, 255, 255},{255, 0, 0, 255}};
 AtMouseEventType mbutton;
 AtVec2I16        p0, p1;
 
-AtArrayU64*
-at_seeds_from_mask(AtArrayU8* mask){
-  uint64_t  * seeds_data = malloc(mask->h.num_elements << 4); // numelem x 2^1 pairs x 2^3 bytes
-  uint64_t    k = 0, i;
-  for(i = 0; i < mask->h.num_elements; i++){
-    if(mask->data[i] > 0){
-      seeds_data[k++] = i;
-      seeds_data[k++] = mask->data[i];
-    }
-  }
-  uint64_t shape[2]   = {k>>1,2};
-  seeds_data = realloc(seeds_data,k << 3);
-  AtArrayU64* seeds   = at_arrayu64_new_with_data(2,shape,seeds_data,false);
-  seeds->h.owns_data  = true;
-  return seeds;
-}
-
 static void
 on_mouse(AtMouseEvent* ev, void* user_data){
   AtArrayU8* array = (AtArrayU8*) user_data;

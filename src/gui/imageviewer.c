@@ -240,7 +240,7 @@ at_imageviewer_motion_notify_event(GtkWidget* widget, GdkEvent* event, gpointer 
     at_imageviewer_get_array_pos(self,priv->ar_pos,eventmotion->x,eventmotion->y);
     priv->mouseevent.x    = priv->ar_pos[0];
     priv->mouseevent.y    = priv->ar_pos[1];
-    priv->mousecallback(&priv->mouseevent,priv->mousecallbackdata);
+    if(priv->mousecallback) priv->mousecallback(&priv->mouseevent,priv->mousecallbackdata);
   }
   return false;
 }

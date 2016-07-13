@@ -113,6 +113,30 @@ at_conn_constructor(){
   at_conn_euc.seeds = at_ift_add_seeds_conn_euc;
   at_conn_euc.func       = at_conn_euc_func;
 }
+static void
+at_split_seeds(AtArrayU64* seeds, AtArrayU64** sback, AtArrayU64** sobj, uint64_t lblback){
+  uint64_t a,k,i, size;
+  size = seeds->h.num_elements << 1;
+  uint64_t* sbackdata = malloc(seeds->h.num_elements << 3);
+  uint64_t* sobjdata  = malloc(seeds->h.num_elements << 3);
+  k = 0;
+  a = 0;
+  for(i = 0; i < seeds->h.num_elements; i+=2) if(seeds->data[i+1] == lblback){
+    sbackdata[k++] = seeds->data[i];
+    sbackdata[k++] = lblback;
+  }else{
+    sobjdata[a++] = seeds->data[i];
+    sobjdata[a++] = seeds->data[i+1];
+  }
+  sbackdata = realloc(sbackdata,k<<3);
+  sobjdata  = realloc(sobjdata,a<<3);
+  uint64_t sbackshape[2] = {k>>1,2};
+  uint64_t sobjshape[2]  = {a>>1,2};
+  *sback = at_arrayu64_new_with_data(2,sbackshape,sbackdata,false);
+  *sobj  = at_arrayu64_new_with_data(2,sobjshape,sobjdata,false);
+  (*sback)->h.owns_data = true;
+  (*sobj)->h.owns_data  = true;
+}
 
 /*=============================================================================
  PUBLIC API
@@ -299,4 +323,66 @@ at_ift_apply_arrayu8(AtArrayU8*           ar,
   at_grapharray_destroy(&g);
   free(r);
   return ift;
+}
+AtSCC*
+at_ift_orfc_core_arrayu8(AtArrayU8*        array,
+                         AtAdjacency       adj,
+                         AtOptimization    o,
+                         AtConnectivity    conn,
+                         AtWeightingFuncu8 w,
+                         AtArrayU64*       seeds,
+                         uint64_t          lblback,
+                         AtPolicy          po,
+                         AtSCCAlgorithm    sccalgo){
+  uint64_t off, i, k, a, b, size;
+  AtArrayU64* sback, *sobj;
+  // get only background seeds by using lblback
+  at_split_seeds(seeds, &sback, &sobj, lblback);
+
+  // apply ift with background seeds
+  AtIFT* ift = at_ift_apply_arrayu8(array,adj,o,conn,w,sback,po);
+
+  // generate graph
+  AtGraphArray* g = at_grapharrayu8_new(array,adj,w);
+
+  size = g->h->num_elements * adj;
+  for(i = 0, a = 0; i < size; i += adj, a++){
+    for(k = 0; k < adj; k++){
+      off = i+k;
+      if(g->active[off]){
+        b = g->neighbors[off];
+        if(g->weights[off] >= ift->c[a] || ift->c[a] != ift->c[b])
+          g->active[off] = 0;
+      }
+    }
+  }
+
+  // find scc
+  AtSCC* scc = at_grapharrayu8_scc(g,sccalgo);
+
+  // Convert to bitmap
+  uint32_t lbl = scc->l[sobj->data[0]];
+  for(i = 0; i < array->h.num_elements; i++){
+    if(scc->l[i] == lbl)      scc->l[i] = 255;
+    else                      scc->l[i] = 0;
+  }
+  scc->n = 2;
+  return scc;
+}
+
+AtArrayU64*
+at_seeds_from_mask(AtArrayU8* mask){
+  uint64_t  * seeds_data = malloc(mask->h.num_elements << 4); // numelem x 2^1 pairs x 2^3 bytes
+  uint64_t    k = 0, i;
+  for(i = 0; i < mask->h.num_elements; i++){
+    if(mask->data[i] > 0){
+      seeds_data[k++] = i;
+      seeds_data[k++] = mask->data[i];
+    }
+  }
+  uint64_t shape[2]   = {k>>1,2};
+  seeds_data = realloc(seeds_data,k << 3);
+  AtArrayU64* seeds   = at_arrayu64_new_with_data(2,shape,seeds_data,false);
+  seeds->h.owns_data  = true;
+  return seeds;
 }
