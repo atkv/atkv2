@@ -90,21 +90,29 @@ at_grapharrayu8_new(AtArrayU8* array, AtAdjacency adjacency, AtWeightingFuncu8 w
 
 /**
  * @brief at_grapharray_remove_arc
- * @param grapharray
+ * @param g
  * @param s
  * @param t
  */
 void
-at_grapharray_remove_arc(AtGraphArray* grapharray, uint64_t s, uint64_t t);
+at_grapharray_remove_arc(AtGraphArray* g, uint64_t s, uint64_t t);
+/**
+ * @brief at_grapharray_remove_arcs
+ * @param g
+ * @param pairs
+ * @param n
+ */
+void
+at_grapharray_remove_arcs(AtGraphArray* g, uint64_t* pairs, uint64_t n);
 
 /**
  * @brief at_grapharray_add_arc
- * @param grapharray
+ * @param g
  * @param s
  * @param t
  */
 void
-at_grapharray_add_arc(AtGraphArray* grapharray, uint64_t s, uint64_t t);
+at_grapharray_add_arc(AtGraphArray* g, uint64_t s, uint64_t t);
 
 /**
  * @brief at_grapharray_remove_edge

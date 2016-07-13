@@ -74,6 +74,7 @@ at_grapharrayu8_new(AtArrayU8* array,
   grapharray->active         = malloc(num_elements * sizeof(uint8_t));
   grapharray->weights        = malloc(num_elements * sizeof(double));
   grapharray->h              = &array->h;
+  grapharray->adjacency      = adjacency;
   memset(grapharray->neighbors,0,num_elements*sizeof(uint64_t));
   memset(grapharray->weights  ,0,num_elements*sizeof(double));
   memset(grapharray->active   ,0,num_elements*sizeof(uint8_t));
@@ -125,13 +126,25 @@ at_grapharray_destroy(AtGraphArray** grapharray_ptr){
 }
 
 void
-at_grapharray_remove_arc(AtGraphArray* grapharray, uint64_t s, uint64_t t){
-  grapharray->active[s*grapharray->adjacency + t] = 0;
+at_grapharray_remove_arc(AtGraphArray* g, uint64_t s, uint64_t t){
+  uint64_t off = s*g->adjacency;
+  uint64_t i;
+  for(i = 0; i < g->adjacency; i++){
+    if(g->neighbors[off+i] == t){
+      g->active[off+i] = 0; break;
+    }
+  }
 }
 
 void
-at_grapharray_add_arc(AtGraphArray* grapharray, uint64_t s, uint64_t t){
-  grapharray->active[s*grapharray->adjacency + t] = 1;
+at_grapharray_add_arc(AtGraphArray* g, uint64_t s, uint64_t t){
+  uint64_t off = s*g->adjacency;
+  uint64_t i;
+  for(i = 0; i < g->adjacency; i++){
+    if(g->neighbors[off+i] == t){
+      g->active[off+i] = 1; break;
+    }
+  }
 }
 
 void
@@ -155,4 +168,11 @@ at_grapharray_get(AtGraphArray* graph, uint64_t s, uint64_t t){
     if(graph->neighbors[i] == t)
       return graph->weights[i];
   return 5;
+}
+
+void
+at_grapharray_remove_arcs(AtGraphArray* g, uint64_t* pairs, uint64_t n){
+  uint64_t i;
+  for(i = 0; i < n; i += 2)
+    at_grapharray_remove_arc(g, pairs[i], pairs[i+1]);
 }
