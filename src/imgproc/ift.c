@@ -370,6 +370,72 @@ at_ift_orfc_core_arrayu8(AtArrayU8*        array,
   return scc;
 }
 
+AtIFT*
+at_orfc_arrayu8(AtArrayU8*        array,
+                AtAdjacency       adj,
+                AtOptimization    o,
+                AtConnectivity    conn,
+                AtWeightingFuncu8 w,
+                AtArrayU64*       seeds,
+                uint64_t          lblback,
+                AtPolicy          po){
+  uint64_t off, i,j, k, a, b, size;
+  AtArrayU64* sback, *sobj;
+  // get only background seeds by using lblback
+  at_split_seeds(seeds, &sback, &sobj, lblback);
+
+  // find energy by applying ift with background seeds
+  AtIFT* ift = at_ift_apply_arrayu8(array,adj,o,conn,w,sback,po);
+
+  // generate graph
+  AtGraphArray* g = at_grapharrayu8_new(array,adj,w);
+
+  // remove
+  size = g->h->num_elements * adj;
+  for(i = 0, a = 0; i < size; i += adj, a++){
+    for(k = 0; k < adj; k++){
+      off = i+k;
+      if(g->active[off]){
+        b = g->neighbors[off];
+        if(g->weights[off] >= ift->c[sobj->data[0]])
+          g->active[off] = 0;
+      }
+    }
+  }
+
+  // get transpose graph
+
+
+  uint64_t* tree = malloc(array->h.num_elements << 3);
+  uint64_t  top  = 1, offa, offb;
+  uint8_t lblobj = sobj->data[1];
+  tree[0]        = sobj->data[0];
+  ift->l[tree[0]] = lblobj;
+  for(i = 0; i < top; i++){
+    a   = tree[i];
+    offa = adj * a;
+    for(k = 0; k < adj; k++){
+      b = g->neighbors[offa+k];
+      offb = adj * b;
+      for(j = 0; j < adj; j++){
+        if(ift->l[b] != lblobj && g->neighbors[offb+j] == a && g->active[offb+j]){
+          ift->l[b] = lblobj;
+          tree[top++] = b;
+          break;
+        }
+      }
+    }
+  }
+
+
+  // find Directed Rooted Tree (DRT)
+  free(tree);
+  at_grapharray_destroy(&g);
+  at_arrayu64_destroy(&sback);
+  at_arrayu64_destroy(&sobj);
+  return ift;
+}
+
 AtArrayU64*
 at_seeds_from_mask(AtArrayU8* mask){
   uint64_t  * seeds_data = malloc(mask->h.num_elements << 4); // numelem x 2^1 pairs x 2^3 bytes
