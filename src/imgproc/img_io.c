@@ -62,7 +62,7 @@ at_arrayu8_write_pgm_ppm(AtArrayU8 *array, const char *filename, AtError **error
   array_max    = at_array_max(array);
 
   fprintf(fp,  "P%d\n", format);
-  fprintf(fp,"%d %d\n", shape[1], shape[0]);
+  fprintf(fp,"%d %d\n", (int)shape[1], (int)shape[0]);
   fprintf(fp,   "%d\n", array_max);
   fwrite(data, sizeof(uint8_t), num_elements, fp);
   fclose(fp);

@@ -28,6 +28,7 @@ MACRO(AT_MAKE_MODULE MODULE)
     FOREACH(MDLFILE ${${MODULEUPPER}_SRCS})
       LIST(APPEND SRCS_ABS ${CMAKE_SOURCE_DIR}/src/${MODULE}/${MDLFILE})
     ENDFOREACH()
+    LIST(APPEND AT_SRCS_ABS ${SRCS_ABS})
 
     ADD_LIBRARY           (atkv_${MODULE} SHARED ${HDRS_ABS} ${SRCS_ABS})
     LIST(APPEND ATKV_LIBRARIES atkv_${MODULE} ${${MODULEUPPER}_DEPS})
@@ -113,6 +114,10 @@ SET                   (GUI_DEPS ${GTK3_LIBRARIES} ${CORE_DEPS} atkv_core)
 CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/include/at/core/version.h.in" "${CMAKE_SOURCE_DIR}/include/at/core/version.h")
 
 #================================================================= LIBRARY
+if (COVERALLS)
+  include(Coveralls)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+endif(COVERALLS)
 AT_MAKE_MODULES       ("${MDLS}")
 
 #================================================================= TESTING
@@ -141,6 +146,10 @@ IF(BUILD_TESTING)
     include_directories(${CMOCKA_INCLUDE_DIRS})
     link_directories(${GLOBAL_OUTPUT_PATH})
   ENDIF()
+  IF (COVERALLS)
+    set(COVERALLS_REPO_TOKEN "7uyw7LtYInww5slk3pBM1HTQo3DC7YjrC")
+    coveralls_setup("${AT_SRCS_ABS}" ${COVERALLS_UPLOAD} "${CMAKE_SOURCE_DIR}/cmake/")
+  ENDIF(COVERALLS)
 
   INCLUDE_DIRECTORIES   (${CMOCKA_INCLUDE_DIRS})
   ENABLE_TESTING        ()
