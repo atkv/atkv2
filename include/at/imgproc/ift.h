@@ -21,6 +21,7 @@
 #include <at/core/grapharray.h>
 #include <at/core/optimization.h>
 #include <at/core/macro.h>
+#include <at/core/scc.h>
 AT_BEGIN_DECLS
 /**
  * Necessary info for IFT
@@ -78,12 +79,34 @@ at_seeds_new(uint64_t n, uint64_t* data);
  * @return
  */
 AtIFT*
-at_ift_apply_arrayu8(AtArrayU8*                 array,
-                           AtAdjacency          adj,
-                           AtOptimization       o,
-                           AtConnectivity       connectivity,
-                           AtWeightingFuncu8    w,
-                           AtArrayU64*          seeds,
-                           AtPolicy             po);
+at_ift_apply_arrayu8(AtArrayU8*           array,
+                     AtAdjacency          adj,
+                     AtOptimization       o,
+                     AtConnectivity       connectivity,
+                     AtWeightingFuncu8    w,
+                     AtArrayU64*          seeds,
+                     AtPolicy             po);
+
+AtSCC*
+at_ift_orfc_core_arrayu8(AtArrayU8*        array,
+                         AtAdjacency       adj,
+                         AtOptimization    o,
+                         AtConnectivity    conn,
+                         AtWeightingFuncu8 w,
+                         AtArrayU64*       seeds,
+                         uint64_t          lblback,
+                         AtPolicy          po,
+                         AtSCCAlgorithm    sccalgo);
+/**
+ * @brief Create the seeds from a mask (non-zero labels)
+ *
+ * If mask(v) != 0, for any node v, we add the pair (v, mask(v)) to the resulting array
+ *
+ * @param mask
+ * @return
+ */
+AtArrayU64*
+at_seeds_from_mask(AtArrayU8* mask);
+
 AT_END_DECLS
 #endif
