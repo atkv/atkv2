@@ -78,10 +78,30 @@ test_orfc_core(void** state){
   }
 }
 
+static void
+test_orfc(void** state){
+  uint64_t   shape[2] = {4,4};
+  AtArrayU8* array;
+  uint8_t    data[16] ={  0,  0,  0,  0,
+                          0,255,255,  0,
+                          0,255,255,  0,
+                        255,255,255,255};
+  array               = at_arrayu8_new_with_data(2, shape, data, false);
+  uint64_t   sdata[4] = {0,0, 14,255};
+  AtArrayU64*seeds    = at_seeds_new(2,sdata);
+  AtIFT* ift = at_orfc_arrayu8(array,AT_ADJACENCY_4, AT_MINIMIZATION, at_conn_max, at_weighting_diff_abs, seeds, 0, AT_FIFO);
+  uint8_t    i;
+
+  for(i = 0; i < 16; i++){
+    assert_int_equal(ift->l[i], data[i]);
+  }
+}
+
 int main(void){
-  const struct CMUnitTest tests[2] = {
+  const struct CMUnitTest tests[3] = {
     cmocka_unit_test(test_ift),
     cmocka_unit_test(test_orfc_core),
+    cmocka_unit_test(test_orfc),
   };
   return cmocka_run_group_tests(tests, NULL, NULL);
 }

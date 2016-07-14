@@ -97,6 +97,15 @@ at_ift_orfc_core_arrayu8(AtArrayU8*        array,
                          uint64_t          lblback,
                          AtPolicy          po,
                          AtSCCAlgorithm    sccalgo);
+AtIFT*
+at_orfc_arrayu8(AtArrayU8*        array,
+                AtAdjacency       adj,
+                AtOptimization    o,
+                AtConnectivity    conn,
+                AtWeightingFuncu8 w,
+                AtArrayU64*       seeds,
+                uint64_t          lblback,
+                AtPolicy          po);
 /**
  * @brief Create the seeds from a mask (non-zero labels)
  *
