@@ -587,7 +587,7 @@ at_niftiimage_from_ascii(const char* str, size_t* bread){
   char          rhs[1024];
 
   spos = 0;
-  sscanf(str+spos,"%1023s%n", lhs, &nn);
+  sscanf(str+spos,"%1023s%l", lhs, &nn);
   spos += nn;
 
   return nim;

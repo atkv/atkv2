@@ -28,6 +28,7 @@ test_drawing_line(void** state){
   uint8_t    data4[16]= {1,1,0,0, 0,1,1,0, 0,0,1,1, 0,0,0,1};
   uint8_t    i;
 
+  at_arrayu8_fill(array,0);
   at_arrayu8_draw_line(array,p0,p1,color,1,AT_ADJACENCY_8,0);
   for(i = 0; i < 16; i++) assert_int_equal(data8[i],array->data[i]);
   at_arrayu8_fill(array,0);

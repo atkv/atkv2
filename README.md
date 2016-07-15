@@ -4,8 +4,10 @@ Biblioteca de Visão Computacional com foco no framework IFT[1]
 
 | Branch  | Status |
 | ------------- | ------------- |
-| Develop  | [![Build Status](https://travis-ci.org/atkv/atkv_cuda.svg?branch=develop)](https://travis-ci.org/atkv/atkv_cuda) |
-| Master  | [![Build Status](https://travis-ci.org/atkv/atkv_cuda.svg?branch=master)](https://travis-ci.org/atkv/atkv_cuda)  |
+| Develop  | [![Build Status](https://travis-ci.org/atkv/atkv_cuda.svg?branch=develop)](https://travis-ci.org/atkv/atkv_cuda) [![Coverage Status](https://coveralls.io/repos/github/atkv/atkv_cuda/badge.svg?branch=develop)](https://coveralls.io/github/atkv/atkv_cuda?branch=develop)
+|
+| Master  | [![Build Status](https://travis-ci.org/atkv/atkv_cuda.svg?branch=master)](https://travis-ci.org/atkv/atkv_cuda) [![Coverage Status](https://coveralls.io/repos/github/atkv/atkv_cuda/badge.svg?branch=master)](https://coveralls.io/github/atkv/atkv_cuda?branch=master)
+ |
 
 ## Como compilar
 
