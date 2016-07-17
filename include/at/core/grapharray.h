@@ -38,22 +38,21 @@ typedef enum {
  * @brief A directed weighted grid graph
  */
 typedef struct AtGraphArray{
-  uint64_t* neighbors;   // 00-8: indices of neighbors for each node
-  AtArrayHeader* h;      // 08-8: dim, shape, step...
-  double  * weights;     // 16-8: weights of edges <node,neighbor>
-  uint8_t * active;      // 24-8: <node,neighbor> is active?
-  uint8_t   adjacency;   // 32-1: Neighboring
-  uint8_t   padding[6];  // 33-7: Memory alignment
-}AtGraphArray;           // Total: 40B
+  uint64_t* neighbors;   /*!< indices of neighbors for each node *//*00-8*/
+  AtArrayHeader* h;      /*!< dim, shape, step... */               /*08-8*/
+  double  * weights;     /*!< weights of edges <node,neighbor> */  /*16-8*/
+  uint8_t * active;      /*!< <node,neighbor> is active? */        /*24-8*/
+  uint8_t   adjacency;   /*!< Neighboring */                       /*32-1*/
+  uint8_t   padding[6];  /*!< Memory alignment */                  /*33-7*/
+}AtGraphArray;           /* Total: 40B
 
 /*=============================================================================
  FUNCTIONS
  ============================================================================*/
 #define at_grapharray_new(array, adjacency, weighting) _Generic((array), \
-  AtArray_uint8_t*: at_grapharray_uint8_t_new)(array, adjacency, weighting)
-
+  AtArrayU8*: at_grapharrayu8_new)(array, adjacency, weighting)
 typedef double
-(*AtWeightingFunc_uint8_t) (AtArray_uint8_t* graph, uint64_t s, uint64_t t);
+(*AtWeightingFuncu8) (AtArrayU8* graph, uint64_t s, uint64_t t);
 
 /**
  * @brief at_weighting_diff_abs
@@ -63,9 +62,16 @@ typedef double
  * @return
  */
 double
-at_weighting_diff_abs(AtArray_uint8_t* array, uint64_t s, uint64_t t);
+at_weighting_diff_abs(AtArrayU8* array, uint64_t s, uint64_t t);
+/**
+ * @brief at_weighting_diff_absc
+ * @param array
+ * @param s
+ * @param t
+ * @return
+ */
 double
-at_weighting_diff_absc(AtArray_uint8_t* array, uint64_t s, uint64_t t);
+at_weighting_diff_absc(AtArrayU8* array, uint64_t s, uint64_t t);
 
 /**
  * @brief at_grapharray_create
@@ -75,30 +81,38 @@ AtGraphArray*
 at_grapharray_create();
 
 /**
- * @brief at_grapharray_new_from_array_uint8_t
+ * @brief at_grapharray_new_from_arrayu8
  * @param array
  * @return
  */
 AtGraphArray*
-at_grapharray_uint8_t_new(AtArray_uint8_t* array, AtAdjacency adjacency, AtWeightingFunc_uint8_t weighting);
+at_grapharrayu8_new(AtArrayU8* array, AtAdjacency adjacency, AtWeightingFuncu8 weighting);
 
 /**
  * @brief at_grapharray_remove_arc
- * @param grapharray
+ * @param g
  * @param s
  * @param t
  */
 void
-at_grapharray_remove_arc(AtGraphArray* grapharray, uint64_t s, uint64_t t);
+at_grapharray_remove_arc(AtGraphArray* g, uint64_t s, uint64_t t);
+/**
+ * @brief at_grapharray_remove_arcs
+ * @param g
+ * @param pairs
+ * @param n
+ */
+void
+at_grapharray_remove_arcs(AtGraphArray* g, uint64_t* pairs, uint64_t n);
 
 /**
  * @brief at_grapharray_add_arc
- * @param grapharray
+ * @param g
  * @param s
  * @param t
  */
 void
-at_grapharray_add_arc(AtGraphArray* grapharray, uint64_t s, uint64_t t);
+at_grapharray_add_arc(AtGraphArray* g, uint64_t s, uint64_t t);
 
 /**
  * @brief at_grapharray_remove_edge

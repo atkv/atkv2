@@ -23,24 +23,38 @@ AT_BEGIN_DECLS
 /*=============================================================================
  STRUCTURE
  ============================================================================*/
-typedef struct AtList_uint64_t AtList_uint64_t;
-struct AtList_uint64_t{
-  AtList_uint64_t* prev;
-  AtList_uint64_t* next;
-  uint64_t value;
+typedef struct AtListU64 AtListU64;
+/**
+ * @brief List 64 bits
+ */
+struct AtListU64{
+  AtListU64* prev; /*!< Previous list item */
+  AtListU64* next; /*!< Next list item */
+  uint64_t value;  /*!< Value of current item */
 };
 
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
-AtList_uint64_t*
-at_list_uint64_t_new_array(uint64_t n_items);
-
+/**
+ * @brief at_listu64_new_array
+ * @param n_items
+ * @return
+ */
+AtListU64*
+at_listu64_new_array(uint64_t n_items);
+/**
+ * @brief at_listu64_destroy
+ * @param list_ptr
+ */
 void
-at_list_uint64_t_destroy(AtList_uint64_t** list_ptr);
-
+at_listu64_destroy(AtListU64** list_ptr);
+/**
+ * @brief at_listu64_destroy_array
+ * @param list
+ */
 void
-at_list_uint64_t_destroy_array(AtList_uint64_t** list);
+at_listu64_destroy_array(AtListU64** list);
 
 AT_END_DECLS
 #endif

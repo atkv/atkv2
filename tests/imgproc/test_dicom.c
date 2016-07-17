@@ -24,10 +24,10 @@
 static void
 test_at_dicom_read(void** state){
   const char* filename = "MR-MONO2-16-head.dcm";
-  AtDicom_uint16_t* dicom = NULL;
+  AtDicomU16* dicom = NULL;
   AtError*          error = NULL;
 
-  dicom = at_dicom_uint16_t_read(filename, &error);
+  dicom = at_dicomu16_read(filename, &error);
 
   assert_non_null(dicom);
 

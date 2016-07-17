@@ -25,20 +25,20 @@
 #include <math.h>
 
 void test_pqueue(void** state){
-  AtPQueue_uint64_t* queue;
+  AtPQueueU64* queue;
   uint64_t  priorities[5]  = {9,8,7,6,5};
   uint64_t  values[5]      = {1,2,3,4,5};
   uint64_t  values_r[5]    = {5,4,3,2,1};
   uint64_t  s;
   uint8_t   i;
-  queue = at_pqueue_uint64_t_new_prealloc(AT_MINIMIZATION,AT_FIFO,10,6);
+  queue = at_pqueueu64_new_prealloc(AT_MINIMIZATION,AT_FIFO,10,6);
   for(i = 0; i < 5; i++)
-    at_pqueue_uint64_t_add(queue, priorities[i], values[i]);
+    at_pqueueu64_add(queue, priorities[i], values[i]);
   for(i = 0; i < 5; i++){
-    s = at_pqueue_uint64_t_remove(queue);
+    s = at_pqueueu64_remove(queue);
     assert_int_equal(s, values_r[i]);
   }
-  at_pqueue_uint64_t_destroy(&queue);
+  at_pqueueu64_destroy(&queue);
 }
 
 int main(void){

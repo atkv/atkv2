@@ -23,6 +23,9 @@
 #include <stdint.h>
 AT_BEGIN_DECLS
 
+/**
+ * @brief Nifti File Type
+ */
 typedef enum{
   AT_NIFTI_TYPE_ANALYZE  = 0,
   AT_NIFTI_TYPE_NIFTI1_1 = 1,
@@ -46,6 +49,9 @@ typedef enum _AtAnalyze75OrientCode {
   AT_A75_ORIENT_UNKNOWN       = 6
 } AtAnalyze75OrientCode;
 
+/**
+ * @brief Nifti XForm Code
+ */
 typedef enum{
   AT_NIFTI_XFORM_UNKNOWN      = 0,
   AT_NIFTI_XFORM_SCANNER_ANAT = 1,
@@ -54,6 +60,9 @@ typedef enum{
   AT_NIFTI_XFORM_MNI_152      = 4
 }AtNiftiXformCode;
 
+/**
+ * @brief Nifti Data Type
+ */
 typedef enum{
   AT_DT_INT8       = 256,
   AT_DT_UINT8      = 2,
@@ -73,53 +82,58 @@ typedef enum{
   AT_DT_COMPLEX256 = 2048
 }AtNiftiDatatype;
 
-
+/**
+ * @brief Nifti Extension
+ */
 typedef struct AtNifti1Extension{
   uint8_t* edata; /*!< raw data, with no byte swapping (length is esize-8)  */
   uint32_t esize; /*!< size of extension, in bytes (must be multiple of 16) */
   uint32_t ecode; /*!< extension code, one of the NIFTI_ECODE_ values       */
 }AtNifti1Extension;     // Total: 16 bytes
 
-
+/**
+ * @brief Nifti Image
+ */
 typedef struct AtNiftiImage{
-  AtNifti1Extension    *ext_list;
-  AtArray_uint16_t     *ar;
-  char                 *fname;
-  char                 *iname;
-  float                 qto_xyz[16];
-  float                 sto_xyz[16];
-  float                 qto_ijk[16];
-  float                 sto_ijk[16];
-  float                 quatern[3];
-  float                 qoffset[3];
-  float                 qfac;
-  float                 scl_slope;
-  float                 scl_inter;
-  float                 slice_duration;
-  float                 cal_min;
-  float                 cal_max;
-  uint32_t              iname_offset;
-  uint32_t              num_ext;
-  uint32_t              byteorder;
-  AtNiftiDatatype       datatype;
-  uint16_t              ndim;
-  uint16_t              dim[7];
-  uint16_t              pixdim[7];
-  uint16_t              slice_start;
-  uint16_t              slice_end;
-  AtNiftiXformCode      qform_code;
-  AtNiftiXformCode      sform_code;
-  AtNiftiFileType       nifti_type;
-  char                  descrip[80];
-  char                  aux_file[24];
-  uint8_t               swapsize;
-  uint8_t               slice_code;
-  uint8_t               xyz_units;
-  uint8_t               time_units;
-  uint8_t               freq_dim;
-  uint8_t               phase_dim;
-  uint8_t               slice_dim;
-  AtAnalyze75OrientCode analyze75_orient;
+  AtNifti1Extension    *ext_list;        /*000+8*//*!< List of extensions */
+  AtArrayU16           *ar;              /*008+8*//*!< Array of data */
+  char                 *fname;           /*016+8*//*!< filename */
+  char                 *iname;           /*024+8*//*!< name of image file */
+  float                 qto_xyz[16];     /*032+8*//*!< quaternion xyz */
+  float                 sto_xyz[16];     /*040+8*//*!< */
+  float                 qto_ijk[16];     /*048+8*//*!< quaternion ijk */
+  float                 sto_ijk[16];     /*056+8*//*!< */
+  float                 quatern[3];      /*064+8*//*!< quaternion */
+  float                 qoffset[3];      /*072+8*//*!< offset of quaternion */
+  float                 qfac;            /*080+8*//*!< */
+  float                 scl_slope;       /*088+8*//*!< */
+  float                 scl_inter;       /*096+8*//*!< */
+  float                 slice_duration;  /*104+8*//*!< */
+  float                 cal_min;         /*112+8*//*!< */
+  float                 cal_max;         /*120+8*//*!< */
+  uint32_t              iname_offset;    /*128+4*//*!< */
+  uint32_t              num_ext;         /*132+4*//*!< */
+  uint32_t              byteorder;       /*136+4*//*!< */
+  AtNiftiDatatype       datatype;        /*140+2*//*!< */
+  uint16_t              ndim;            /*142+2*//*!< */
+  uint16_t              dim[7];          /*144+2*//*!< */
+  uint16_t              pixdim[7];       /*146+2*//*!< */
+  uint16_t              slice_start;     /*148+2*//*!< */
+  uint16_t              slice_end;       /*150+2*//*!< */
+  AtNiftiXformCode      qform_code;      /*152+1*//*!< */
+  AtNiftiXformCode      sform_code;      /*153+1*//*!< */
+  AtNiftiFileType       nifti_type;      /*154+1*//*!< */
+  AtAnalyze75OrientCode analyze75_orient;/*155+1*//*!< */
+  char                  descrip[80];     /*156+1*//*!< */
+  char                  aux_file[24];    /*157+1*//*!< */
+  uint8_t               swapsize;        /*158+1*//*!< */
+  uint8_t               slice_code;      /*159+1*//*!< */
+  uint8_t               xyz_units;       /*160+1*//*!< */
+  uint8_t               time_units;      /*161+1*//*!< */
+  uint8_t               freq_dim;        /*162+1*//*!< */
+  uint8_t               phase_dim;       /*163+1*//*!< */
+  uint8_t               slice_dim;       /*164+1*//*!< */
+  uint8_t               pd[3];           /*165+3*//*!< */
 }AtNiftiImage;
 
 /**
@@ -130,7 +144,10 @@ typedef struct AtNiftiImage{
  */
 AtNiftiImage*
 at_niftiimage_read(const char *name, uint8_t read_data, AtError** error);
-
+/**
+ * @brief at_niftiimage_destroy
+ * @param np
+ */
 void
 at_niftiimage_destroy(AtNiftiImage** np);
 

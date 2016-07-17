@@ -439,7 +439,7 @@ at_dicombase_read(AtDicomBase* base, const char* filename, FILE** fpp, size_t* o
 }
 
 static void
-at_dicom_uint16_t_read_pixels(AtDicom_uint16_t* dicom, size_t offset, FILE* file){
+at_dicomu16_read_pixels(AtDicomU16* dicom, size_t offset, FILE* file){
   uint16_t* d            = dicom->image->data;
   int16_t * ds           = (uint16_t*) d;
   uint8_t * d8           = (uint8_t*)  d;
@@ -495,14 +495,14 @@ at_dicom_uint16_t_read_pixels(AtDicom_uint16_t* dicom, size_t offset, FILE* file
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
-static AtDicom_uint16_t*
-at_dicom_uint16_t_new(){
-  return malloc(sizeof(AtDicom_uint16_t));
+static AtDicomU16*
+at_dicomu16_new(){
+  return malloc(sizeof(AtDicomU16));
 }
 
-AtDicom_uint16_t*
-at_dicom_uint16_t_read(const char *fname, AtError** error){
-  AtDicom_uint16_t* d     = at_dicom_uint16_t_new();
+AtDicomU16*
+at_dicomu16_read(const char *fname, AtError** error){
+  AtDicomU16* d     = at_dicomu16_new();
   FILE*             fp    = NULL;
   uint64_t          shape[3];
   size_t            offset;
@@ -511,13 +511,13 @@ at_dicom_uint16_t_read(const char *fname, AtError** error){
     free(d);
     return NULL;
   }
-  d->image = at_array_uint16_t_new(3,shape);
-  at_dicom_uint16_t_read_pixels(d,offset,fp);
+  d->image = at_arrayu16_new(3,shape);
+  at_dicomu16_read_pixels(d,offset,fp);
   if(fp) fclose(fp);
   return d;
 }
 
 void
-at_dicom_uint16_t_write(AtDicom_uint16_t *dicom, const char *filename){
+at_dicomu16_write(AtDicomU16 *dicom, const char *filename){
 
 }

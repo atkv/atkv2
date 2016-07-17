@@ -21,30 +21,32 @@
 #include <at/core/grapharray.h>
 #include <at/core/optimization.h>
 #include <at/core/macro.h>
+#include <at/core/scc.h>
 AT_BEGIN_DECLS
 /**
  * Necessary info for IFT
  */
 typedef struct AtIFT{
   // Output
-  uint64_t* p;// 00+08
-  uint64_t* r;// 08+08
-  double  * c;// 16+08
-  uint8_t * l;// 24+08 = 32
+  uint64_t* p;/*00+08*//*!< Predecessors */
+  uint64_t* r;/*08+08*//*!< Roots */
+  double  * c;/*16+08*//*!< Connectivities */
+  uint8_t * l;/*24+08*//*!< Labels */
+              // Total: 32 bytes
 }AtIFT;
 
 typedef void
-(*AtConnInit_uint8_t)(AtIFT* ift, AtArray_uint8_t* array);
+(*AtConnInitu8)(AtIFT* ift, AtArrayU8* array);
 typedef void
-(*AtConnInitSeeds)(AtIFT* ift, AtArray_uint64_t* seeds);
+(*AtConnInitSeeds)(AtIFT* ift, AtArrayU64* seeds);
 typedef double
-(*AtConnFunc_uint8_t) (AtIFT* ift, AtGraphArray* graph,
+(*AtConnFuncu8) (AtIFT* ift, AtGraphArray* graph,
                        uint64_t s, uint64_t t, uint64_t i);
 
 typedef struct AtConnectivity{
-  AtConnInit_uint8_t init;
+  AtConnInitu8 init;
   AtConnInitSeeds    seeds;
-  AtConnFunc_uint8_t func;
+  AtConnFuncu8 func;
 }AtConnectivity;
 
 AtConnectivity at_conn_max;
@@ -56,18 +58,64 @@ AtConnectivity at_conn_euc;
  FUNCTIONS
  ============================================================================*/
 #define at_ift_apply(input) _Generic((input), Array: at_ift_apply_array)
-
-AtArray_uint64_t*
+/**
+ * @brief at_seeds_new
+ * @param n
+ * @param data
+ * @return
+ */
+AtArrayU64*
 at_seeds_new(uint64_t n, uint64_t* data);
 
-
+/**
+ * @brief at_ift_apply_arrayu8
+ * @param array
+ * @param adj
+ * @param o
+ * @param connectivity
+ * @param w
+ * @param seeds
+ * @param po
+ * @return
+ */
 AtIFT*
-at_ift_apply_array_uint8_t(AtArray_uint8_t*           array,
-                           AtAdjacency                adj,
-                           AtOptimization             o,
-                           AtConnectivity             connectivity,
-                           AtWeightingFunc_uint8_t    w,
-                           AtArray_uint64_t*          seeds,
-                           AtPolicy                   po);
+at_ift_apply_arrayu8(AtArrayU8*           array,
+                     AtAdjacency          adj,
+                     AtOptimization       o,
+                     AtConnectivity       connectivity,
+                     AtWeightingFuncu8    w,
+                     AtArrayU64*          seeds,
+                     AtPolicy             po);
+
+AtSCC*
+at_ift_orfc_core_arrayu8(AtArrayU8*        array,
+                         AtAdjacency       adj,
+                         AtOptimization    o,
+                         AtConnectivity    conn,
+                         AtWeightingFuncu8 w,
+                         AtArrayU64*       seeds,
+                         uint64_t          lblback,
+                         AtPolicy          po,
+                         AtSCCAlgorithm    sccalgo);
+AtIFT*
+at_orfc_arrayu8(AtArrayU8*        array,
+                AtAdjacency       adj,
+                AtOptimization    o,
+                AtConnectivity    conn,
+                AtWeightingFuncu8 w,
+                AtArrayU64*       seeds,
+                uint64_t          lblback,
+                AtPolicy          po);
+/**
+ * @brief Create the seeds from a mask (non-zero labels)
+ *
+ * If mask(v) != 0, for any node v, we add the pair (v, mask(v)) to the resulting array
+ *
+ * @param mask
+ * @return
+ */
+AtArrayU64*
+at_seeds_from_mask(AtArrayU8* mask);
+
 AT_END_DECLS
 #endif

@@ -1,0 +1,18 @@
+dependencies:
+  pre:
+    - if [[ ! -e cmake-3.6.0-Linux-x86_64/bin/cmake ]]; then wget https://cmake.org/files/v3.6/cmake-3.6.0-Linux-x86_64.tar.gz && tar xzf cmake-3.6.0-Linux-x86_64.tar.gz; fi
+    - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+    - sudo apt-get update
+    - sudo apt-get install gcc-5
+    - sudo pip install cpp-coveralls
+  cache_directories:
+    - "cmake-3.6.0-Linux-x86_64"
+test:
+  pre:
+    - mkdir build
+    - cd build
+    - pwd
+    - cd build && ../cmake-3.6.0-Linux-x86_64/bin/cmake .. -DBUILD_DOCS=OFF -DBUILD_TESTING=ON -DBUILD_GUI=OFF -DCOVERALLS=ON -DCMAKE_BUILD_TYPE=Debug
+    - cd build && make
+    - cd build && make coveralls
+

@@ -366,7 +366,7 @@ at_niftiimage_load(AtNiftiImage* nim, AtNiftiFile* nfp){
 
   imgnfp = at_extract_nifti_finfo(nfp->fname);
   uint64_t shape[3] = {nim->dim[0],nim->dim[1],nim->dim[2]};
-  nim->ar = at_array_uint16_t_new(nim->ndim,shape);
+  nim->ar = at_arrayu16_new(nim->ndim,shape);
 
   // open the file and position the filepointer
   ioff   = nim->iname_offset;
@@ -587,7 +587,7 @@ at_niftiimage_from_ascii(const char* str, size_t* bread){
   char          rhs[1024];
 
   spos = 0;
-  sscanf(str+spos,"%1023s%n", lhs, &nn);
+  sscanf(str+spos,"%1023s%l", lhs, &nn);
   spos += nn;
 
   return nim;
@@ -687,7 +687,7 @@ void
 at_niftiimage_destroy(AtNiftiImage** np){
   AtNiftiImage* n = *np;
   if(n){
-    if(n->ar) at_array_uint16_t_destroy(&n->ar);
+    if(n->ar) at_arrayu16_destroy(&n->ar);
     free(n);
   }
   *np = NULL;

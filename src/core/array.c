@@ -47,34 +47,34 @@ at_array_header_set(AtArrayHeader* header, uint8_t dim, uint64_t* shape){
   header->num_elements = header->step[0] * header->shape[0];
 }
 
-AtArray_uint8_t*
-at_array_uint8_t_create(){
-  AtArray_uint8_t* array = malloc(sizeof(AtArray_uint8_t));
+AtArrayU8*
+at_arrayu8_create(){
+  AtArrayU8* array = malloc(sizeof(AtArrayU8));
   at_array_header_init(&array->h);
   array->data = NULL;
   array->h.elemsize = sizeof(uint8_t);
   return array;
 }
-AtArray_uint64_t*
-at_array_uint64_t_create(){
-  AtArray_uint64_t* array = malloc(sizeof(AtArray_uint64_t));
+AtArrayU64*
+at_arrayu64_create(){
+  AtArrayU64* array = malloc(sizeof(AtArrayU64));
   at_array_header_init(&array->h);
   array->data = NULL;
   array->h.elemsize = sizeof(uint64_t);
   return array;
 }
 
-AtArray_uint8_t*
-at_array_uint8_t_new(uint8_t dim, uint64_t* shape){
-  AtArray_uint8_t* array = at_array_uint8_t_create();
+AtArrayU8*
+at_arrayu8_new(uint8_t dim, uint64_t* shape){
+  AtArrayU8* array = at_arrayu8_create();
   at_array_header_set(&array->h, dim, shape);
   array->data = malloc(array->h.num_elements * sizeof(uint8_t));
   return array;
 }
 
-AtArray_uint8_t*
-at_array_uint8_t_new_with_data(uint8_t dim, uint64_t* shape, uint8_t* data, bool copy){
-  AtArray_uint8_t* array = at_array_uint8_t_create();
+AtArrayU8*
+at_arrayu8_new_with_data(uint8_t dim, uint64_t* shape, uint8_t* data, bool copy){
+  AtArrayU8* array = at_arrayu8_create();
   uint64_t num_bytes;
   at_array_header_set(&array->h, dim, shape);
 
@@ -88,9 +88,9 @@ at_array_uint8_t_new_with_data(uint8_t dim, uint64_t* shape, uint8_t* data, bool
   return array;
 }
 
-AtArray_uint64_t*
-at_array_uint64_t_new_with_data(uint8_t dim, uint64_t* shape, uint64_t* data, bool copy){
-  AtArray_uint64_t* array = at_array_uint64_t_create();
+AtArrayU64*
+at_arrayu64_new_with_data(uint8_t dim, uint64_t* shape, uint64_t* data, bool copy){
+  AtArrayU64* array = at_arrayu64_create();
   uint64_t num_bytes;
   at_array_header_set(&array->h, dim, shape);
 
@@ -105,12 +105,12 @@ at_array_uint64_t_new_with_data(uint8_t dim, uint64_t* shape, uint64_t* data, bo
 }
 
 void
-at_array_uint8_t_fill(AtArray_uint8_t* array, uint8_t value){
+at_arrayu8_fill(AtArrayU8* array, uint8_t value){
   memset(array->data,value,array->h.num_elements * sizeof(uint8_t));
 }
 
 uint8_t
-at_array_uint8_t_max(AtArray_uint8_t* array){
+at_arrayu8_max(AtArrayU8* array){
   uint64_t i;
   uint8_t  value = 0;
   for(i = 0; i < array->h.num_elements; i++)
@@ -119,7 +119,7 @@ at_array_uint8_t_max(AtArray_uint8_t* array){
 }
 
 void
-at_array_uint64_t_fill(AtArray_uint64_t* array, uint64_t value){
+at_arrayu64_fill(AtArrayU64* array, uint64_t value){
   uint64_t i;
   if(value == 0) memset(array->data, 0, array->h.num_elements * sizeof(uint64_t));
   else
@@ -127,24 +127,24 @@ at_array_uint64_t_fill(AtArray_uint64_t* array, uint64_t value){
       array->data[i] = value;
 }
 
-AtArray_uint8_t*
-at_array_uint8_t_zeros(uint8_t dim, uint64_t *shape){
-  AtArray_uint8_t* array = at_array_uint8_t_new(dim, shape);
-  at_array_uint8_t_fill(array,0);
+AtArrayU8*
+at_arrayu8_zeros(uint8_t dim, uint64_t *shape){
+  AtArrayU8* array = at_arrayu8_new(dim, shape);
+  at_arrayu8_fill(array,0);
   return array;
 }
-AtArray_uint8_t*
-at_array_uint8_t_ones(uint8_t dim, uint64_t *shape){
-  AtArray_uint8_t* array = at_array_uint8_t_new(dim, shape);
-  at_array_uint8_t_fill(array,1);
+AtArrayU8*
+at_arrayu8_ones(uint8_t dim, uint64_t *shape){
+  AtArrayU8* array = at_arrayu8_new(dim, shape);
+  at_arrayu8_fill(array,1);
   return array;
 }
 
 
 void
-at_array_uint8_t_destroy(AtArray_uint8_t** array_ptr){
+at_arrayu8_destroy(AtArrayU8** array_ptr){
   if(array_ptr){
-    AtArray_uint8_t* array = *array_ptr;
+    AtArrayU8* array = *array_ptr;
     if(array){
       if(array->h.owns_data)
         free(array->data);
@@ -175,24 +175,24 @@ at_index_to_1d(uint8_t dim, uint64_t* step, int64_t* s_nd, uint64_t* s){
 #define at_array_index_to_nd(array, s, s_nd) at_index_to_nd(array->h.dim, array->h.step,s,s_nd)
 #define at_array_index_to_1d(array, s_nd, s) at_index_to_1d(array->h.dim, array->h.step,s_nd,s)
 
-AtArray_uint16_t*
-at_array_uint16_t_create(){
-  AtArray_uint16_t* array = malloc(sizeof(AtArray_uint16_t));
+AtArrayU16*
+at_arrayu16_create(){
+  AtArrayU16* array = malloc(sizeof(AtArrayU16));
   at_array_header_init(&array->h);
   array->h.elemsize = sizeof(uint16_t);
   array->data = NULL;
   return array;
 }
-AtArray_uint16_t*
-at_array_uint16_t_new(uint8_t dim, uint64_t* shape){
-  AtArray_uint16_t* array = at_array_uint16_t_create();
+AtArrayU16*
+at_arrayu16_new(uint8_t dim, uint64_t* shape){
+  AtArrayU16* array = at_arrayu16_create();
   at_array_header_set(&array->h, dim, shape);
   array->data = malloc(array->h.num_elements * sizeof(uint16_t));
   return array;
 }
 
 void
-at_array_uint8_t_save(AtArray_uint8_t** arrays, char** names, uint8_t num, const char* filename){
+at_arrayu8_save(AtArrayU8** arrays, char** names, uint8_t num, const char* filename){
   AtZnzFile* fp = at_znzfile_open(filename, "wb", true);
   uint8_t i,len;
 
@@ -223,10 +223,10 @@ at_array_uint8_t_save(AtArray_uint8_t** arrays, char** names, uint8_t num, const
   at_znzfile_close(fp);
 }
 
-AtArray_uint8_t*
+AtArrayU8*
 at_array_load(char*** namesp, uint8_t *nump, const char* filename){
   char            ** names;
-  AtArray_uint8_t  * ar;
+  AtArrayU8  * ar;
   AtZnzFile        * fp;
   uint8_t            i;
   uint8_t            len;
@@ -250,7 +250,7 @@ at_array_load(char*** namesp, uint8_t *nump, const char* filename){
   }
 
   // read proper arrays
-  ar = malloc(sizeof(AtArray_uint8_t)*num);
+  ar = malloc(sizeof(AtArrayU8)*num);
   for(i = 0; i < num; i++){
     // read num_elements, dim, owns_data and elemsize
     at_znzfile_read(fp,&ar[i].h.num_elements,sizeof(uint64_t)+(sizeof(uint8_t)<<1)+sizeof(uint8_t),1);
@@ -272,9 +272,25 @@ at_array_load(char*** namesp, uint8_t *nump, const char* filename){
 }
 
 void
-at_array_uint16_t_destroy(AtArray_uint16_t** arp){
+at_arrayu8_set_nd(AtArrayU8* ar, uint64_t *coords, uint8_t value){
+  uint64_t coord = 0;
+  at_array_index_to_1d(ar,coords,&coord);
+  ar->data[coord] = value;
+}
+
+void
+at_arrayu8_set_nd_many(AtArrayU8* ar, uint64_t *coords, uint8_t* value){
+  uint64_t coord = 0;
+  uint8_t lim = ar->h.dim-1;
+  uint8_t i;
+  for(i = 0; i < lim; i++) coord += coords[i] * ar->h.step[i];
+  memcpy(&ar->data[coord],value,sizeof(uint8_t)*ar->h.shape[lim]);
+}
+
+void
+at_arrayu16_destroy(AtArrayU16** arp){
   if(arp){
-    AtArray_uint16_t* ar = *arp;
+    AtArrayU16* ar = *arp;
     if(ar){
       if(ar->h.owns_data)
         free(ar->data);
@@ -287,9 +303,9 @@ at_array_uint16_t_destroy(AtArray_uint16_t** arp){
 
 
 void
-at_array_uint64_t_destroy(AtArray_uint64_t** array_ptr){
+at_arrayu64_destroy(AtArrayU64** array_ptr){
   if(array_ptr){
-    AtArray_uint64_t* array = *array_ptr;
+    AtArrayU64* array = *array_ptr;
     if(array){
       if(array->h.owns_data)
         free(array->data);
