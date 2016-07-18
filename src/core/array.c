@@ -78,8 +78,10 @@ at_arrayu8_new_with_data(uint8_t dim, uint64_t* shape, uint8_t* data, bool copy)
   uint64_t num_bytes;
   at_array_header_set(&array->h, dim, shape);
 
-  if(!copy)
+  if(!copy){
     array->data = data;
+    array->h.owns_data = false;
+  }
   else{
     num_bytes   = array->h.num_elements * sizeof(uint8_t);
     array->data = malloc(num_bytes);

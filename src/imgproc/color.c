@@ -139,3 +139,33 @@ at_arrayu8_cvt_color(AtArrayU8 *array, AtColorType from, AtColorType to){
   return newar;
 }
 
+AtArrayU8*
+at_arrayu8_lut_random(AtArrayU8* array){
+  uint64_t   i;
+  AtArrayU8* arraylut = at_arrayu8_new(array->h.dim, array->h.shape);
+  uint8_t    lut[256];
+
+  for(i = 0; i < 256; i++) lut[i] = rand();
+  for(i = 0; i < array->h.num_elements; i++)
+    arraylut->data[i] = lut[array->data[i]];
+  return arraylut;
+}
+
+AtArrayU8*
+at_arrayu8_lut_random_multi(AtArrayU8* array, uint8_t nchannels){
+  uint64_t   i,j,k,slut;
+  uint64_t   shape[256];
+  memcpy(shape,array->h.shape,array->h.dim*sizeof(uint64_t));
+  shape[array->h.dim] = nchannels;
+  AtArrayU8* arraylut = at_arrayu8_new(array->h.dim+1, shape);
+  slut = 256*nchannels;
+  uint8_t    *lut = malloc(slut);
+
+  for(i = 0; i < slut; i++) lut[i] = rand();
+  for(i = 0,k=0; i < arraylut->h.num_elements; i+=nchannels,k++)
+    memcpy(&arraylut->data[i],&lut[array->data[k]*nchannels],nchannels);
+  free(lut);
+  return arraylut;
+}
+
+
