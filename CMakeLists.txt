@@ -155,7 +155,7 @@ IF(BUILD_TESTING)
 
   # Defining tests----------------------------------------------
   SET(AT_CORE_TESTS    array grapharray list queue pqueue vec)
-  SET(AT_IMGPROC_TESTS img_io dicom nifti ift drawing)
+  SET(AT_IMGPROC_TESTS img_io dicom nifti ift drawing color)
   # ------------------------------------------------------------
 
   # Compiling tests

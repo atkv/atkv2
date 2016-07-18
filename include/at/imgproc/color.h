@@ -34,6 +34,21 @@ typedef enum{
 
 AtArrayU8*
 at_arrayu8_cvt_color(AtArrayU8* array, AtColorType from, AtColorType to);
+/**
+ * @brief at_arrayu8_lut_random
+ * @param array
+ * @return
+ */
+AtArrayU8*
+at_arrayu8_lut_random(AtArrayU8* array);
+/**
+ * @brief at_arrayu8_lut_random_multi
+ * @param array
+ * @param nchannels
+ * @return
+ */
+AtArrayU8*
+at_arrayu8_lut_random_multi(AtArrayU8* array, uint8_t nchannels);
 
 AT_END_DECLS
 #endif
