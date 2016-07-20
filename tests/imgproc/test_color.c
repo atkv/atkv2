@@ -16,8 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/imgproc/color.h>
-#include <at/imgproc/img_io.h>
+#include <at/imgproc.h>
 #include <stdarg.h>
 #include <setjmp.h>
 #include <cmocka.h>

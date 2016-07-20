@@ -16,7 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/imgproc/dicom.h>
+#include <at/imgproc.h>
 #include <setjmp.h>
 #include <stdarg.h>
 #include <cmocka.h>

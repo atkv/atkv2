@@ -29,5 +29,9 @@ typedef struct{
 
 AtSCC*
 at_grapharrayu8_scc(AtGraphArray* grapharray, AtSCCAlgorithm algorithm);
+
+void
+at_scc_destroy(AtSCC** scc);
+
 AT_END_DECLS
 #endif

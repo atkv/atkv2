@@ -184,3 +184,11 @@ at_grapharrayu8_scc(AtGraphArray* g, AtSCCAlgorithm a){
 
 
 }
+
+void
+at_scc_destroy(AtSCC** scc){
+  if((*scc)->l) free((*scc)->l);
+  free(*scc);
+  *scc = NULL;
+}
+

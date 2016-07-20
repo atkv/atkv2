@@ -55,6 +55,14 @@ at_arrayu8_create(){
   array->h.elemsize = sizeof(uint8_t);
   return array;
 }
+AtArrayU32*
+at_arrayu32_create(){
+  AtArrayU32* array = malloc(sizeof(AtArrayU32));
+  at_array_header_init(&array->h);
+  array->data = NULL;
+  array->h.elemsize = sizeof(uint32_t);
+  return array;
+}
 AtArrayU64*
 at_arrayu64_create(){
   AtArrayU64* array = malloc(sizeof(AtArrayU64));
@@ -100,6 +108,21 @@ at_arrayu64_new_with_data(uint8_t dim, uint64_t* shape, uint64_t* data, bool cop
     array->data = data;
   else{
     num_bytes   = array->h.num_elements * sizeof(uint64_t);
+    array->data = malloc(num_bytes);
+    memcpy(array->data, data, num_bytes);
+  }
+  return array;
+}
+AtArrayU32*
+at_arrayu32_new_with_data(uint8_t dim, uint64_t* shape, uint32_t* data, bool copy){
+  AtArrayU32* array = at_arrayu32_create();
+  uint64_t num_bytes;
+  at_array_header_set(&array->h, dim, shape);
+
+  if(!copy)
+    array->data = data;
+  else{
+    num_bytes   = array->h.num_elements * array->h.elemsize;
     array->data = malloc(num_bytes);
     memcpy(array->data, data, num_bytes);
   }
@@ -321,4 +344,25 @@ at_arrayu64_destroy(AtArrayU64** array_ptr){
 void
 at_array_header_dispose(AtArrayHeader* header){
   free(header->shape);
+}
+
+AtArrayU32*
+at_arrayu32_new(uint8_t dim, uint64_t* shape){
+  AtArrayU32* array = at_arrayu32_create();
+  at_array_header_set(&array->h, dim, shape);
+  array->data = malloc(array->h.num_elements * array->h.elemsize);
+  return array;
+}
+void
+at_arrayu32_destroy(AtArrayU32** array_ptr){
+  if(array_ptr){
+    AtArrayU32* array = *array_ptr;
+    if(array){
+      if(array->h.owns_data)
+        free(array->data);
+      at_array_header_dispose(&array->h);
+      free(array);
+    }
+    *array_ptr = NULL;
+  }
 }

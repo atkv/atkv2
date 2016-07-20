@@ -16,6 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 #include <at/imgproc/ift.h>
+#include <at/imgproc/color.h>
 #include <at/core/pqueue.h>
 #include <math.h>
 #include <at/core/macro.h>
@@ -30,13 +31,17 @@ at_conn_max_arrayu8(AtIFT* ift, AtArrayU8* array);
 void
 at_conn_min_arrayu8(AtIFT* ift, AtArrayU8* array);
 void
-at_ift_add_seeds_conn_max(AtIFT* ift, AtArrayU64* seeds);
+at_ift_add_seeds_conn_max(AtIFT* ift, AtSeeds *seeds);
 void
-at_ift_add_seeds_conn_min(AtIFT* ift, AtArrayU64* seeds);
+at_ift_add_seeds_conn_min(AtIFT* ift, AtSeeds* seeds);
 double
 at_conn_max_func(AtIFT* ift, AtGraphArray* graph,uint64_t s, uint64_t t, uint64_t i);
 double
+at_conn_maxr_func(AtIFT* ift, AtGraphArray* graph,uint64_t s, uint64_t t, uint64_t i);
+double
 at_conn_min_func(AtIFT* ift, AtGraphArray* graph,uint64_t s, uint64_t t, uint64_t i);
+double
+at_conn_minr_func(AtIFT* ift, AtGraphArray* graph,uint64_t s, uint64_t t, uint64_t i);
 double
 at_conn_sum_func(AtIFT* ift, AtGraphArray* graph,uint64_t s, uint64_t t, uint64_t i);
 double
@@ -99,59 +104,51 @@ static void
 at_conn_constructor(){
   at_conn_max.init  = at_conn_max_arrayu8;
   at_conn_max.seeds = at_ift_add_seeds_conn_max;
-  at_conn_max.func       = at_conn_max_func;
+  at_conn_max.func  = at_conn_max_func;
+  at_conn_max.o     = AT_MINIMIZATION;
+
+  at_conn_maxr.init = at_conn_max_arrayu8;
+  at_conn_maxr.seeds= at_ift_add_seeds_conn_max;
+  at_conn_maxr.func = at_conn_maxr_func;
+  at_conn_maxr.o     = AT_MINIMIZATION;
 
   at_conn_min.init  = at_conn_min_arrayu8;
   at_conn_min.seeds = at_ift_add_seeds_conn_min;
-  at_conn_min.func       = at_conn_min_func;
+  at_conn_min.func  = at_conn_min_func;
+  at_conn_min.o     = AT_MAXIMIZATION;
+
+  at_conn_minr.init = at_conn_min_arrayu8;
+  at_conn_minr.seeds= at_ift_add_seeds_conn_min;
+  at_conn_minr.func = at_conn_minr_func;
+  at_conn_minr.o     = AT_MAXIMIZATION;
 
   at_conn_sum.init  = at_conn_sum_arrayu8;
   at_conn_sum.seeds = at_ift_add_seeds_conn_sum;
-  at_conn_sum.func       = at_conn_sum_func;
+  at_conn_sum.func  = at_conn_sum_func;
+  at_conn_sum.o     = AT_MINIMIZATION;
 
   at_conn_euc.init  = at_conn_euc_arrayu8;
   at_conn_euc.seeds = at_ift_add_seeds_conn_euc;
-  at_conn_euc.func       = at_conn_euc_func;
-}
-static void
-at_split_seeds(AtArrayU64* seeds, AtArrayU64** sback, AtArrayU64** sobj, uint64_t lblback){
-  uint64_t a,k,i, size;
-  size = seeds->h.num_elements << 1;
-  uint64_t* sbackdata = malloc(seeds->h.num_elements << 3);
-  uint64_t* sobjdata  = malloc(seeds->h.num_elements << 3);
-  k = 0;
-  a = 0;
-  for(i = 0; i < seeds->h.num_elements; i+=2) if(seeds->data[i+1] == lblback){
-    sbackdata[k++] = seeds->data[i];
-    sbackdata[k++] = lblback;
-  }else{
-    sobjdata[a++] = seeds->data[i];
-    sobjdata[a++] = seeds->data[i+1];
-  }
-  sbackdata = realloc(sbackdata,k<<3);
-  sobjdata  = realloc(sobjdata,a<<3);
-  uint64_t sbackshape[2] = {k>>1,2};
-  uint64_t sobjshape[2]  = {a>>1,2};
-  *sback = at_arrayu64_new_with_data(2,sbackshape,sbackdata,false);
-  *sobj  = at_arrayu64_new_with_data(2,sobjshape,sobjdata,false);
-  (*sback)->h.owns_data = true;
-  (*sobj)->h.owns_data  = true;
+  at_conn_euc.func  = at_conn_euc_func;
+  at_conn_euc.o     = AT_MINIMIZATION;
 }
 
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
 void
-at_ift_add_seeds_to_pqueue(AtIFT* ift, AtPQueueU64* queue, AtArrayU64* seeds){
+at_ift_add_seeds_to_pqueue(AtIFT* ift, AtPQueueU64* queue, AtSeeds* seeds){
   uint64_t i;
-  for(i = 0; i < seeds->h.num_elements; i+=2){
-    double conn = ift->c[seeds->data[i]];
+  uint64_t s;
+  for(i = 0; i < seeds->n; i++){
+    s = seeds->s[i];
+    double conn = ift->c[s];
     if(conn == -INFINITY)
-      at_pqueueu64_add(queue,0,seeds->data[i]);
+      at_pqueueu64_add(queue,0,s);
     else if(conn == INFINITY)
-      at_pqueueu64_add(queue,queue->np-1,seeds->data[i]);
+      at_pqueueu64_add(queue,queue->np-1,s);
     else
-      at_pqueueu64_add(queue,(uint8_t)conn,seeds->data[i]);
+      at_pqueueu64_add(queue,(uint8_t)conn,s);
   }
 }
 
@@ -173,36 +170,36 @@ at_conn_min_arrayu8(AtIFT* ift,AtArrayU8* array){
 // Adding seeds initially (changing label)
 //--------------------------------------------
 void
-at_ift_add_seeds_labels(AtIFT* ift, AtArrayU64* seeds){
+at_ift_add_seeds_labels(AtIFT* ift, AtSeeds* seeds){
   uint8_t *lb = ift->l;
-  register uint64_t nelem  = seeds->h.num_elements;
+  register uint64_t nelem  = seeds->n;
   register uint64_t i, v, l;
-  for(i = 0; i < nelem;){
-    v = seeds->data[i++];
-    l = seeds->data[i++];
+  for(i = 0; i < nelem;i++){
+    v = seeds->s[i];
+    l = seeds->l[i];
     lb[v] = l;
   }
 }
 // Adding seeds initially (changing connectivity)
 //--------------------------------------------
 void
-at_ift_add_seeds_conn_max(AtIFT* ift, AtArrayU64* seeds){
+at_ift_add_seeds_conn_max(AtIFT* ift, AtSeeds* seeds){
   double   *conn = ift->c;
-  uint64_t *data = seeds->data;
-  register uint64_t nelem  = seeds->h.num_elements;
+  uint64_t *data = seeds->s;
+  register uint64_t nelem  = seeds->n;
   register uint64_t i;
-  for(i = 0; i < nelem; i+=2){
+  for(i = 0; i < nelem; i++){
     conn[data[i]] = -INFINITY;
   }
 }
 void
-at_ift_add_seeds_conn_min(AtIFT* ift, AtArrayU64* seeds){
+at_ift_add_seeds_conn_min(AtIFT* ift, AtSeeds* seeds){
   // find max value
   double   *conn = ift->c;
-  uint64_t *data = seeds->data;
-  register uint64_t nelem  = seeds->h.num_elements;
+  uint64_t *data = seeds->s;
+  register uint64_t nelem  = seeds->n;
   register uint64_t i;
-  for(i = 0; i < nelem; i+=2){
+  for(i = 0; i < nelem; i++){
     conn[data[i]] = INFINITY;
   }
 }
@@ -216,9 +213,20 @@ double at_conn_max_func(AtIFT* ift, AtGraphArray* graph,
   return max(ift->c[s],graph->weights[i]);
 }
 
+double at_conn_maxr_func(AtIFT* ift, AtGraphArray* graph,
+                         uint64_t s, uint64_t t, uint64_t i){
+  return max(ift->c[s],graph->weights[at_grapharray_get_indexr(graph,s,t)]);
+}
+
 double at_conn_min_func(AtIFT* ift, AtGraphArray* graph,
                         uint64_t s, uint64_t t, uint64_t i){
   return min(ift->c[s],graph->weights[i]);
+}
+
+double at_conn_minr_func(AtIFT* ift, AtGraphArray* graph,
+                         uint64_t s, uint64_t t, uint64_t i){
+  uint64_t off = at_grapharray_get_indexr(graph,s,t);
+  return min(ift->c[s],graph->weights[off]);
 }
 
 double at_conn_sum_func(AtIFT* ift, AtGraphArray* graph,
@@ -243,48 +251,41 @@ double at_conn_euc_func(AtIFT* ift, AtGraphArray* graph,
   return sqrt(sum);
 }
 
-AtArrayU64*
-at_seeds_new(uint64_t n, uint64_t* data){
-  uint64_t shape[2] = {n,2};
-  return at_arrayu64_new_with_data(2,shape,data,true);
-}
-
 AtIFT*
-at_ift_apply_arrayu8(AtArrayU8*           ar,
-                           AtAdjacency                adj,
-                           AtOptimization             o,
-                           AtConnectivity             c,
-                           AtWeightingFuncu8    w,
-                           AtArrayU64*          seeds,
-                           AtPolicy                   po){
+at_ift_apply_arrayu8(AtArrayU8     *ar,
+                     AtGraphArray  *g,
+                     AtConnectivity c,
+                     AtSeeds       *seeds,
+                     AtPolicy       po){
   AtIFT            * ift;         // 00+08: ift structure (the result)
-  AtGraphArray     * g;           // 08+08: graph array structure
-  AtPQueueU64* q;                 // 16+08: priority queue structure
-  uint8_t          * r;           // 24+08
-  double             newc;        // 32+08: new neighbor connectivity (if better)
+  AtPQueueU64      * q;           // 08+08: priority queue structure
+  uint8_t          * r;           // 16+08: node status (processed or not?)
+  double             newc;        // 24+08: new neighbor connectivity (if better)
+  double             vmax;        // 32+08: max array value (for allocating the queue)
   uint64_t           s;           // 40+08: index of current node in array
   uint64_t           t;           // 48+08: index of current neighbor in array
   uint64_t           off;         // 56+08: index of current node in grapharray (for loop)
   uint64_t           offn;        // 64+08: index of next node in grapharray (for loop)
   uint64_t           i;           // 72+08: counter
   uint16_t           pr;          // 80+02: priority
-  uint8_t            vmax;        // 82+01: max array value (for allocating the queue)
-  uint8_t            pd[5];       // 83+05: padding for alignment
+  uint8_t            pd[5];       // 82+06: padding for alignment
                                   // Total: 88 bytes
                            
   // Create the auxiliary structures
   r     = calloc(ar->h.num_elements,sizeof(uint8_t));
-  ift   = at_ift_new_initu8(ar);
-  g     = at_grapharray_new(ar,adj,w);
-  vmax  = at_arrayu8_max(ar);
+  ift   = at_ift_new_initu8(ar); // allocate maps (label, root, predec., and connectivity)
+  off   = g->h->num_elements * g->adjacency;
+  vmax  = -INFINITY;
+  for(i = 0; i < off; i++)       // get maximum value (for allocating queue)
+    vmax = max(vmax,g->weights[i]);
 
   // Initialize IFT structure values and add seeds
-  c.init (ift,ar);
-  c.seeds(ift,seeds);
+  c.init (ift,ar);   // trivial connectivity values (excluding seeds)
+  c.seeds(ift,seeds);// trivial connectivity values (only seeds)
   at_ift_add_seeds_labels(ift, seeds);
 
   // Create priority queue and add seeds
-  q = at_pqueueu64_new_prealloc(o,po,(uint64_t)vmax+2,ar->h.num_elements);
+  q = at_pqueueu64_new_prealloc(c.o,po,(uint64_t)vmax+2,ar->h.num_elements);
   at_ift_add_seeds_to_pqueue(ift,q,seeds);
 
   // Main loop
@@ -293,16 +294,16 @@ at_ift_apply_arrayu8(AtArrayU8*           ar,
     s    = at_pqueueu64_remove(q);
     r[s] = 1;
     // loop through neighbors
-    off  = s   * adj;
-    offn = off + adj;
+    off  = s   * g->adjacency;
+    offn = off + g->adjacency;
     for(i = off; i < offn; i++){
       if(g->active[i]){
         t = g->neighbors[i];
         // Still not processed?
         if(!r[t]){
           newc = c.func(ift, g, s, t, i);
-          if((o == AT_MAXIMIZATION && ift->c[t] < newc)||
-             (o == AT_MINIMIZATION && ift->c[t] > newc)){
+          if((c.o == AT_MAXIMIZATION && ift->c[t] < newc)||
+             (c.o == AT_MINIMIZATION && ift->c[t] > newc)){
             if(at_pqueueu64_has(q,t))
               at_pqueueu64_remove_from(q,t);
             ift->c[t] = newc;
@@ -310,7 +311,7 @@ at_ift_apply_arrayu8(AtArrayU8*           ar,
             ift->r[t] = ift->r[s];
             ift->l[t] = ift->l[s];
             pr = (uint16_t)ift->c[t];
-            if(o == AT_MINIMIZATION) pr++;
+            if(c.o == AT_MINIMIZATION) pr++;
             at_pqueueu64_add(q, pr, t);
           }
         }
@@ -320,135 +321,222 @@ at_ift_apply_arrayu8(AtArrayU8*           ar,
 
   // Clear memory
   at_pqueueu64_destroy(&q);
-  at_grapharray_destroy(&g);
   free(r);
   return ift;
 }
 AtSCC*
-at_ift_orfc_core_arrayu8(AtArrayU8*        array,
-                         AtAdjacency       adj,
-                         AtOptimization    o,
-                         AtConnectivity    conn,
-                         AtWeightingFuncu8 w,
-                         AtArrayU64*       seeds,
-                         uint64_t          lblback,
-                         AtPolicy          po,
-                         AtSCCAlgorithm    sccalgo){
+at_orfc_core_arrayu8(AtArrayU8     * array,
+                     AtGraphArray  * g,
+                     AtConnectivity  conn,
+                     AtSeeds       * seeds,
+                     uint64_t        lblback,
+                     AtPolicy        po,
+                     AtSCCAlgorithm  sccalgo){
   uint64_t off, i, k, a, b, size;
-  AtArrayU64* sback, *sobj;
+  AtSeeds* sback, *sobj;
   // get only background seeds by using lblback
-  at_split_seeds(seeds, &sback, &sobj, lblback);
+  at_seeds_split(seeds, &sback, &sobj, lblback);
 
   // apply ift with background seeds
-  AtIFT* ift = at_ift_apply_arrayu8(array,adj,o,conn,w,sback,po);
+  AtIFT* ift = at_ift_apply_arrayu8(array,g,conn,sback,po);
 
-  // generate graph
-  AtGraphArray* g = at_grapharrayu8_new(array,adj,w);
+  // regenerate graph
+  at_grapharrayu8_renew_edges(g);
 
-  size = g->h->num_elements * adj;
-  for(i = 0, a = 0; i < size; i += adj, a++){
-    for(k = 0; k < adj; k++){
+  size = g->h->num_elements * g->adjacency;
+  for(i = 0, a = 0; i < size; i += g->adjacency, a++){
+    for(k = 0; k < g->adjacency; k++){
       off = i+k;
       if(g->active[off]){
         b = g->neighbors[off];
-        if(g->weights[off] >= ift->c[a] || ift->c[a] != ift->c[b])
+        if(ift->c[a] != ift->c[b] || (conn.o == AT_MAXIMIZATION && g->weights[off] <= ift->c[a] ||
+                                      conn.o == AT_MINIMIZATION && g->weights[off] >= ift->c[a]))
           g->active[off] = 0;
       }
     }
   }
 
-  // find scc
+  // Find SCC
   AtSCC* scc = at_grapharrayu8_scc(g,sccalgo);
 
+  // Remove background SCCs
+  uint64_t *s = malloc(array->h.num_elements << 3);
+  memset(s,0,array->h.num_elements << 3);
+  //   Create LUT: s[label] = seed (for O(1) lookup)
+  for(i = 0, k = 1; i < seeds->n; i++)
+    if(s[scc->l[seeds->s[i]]] == 0 && seeds->l[i] != lblback)
+      s[scc->l[seeds->s[i]]] = k++;
+  scc->n = k;
+
+  //   Use above array to LUT the labels
+  AtArrayU32* scclbl = at_arrayu32_new_with_data(array->h.dim, array->h.shape, scc->l, false);
+  scclbl->h.owns_data = false;
+  AtArrayU32* scclbl2= at_arrayu32_lut(scclbl,s);
+  memcpy(scc->l, scclbl2->data, scclbl2->h.num_elements << 2);
+
   // Convert to bitmap
-  uint32_t lbl = scc->l[sobj->data[0]];
-  for(i = 0; i < array->h.num_elements; i++){
-    if(scc->l[i] == lbl)      scc->l[i] = 255;
-    else                      scc->l[i] = 0;
-  }
-  scc->n = 2;
+//  uint32_t lbl = scc->l[sobj->data[0]];
+//  for(i = 0; i < array->h.num_elements; i++){
+//    if(scc->l[i] == lbl)      scc->l[i] = 255;
+//    else                      scc->l[i] = 0;
+//  }
+//  scc->n = 2;
+
+  free(s);
+  at_seeds_destroy(&sback);
+  at_seeds_destroy(&sobj);
+
+  at_arrayu32_destroy(&scclbl);
+  at_arrayu32_destroy(&scclbl2);
+  free(ift);
   return scc;
 }
 
-AtIFT*
-at_orfc_arrayu8(AtArrayU8*        array,
-                AtAdjacency       adj,
-                AtOptimization    o,
-                AtConnectivity    conn,
-                AtWeightingFuncu8 w,
-                AtArrayU64*       seeds,
-                uint64_t          lblback,
-                AtPolicy          po){
-  uint64_t off, i,j, k, a, b, size;
-  AtArrayU64* sback, *sobj;
-  // get only background seeds by using lblback
-  at_split_seeds(seeds, &sback, &sobj, lblback);
+/**
+ * @brief Split vector in two arrays: lower then pivot and higher than pivot
+ * @param a the vector
+ * @param l the pivot (left end of range)
+ * @param r the right end of range
+ * @param c comparison values
+ * @return
+ */
+static int64_t
+partition( uint64_t a[], int64_t l, int64_t r, double* c) {
+   int64_t i, j, t;
+   uint64_t pivot;
+   pivot = a[l];
+   i = l; j = r+1;
 
-  // find energy by applying ift with background seeds
-  AtIFT* ift = at_ift_apply_arrayu8(array,adj,o,conn,w,sback,po);
+   while( 1){
+     do ++i; while( c[a[i]] <= c[pivot] && i <= r );
+     do --j; while( c[a[j]] > c[pivot] );
+     if( i >= j ) break;
+     t = a[i]; a[i] = a[j]; a[j] = t;
+   }
+   t = a[l]; a[l] = a[j]; a[j] = t;
+   return j;
+}
+/**
+ * @brief quickSort
+ * @param a the vector
+ * @param l index of left range
+ * @param r index of right range
+ */
+static void
+quickSort( uint64_t a[], int64_t l, int64_t r, double* c)
+{
+  int64_t j;
 
-  // generate graph
-  AtGraphArray* g = at_grapharrayu8_new(array,adj,w);
-
-  // remove
-  size = g->h->num_elements * adj;
-  for(i = 0, a = 0; i < size; i += adj, a++){
-    for(k = 0; k < adj; k++){
-      off = i+k;
-      if(g->active[off]){
-        b = g->neighbors[off];
-        if(g->weights[off] >= ift->c[sobj->data[0]])
-          g->active[off] = 0;
-      }
-    }
+  if( l < r ){
+    // divide and conquer
+    j = partition( a, l, r, c);
+    quickSort( a, l, j-1, c);
+    quickSort( a, j+1, r, c);
   }
+}
 
-  // get transpose graph
-
-
-  uint64_t* tree = malloc(array->h.num_elements << 3);
-  uint64_t  top  = 1, offa, offb;
-  uint8_t lblobj = sobj->data[1];
-  tree[0]        = sobj->data[0];
-  ift->l[tree[0]] = lblobj;
-  for(i = 0; i < top; i++){
-    a   = tree[i];
-    offa = adj * a;
-    for(k = 0; k < adj; k++){
-      b = g->neighbors[offa+k];
-      offb = adj * b;
-      for(j = 0; j < adj; j++){
-        if(ift->l[b] != lblobj && g->neighbors[offb+j] == a && g->active[offb+j]){
-          ift->l[b] = lblobj;
-          tree[top++] = b;
-          break;
+static void
+at_orfc_arrayu8_dfs(uint64_t seed, AtGraphArray* g, uint64_t* stack, uint64_t stackidx, AtIFT* ift, uint8_t* instack){
+  uint64_t s, t, soff, soffn, i;
+  if(ift->l[seed] == 0){
+    stack[stackidx++] = seed;
+    while(stackidx != 0){
+      s = stack[--stackidx];
+      instack[s] = 0;
+      if(!ift->l[s]){
+        ift->l[s] = 1;
+        soff = s*g->adjacency;
+        soffn= soff + g->adjacency;
+        for(i = soff;i < soffn;i++){
+          t = g->neighbors[i];
+          if(g->active[i] && g->weights[i] > ift->c[seed] && !ift->l[t] && !instack[t]){
+            stack[stackidx++] = t;
+            instack[s] = 1;
+          }
         }
       }
     }
   }
-
-
-  // find Directed Rooted Tree (DRT)
-  free(tree);
-  at_grapharray_destroy(&g);
-  at_arrayu64_destroy(&sback);
-  at_arrayu64_destroy(&sobj);
-  return ift;
 }
 
-AtArrayU64*
-at_seeds_from_mask(AtArrayU8* mask){
-  uint64_t  * seeds_data = malloc(mask->h.num_elements << 4); // numelem x 2^1 pairs x 2^3 bytes
-  uint64_t    k = 0, i;
-  for(i = 0; i < mask->h.num_elements; i++){
-    if(mask->data[i] > 0){
-      seeds_data[k++] = i;
-      seeds_data[k++] = mask->data[i];
-    }
-  }
-  uint64_t shape[2]   = {k>>1,2};
-  seeds_data = realloc(seeds_data,k << 3);
-  AtArrayU64* seeds   = at_arrayu64_new_with_data(2,shape,seeds_data,false);
-  seeds->h.owns_data  = true;
-  return seeds;
+
+AtIFT*
+at_orfc_arrayu8(AtArrayU8     * array,
+                AtGraphArray  * g,
+                AtConnectivity  conn,
+                AtSeeds       * seeds,
+                uint64_t        lblback,
+                AtPolicy        po){
+  uint64_t off, i,j, k, a, b, size;
+  AtSeeds* sback, *sobj;
+  // get only background seeds by using lblback
+  at_seeds_split(seeds, &sback, &sobj, lblback);
+
+  // find energy by applying ift with background seeds
+  AtIFT* ift = at_ift_apply_arrayu8(array,g,conn,sback,po);
+  memset(ift->l,0,array->h.num_elements);
+
+  // regenerate graph
+  at_grapharrayu8_renew_edges(g);
+
+  // create queue
+  uint64_t *q = malloc(sizeof(uint64_t)*sobj->n);
+  memcpy(q,sobj->s,sizeof(uint64_t)*sobj->n);
+
+  // sort queue based on ift->c (Copt)
+  quickSort(q,0,sobj->n-1,ift->c);
+
+  // apply DFS
+  uint64_t *s  = malloc(array->h.num_elements << 3);
+  uint8_t*  instack = malloc(array->h.num_elements);
+  memset(instack,0,array->h.num_elements);
+  uint64_t  si = 0;
+
+  for(i = 0; i < sobj->n; i++)
+    at_orfc_arrayu8_dfs(q[i],g,s,si,ift,instack);
+  free(instack);
+  free(s);
+  free(q);
+  at_seeds_destroy(&sback);
+  at_seeds_destroy(&sobj);
+
+
+//  // remove
+//  size = g->h->num_elements * g->adjacency;
+//  for(i = 0, a = 0; i < size; i += g->adjacency, a++){
+//    for(k = 0; k < g->adjacency; k++){
+//      off = i+k;
+//      if(g->active[off]){
+//        b = g->neighbors[off];
+//        if(conn.o == AT_MAXIMIZATION && g->weights[off] <= ift->c[sobj->s[0]] ||
+//           conn.o == AT_MINIMIZATION && g->weights[off] >= ift->c[sobj->s[0]])
+//          g->active[off] = 0;
+//      }
+//    }
+//  }
+
+//  // find Directed Rooted Tree (DRT)
+//  uint64_t* tree = malloc(array->h.num_elements << 3);
+//  memset(ift->l,lblback,array->h.num_elements);
+//  uint64_t  top  = 1, offa;
+//  uint8_t lblobj = sobj->l[0];
+
+//  for(i = 0; i < sobj->n; i++){
+//    tree[top++] = sobj->s[i];
+//    ift->l[sobj->s[i]] = lblobj;
+//  }
+//  for(i = 0; i < top; i++){
+//    a   = tree[i];
+//    offa = g->adjacency * a;
+//    for(k = 0; k < g->adjacency; k++){
+//      b = g->neighbors[offa+k];
+//      if(ift->l[b] != lblobj && g->active[offa+k]){
+//        ift->l[b] = lblobj;
+//        tree[top++] = b;
+//      }
+//    }
+//  }
+//  free(tree);
+//  at_grapharray_destroy(&g);
+  return ift;
 }

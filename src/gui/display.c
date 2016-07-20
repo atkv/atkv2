@@ -24,6 +24,7 @@
 
 static GHashTable* hash;
 static GtkApplication* app;
+static AtKey lastKey;
 
 static void
 at_display_activate(GtkApplication* app, gpointer user_data){
@@ -49,6 +50,13 @@ at_display_key_press_event(GtkWidget* widget,
                            GdkEvent * event,
                            gpointer   user_data){
   GdkEventKey* eventkey = (GdkEventKey*) event;
+  switch(eventkey->keyval){
+  case GDK_KEY_A:
+  case GDK_KEY_a:
+    lastKey = AT_KEY_A;break;
+  case GDK_KEY_Escape:
+    lastKey = AT_KEY_ESCAPE;break;
+  }
 
   if(eventkey->keyval != GDK_KEY_space)
     gtk_main_quit();
@@ -75,15 +83,7 @@ at_display_show_image(AtImageWindow *window, AtArrayU8 *image){
 
 AtImageWindow*
 at_display_show_image_by_name(const char *name, AtArrayU8 *image){
-  AtImageWindow* imagewindow;
-  if(!g_hash_table_contains(hash,name)){
-    imagewindow = at_imagewindow_new();
-    g_signal_connect(GTK_WIDGET(imagewindow),"key-press-event"  , G_CALLBACK(at_display_key_press_event), NULL);
-    g_signal_connect(GTK_WIDGET(imagewindow),"key-release-event", G_CALLBACK(at_display_key_release_event), NULL);
-    g_hash_table_insert(hash,(gpointer)name,imagewindow);
-  }else{
-    imagewindow = g_hash_table_lookup(hash,name);
-  }
+  AtImageWindow* imagewindow = at_display_imagewindow(name);
   at_imagewindow_set(imagewindow,image);
   gtk_widget_show_all(GTK_WIDGET(imagewindow));
   return imagewindow;
@@ -92,7 +92,7 @@ at_display_show_image_by_name(const char *name, AtArrayU8 *image){
 AtKey
 at_display_wait_key(){
   gtk_main();
-  return 0;
+  return lastKey;
 }
 
 AtKey
@@ -102,7 +102,16 @@ at_display_wait_key_until(uint32_t miliseconds){
 
 AtImageWindow*
 at_display_imagewindow(const char *name){
-
+  AtImageWindow* imagewindow;
+  if(!g_hash_table_contains(hash,name)){
+    imagewindow = at_imagewindow_new();
+    g_signal_connect(GTK_WIDGET(imagewindow),"key-press-event"  , G_CALLBACK(at_display_key_press_event), NULL);
+    g_signal_connect(GTK_WIDGET(imagewindow),"key-release-event", G_CALLBACK(at_display_key_release_event), NULL);
+    g_hash_table_insert(hash,(gpointer)name,imagewindow);
+  }else{
+    imagewindow = g_hash_table_lookup(hash,name);
+  }
+  return imagewindow;
 }
 void
 at_display_set_mouse_callback(AtImageWindow* window, AtMouseCallback mouse_callback, void* user_data){
