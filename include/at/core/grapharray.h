@@ -52,8 +52,22 @@ typedef struct AtGraphArray{
 #define at_grapharray_new(array, adjacency, weighting) _Generic((array), \
   AtArrayU8*: at_grapharrayu8_new)(array, adjacency, weighting)
 typedef double
-(*AtWeightingFuncu8) (AtArrayU8* graph, uint64_t s, uint64_t t);
+(*AtWeightingFuncu8) (AtArrayU8* graph, uint64_t s, uint64_t t, void* params);
 
+/**
+ * @brief Weighting information
+ */
+typedef struct AtWeighting{
+  AtWeightingFuncu8 f; /*!< weighting function for arc <s,t> */
+  void* params;        /*!< pointer to params (number, structure...)*/
+}AtWeighting;
+
+AtWeighting at_wdiffabs;
+AtWeighting at_wdiffabsc;
+AtWeighting at_wdiffabscalpha;
+
+// Weighting functions
+//---------------------
 /**
  * @brief at_weighting_diff_abs
  * @param array
@@ -62,7 +76,7 @@ typedef double
  * @return
  */
 double
-at_weighting_diff_abs(AtArrayU8* array, uint64_t s, uint64_t t);
+at_weighting_diff_abs(AtArrayU8* array, uint64_t s, uint64_t t, void* params);
 /**
  * @brief at_weighting_diff_absc
  * @param array
@@ -71,7 +85,20 @@ at_weighting_diff_abs(AtArrayU8* array, uint64_t s, uint64_t t);
  * @return
  */
 double
-at_weighting_diff_absc(AtArrayU8* array, uint64_t s, uint64_t t);
+at_weighting_diff_absc(AtArrayU8* array, uint64_t s, uint64_t t, void* params);
+/**
+ * @brief at_weighting_diff_absc_alpha
+ * @param array
+ * @param s
+ * @param t
+ * @param params
+ * @return
+ */
+double
+at_weighting_diff_absc_alpha(AtArrayU8* array, uint64_t s, uint64_t t, void* params);
+
+// GraphArray functions
+//---------------------
 
 /**
  * @brief at_grapharray_create
@@ -86,8 +113,15 @@ at_grapharray_create();
  * @return
  */
 AtGraphArray*
-at_grapharrayu8_new(AtArrayU8* array, AtAdjacency adjacency, AtWeightingFuncu8 weighting);
-
+at_grapharrayu8_new(AtArrayU8*  array,
+                    AtAdjacency adjacency,
+                    AtWeighting w);
+/**
+ * @brief at_grapharrayu8_renew
+ * @param g
+ */
+void
+at_grapharrayu8_renew_edges(AtGraphArray* g);
 /**
  * @brief at_grapharray_remove_arc
  * @param g
@@ -141,7 +175,15 @@ at_grapharray_add_edge(AtGraphArray* grapharray, uint64_t s, uint64_t t);
  */
 double
 at_grapharray_get(AtGraphArray* graph, uint64_t s, uint64_t t);
-
+/**
+ * @brief Get index for reverse edge
+ * @param g
+ * @param s
+ * @param t
+ * @return
+ */
+uint64_t
+at_grapharray_get_indexr(AtGraphArray* g, uint64_t s, uint64_t t);
 /**
  * @brief at_grapharray_destroy
  * @param grapharray

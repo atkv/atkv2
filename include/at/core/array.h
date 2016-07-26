@@ -335,7 +335,31 @@ at_arrayu8_set_nd_many(AtArrayU8* ar, uint64_t *coords, uint8_t* value);
  */
 void
 at_arrayu64_destroy(AtArrayU64** array);
+/**
+ * @brief at_arrayu32_new
+ * @param dim
+ * @param shape
+ * @return
+ */
+AtArrayU32*
+at_arrayu32_new(uint8_t dim, uint64_t* shape);
+/**
+ * @brief at_arrayu64_new_with_data
+ * @param dim
+ * @param shape
+ * @param data
+ * @param copy
+ * @return
+ */
+AtArrayU32*
+at_arrayu32_new_with_data(uint8_t dim, uint64_t* shape, uint32_t* data, bool copy);
 
+/**
+ * @brief at_arrayu32_destroy
+ * @param array_ptr
+ */
+void
+at_arrayu32_destroy(AtArrayU32** array_ptr);
 
 AT_END_DECLS
 #endif

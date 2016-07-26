@@ -1,6 +1,4 @@
-#include <at/core/array.h>
-#include <at/imgproc/drawing.h>
-#include <at/imgproc/img_io.h>
+#include <at/imgproc.h>
 #include <stdlib.h>
 #include <setjmp.h>
 #include <stdarg.h>

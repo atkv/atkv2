@@ -49,7 +49,7 @@ test_grapharray(void** state){
   uint8_t           data[4]       = {0,1,1,1};         // 304-4
 
   array      = at_arrayu8_new_with_data(2,data_shape,data,true);
-  grapharray = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_weighting_diff_abs);
+  grapharray = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_wdiffabs);
   assert_non_null(grapharray);
   assert_non_null(grapharray->active);
   assert_non_null(grapharray->neighbors);
@@ -74,7 +74,7 @@ test_grapharray_tarjan(void** state){
   // Create our structures
   uint64_t      shape[2]   = {3,3}, i;
   AtArrayU8   * array      = at_arrayu8_new(2, shape);
-  AtGraphArray* g = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_weighting_diff_abs);
+  AtGraphArray* g = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_wdiffabs);
 
   // Remove some edges
   uint64_t arcs_removed[]  = {1,0, 0,3, 4,1, 3,4, 2,5, 5,2, 7,8, 7,6, 6,3, 3,6,

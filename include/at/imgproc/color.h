@@ -50,5 +50,8 @@ at_arrayu8_lut_random(AtArrayU8* array);
 AtArrayU8*
 at_arrayu8_lut_random_multi(AtArrayU8* array, uint8_t nchannels);
 
+AtArrayU32*
+at_arrayu32_lut(AtArrayU32* array, uint64_t* lut);
+
 AT_END_DECLS
 #endif

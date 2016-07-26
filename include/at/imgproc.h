@@ -16,22 +16,16 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#ifndef AT_CORE_H
-#define AT_CORE_H
+#ifndef AT_IMGPROC_H
+#define AT_IMGPROC_H
 
-#include <at/core/version.h>
-#include <at/core/macro.h>
-#include <at/core/i18n-lib.h>
-#include <at/core/optimization.h>
-#include <at/core/type.h>
-#include <at/core/error.h>
-#include <at/core/array.h>
-#include <at/core/grapharray.h>
-#include <at/core/list.h>
-#include <at/core/pqueue.h>
-#include <at/core/queue.h>
-#include <at/core/scc.h>
-#include <at/core/vec.h>
-#include <at/core/znzfile.h>
+#include <at/core.h>
+#include <at/imgproc/color.h>
+#include <at/imgproc/dicom.h>
+#include <at/imgproc/drawing.h>
+#include <at/imgproc/seed.h>
+#include <at/imgproc/ift.h>
+#include <at/imgproc/img_io.h>
+#include <at/imgproc/nifti.h>
 
 #endif

@@ -16,22 +16,15 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#ifndef AT_CORE_H
-#define AT_CORE_H
+#ifndef AT_GUI_H
+#define AT_GUI_H
 
-#include <at/core/version.h>
-#include <at/core/macro.h>
-#include <at/core/i18n-lib.h>
-#include <at/core/optimization.h>
-#include <at/core/type.h>
-#include <at/core/error.h>
-#include <at/core/array.h>
-#include <at/core/grapharray.h>
-#include <at/core/list.h>
-#include <at/core/pqueue.h>
-#include <at/core/queue.h>
-#include <at/core/scc.h>
-#include <at/core/vec.h>
-#include <at/core/znzfile.h>
+#include <at/core.h>
+#include <at/imgproc.h>
+#include <at/gui/type.h>
+#include <at/gui/imageviewer.h>
+#include <at/gui/trackbar.h>
+#include <at/gui/imagewindow.h>
+#include <at/gui/display.h>
 
 #endif

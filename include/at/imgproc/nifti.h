@@ -95,45 +95,45 @@ typedef struct AtNifti1Extension{
  * @brief Nifti Image
  */
 typedef struct AtNiftiImage{
-  AtNifti1Extension    *ext_list;        /*000+8*//*!< List of extensions */
-  AtArrayU16           *ar;              /*008+8*//*!< Array of data */
-  char                 *fname;           /*016+8*//*!< filename */
-  char                 *iname;           /*024+8*//*!< name of image file */
-  float                 qto_xyz[16];     /*032+8*//*!< quaternion xyz */
-  float                 sto_xyz[16];     /*040+8*//*!< */
-  float                 qto_ijk[16];     /*048+8*//*!< quaternion ijk */
-  float                 sto_ijk[16];     /*056+8*//*!< */
-  float                 quatern[3];      /*064+8*//*!< quaternion */
-  float                 qoffset[3];      /*072+8*//*!< offset of quaternion */
-  float                 qfac;            /*080+8*//*!< */
-  float                 scl_slope;       /*088+8*//*!< */
-  float                 scl_inter;       /*096+8*//*!< */
-  float                 slice_duration;  /*104+8*//*!< */
-  float                 cal_min;         /*112+8*//*!< */
-  float                 cal_max;         /*120+8*//*!< */
-  uint32_t              iname_offset;    /*128+4*//*!< */
-  uint32_t              num_ext;         /*132+4*//*!< */
-  uint32_t              byteorder;       /*136+4*//*!< */
-  AtNiftiDatatype       datatype;        /*140+2*//*!< */
-  uint16_t              ndim;            /*142+2*//*!< */
-  uint16_t              dim[7];          /*144+2*//*!< */
-  uint16_t              pixdim[7];       /*146+2*//*!< */
-  uint16_t              slice_start;     /*148+2*//*!< */
-  uint16_t              slice_end;       /*150+2*//*!< */
-  AtNiftiXformCode      qform_code;      /*152+1*//*!< */
-  AtNiftiXformCode      sform_code;      /*153+1*//*!< */
-  AtNiftiFileType       nifti_type;      /*154+1*//*!< */
-  AtAnalyze75OrientCode analyze75_orient;/*155+1*//*!< */
-  char                  descrip[80];     /*156+1*//*!< */
-  char                  aux_file[24];    /*157+1*//*!< */
-  uint8_t               swapsize;        /*158+1*//*!< */
-  uint8_t               slice_code;      /*159+1*//*!< */
-  uint8_t               xyz_units;       /*160+1*//*!< */
-  uint8_t               time_units;      /*161+1*//*!< */
-  uint8_t               freq_dim;        /*162+1*//*!< */
-  uint8_t               phase_dim;       /*163+1*//*!< */
-  uint8_t               slice_dim;       /*164+1*//*!< */
-  uint8_t               pd[3];           /*165+3*//*!< */
+  AtNifti1Extension    *ext_list;        /*000+008*//*!< List of extensions */
+  AtArrayU16           *ar;              /*008+008*//*!< Array of data */
+  char                 *fname;           /*016+008*//*!< filename */
+  char                 *iname;           /*024+008*//*!< name of image file */
+  float                 qto_xyz[16];     /*032+128*//*!< quaternion xyz */
+  float                 sto_xyz[16];     /*160+128*//*!< */
+  float                 qto_ijk[16];     /*288+128*//*!< quaternion ijk */
+  float                 sto_ijk[16];     /*416+128*//*!< */
+  float                 quatern[3];      /*544+024*//*!< quaternion */
+  float                 qoffset[3];      /*568+024*//*!< offset of quaternion */
+  float                 qfac;            /*592+008*//*!< */
+  float                 scl_slope;       /*600+008*//*!< */
+  float                 scl_inter;       /*608+008*//*!< */
+  float                 slice_duration;  /*616+008*//*!< */
+  float                 cal_min;         /*624+008*//*!< */
+  float                 cal_max;         /*632+008*//*!< */
+  uint32_t              iname_offset;    /*640+004*//*!< */
+  uint32_t              num_ext;         /*644+004*//*!< */
+  uint32_t              byteorder;       /*648+004*//*!< */
+  AtNiftiDatatype       datatype;        /*652+002*//*!< */
+  uint16_t              ndim;            /*654+002*//*!< */
+  uint16_t              dim[7];          /*656+014*//*!< */
+  uint16_t              pixdim[7];       /*670+014*//*!< */
+  uint16_t              slice_start;     /*684+002*//*!< */
+  uint16_t              slice_end;       /*686+002*//*!< */
+  AtNiftiXformCode      qform_code;      /*688+001*//*!< */
+  AtNiftiXformCode      sform_code;      /*689+001*//*!< */
+  AtNiftiFileType       nifti_type;      /*690+001*//*!< */
+  AtAnalyze75OrientCode analyze75_orient;/*691+001*//*!< */
+  char                  descrip[80];     /*692+080*//*!< */
+  char                  aux_file[24];    /*772+024*//*!< */
+  uint8_t               swapsize;        /*796+001*//*!< */
+  uint8_t               slice_code;      /*797+001*//*!< */
+  uint8_t               xyz_units;       /*798+001*//*!< */
+  uint8_t               time_units;      /*799+001*//*!< */
+  uint8_t               freq_dim;        /*800+001*//*!< */
+  uint8_t               phase_dim;       /*801+001*//*!< */
+  uint8_t               slice_dim;       /*802+001*//*!< */
+  uint8_t               pd[5];           /*803+005*//*!< */
 }AtNiftiImage;
 
 /**

@@ -168,4 +168,11 @@ at_arrayu8_lut_random_multi(AtArrayU8* array, uint8_t nchannels){
   return arraylut;
 }
 
-
+AtArrayU32*
+at_arrayu32_lut(AtArrayU32* array, uint64_t *lut){
+  uint64_t   i;
+  AtArrayU32* arraylut = at_arrayu32_new(array->h.dim, array->h.shape);
+  for(i = 0; i < array->h.num_elements; i++)
+    arraylut->data[i] = lut[array->data[i]];
+  return arraylut;
+}
