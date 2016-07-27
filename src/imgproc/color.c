@@ -1,4 +1,4 @@
-#include <at/imgproc/color.h>
+#include <at/imgproc.h>
 AtArrayU8*
 at_arrayu8_cvt_color(AtArrayU8 *array, AtColorType from, AtColorType to){
   AtArrayU8* newar;
@@ -176,3 +176,26 @@ at_arrayu32_lut(AtArrayU32* array, uint64_t *lut){
     arraylut->data[i] = lut[array->data[i]];
   return arraylut;
 }
+
+void
+at_arrayu8_add_brightness(AtArrayU8* array, int16_t pos){
+  uint64_t i,j;
+  uint8_t c;
+  uint8_t totalchan,colorchan;
+
+  // Treatment for grayscale, rgb and rgba
+  if(array->h.dim == 2 || array->h.shape[2] == 1) {totalchan = 1;colorchan=1;}
+  else if(array->h.shape[2] == 3){totalchan = 3;colorchan=3;}
+  else{totalchan = 4; colorchan = 3;}
+
+  // Saturated sum and without alpha
+  for(i = 0; i < array->h.num_elements; i+=totalchan){
+    for(j = i; j < i+colorchan; j++){
+      c = array->data[j] + pos;
+      if(pos > 0 && c < array->data[j])      c = UINT8_MAX;
+      else if(pos < 0 && c > array->data[j]) c = 0;
+      array->data[j] = c;
+    }
+  }
+}
+

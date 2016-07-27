@@ -16,7 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/imgproc/drawing.h>
+#include <at/imgproc.h>
 #include <float.h>
 #include <math.h>
 /*=============================================================================

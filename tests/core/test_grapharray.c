@@ -16,7 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/core/scc.h>
+#include <at/core.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdalign.h>
@@ -24,7 +24,6 @@
 #include <cmocka.h>
 #include <math.h>
 #include <time.h>
-#include <at/core/type.h>
 void
 test_grapharray_values(AtGraphArray* graph1, AtGraphArray* graph2, uint64_t num_elements){
   uint64_t i;

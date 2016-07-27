@@ -1,8 +1,5 @@
-#include <at/gui/display.h>
-#include <at/imgproc/img_io.h>
-#include <at/imgproc/color.h>
-#include <at/imgproc/drawing.h>
-#include <at/imgproc/ift.h>
+#include <at/gui.h>
+#include <at/imgproc.h>
 
 //#define AT_SAVE
 

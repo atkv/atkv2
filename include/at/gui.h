@@ -19,12 +19,30 @@
 #ifndef AT_GUI_H
 #define AT_GUI_H
 
+#define AT_GUI_H_INSIDE
+
+#ifndef AT_CORE_H
 #include <at/core.h>
+#endif
+#ifndef AT_IMGPROC_H
 #include <at/imgproc.h>
+#endif
+#ifndef AT_GUI_TYPE_H
 #include <at/gui/type.h>
+#endif
+#ifndef AT_IMAGEVIEWER_H
 #include <at/gui/imageviewer.h>
+#endif
+#ifndef AT_TRACKBAR_H
 #include <at/gui/trackbar.h>
+#endif
+#ifndef AT_IMAGEWINDOW_H
 #include <at/gui/imagewindow.h>
+#endif
+#ifndef AT_DISPLAY_H
 #include <at/gui/display.h>
+#endif
+
+#undef AT_GUI_H_INSIDE
 
 #endif

@@ -24,12 +24,7 @@
  * `at_display_wait_key()` to enter a loop waiting the user interaction
  */
 
-#include <at/gui/display.h>    // for GUI
-#include <at/imgproc/img_io.h> // for PNG Reading
-#include <at/imgproc/drawing.h>// for drawing
-#include <at/imgproc/ift.h>    // for IFT
-#include <at/imgproc/color.h>  // for IFT
-
+#include <at/gui.h>     // for GUI and Image processing
 
 #define BACKGROUND 0
 #define OBJECT     255

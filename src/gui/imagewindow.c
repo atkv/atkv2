@@ -1,7 +1,4 @@
-#include <at/gui/imagewindow.h>
-#include <at/core/version.h>
-#include <at/core/i18n-lib.h>
-#include <at/imgproc/img_io.h>
+#include <at/gui.h>
 /*=============================================================================
  PRIVATE API
  ============================================================================*/
@@ -23,7 +20,9 @@ typedef struct AtImageWindowPrivate{
   GtkWidget    * box_main;
   GtkWidget    * statusbar;
   GtkWidget    * lbl_color;
+  GtkWidget    * trackbox;
   GdkPixbuf    * logo;
+  GHashTable   * trackbars;
   guint          statusctx;
   char           textposition[8];
   char           textcolor[128];
@@ -186,6 +185,7 @@ at_imagewindow_init(AtImageWindow *self){
   priv->btn_about            = GTK_WIDGET(gtk_tool_button_new(NULL,NULL));
   priv->btn_help             = GTK_WIDGET(gtk_tool_button_new(NULL,NULL));
   priv->lbl_color            = gtk_label_new("");
+  priv->trackbars            = g_hash_table_new(g_str_hash, g_str_equal);
 
   gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(priv->btn_save)     ,"document-save");
   gtk_tool_button_set_icon_name(GTK_TOOL_BUTTON(priv->btn_zoomin)   ,"zoom-in");
@@ -290,4 +290,29 @@ void
 at_imagewindow_set_mouse_callback(AtImageWindow* window, AtMouseCallback mouse_callback, void* user_data){
   AtImageWindowPrivate* priv = at_imagewindow_get_instance_private(window);
   at_imageviewer_set_mouse_callback(priv->imgv, mouse_callback, user_data);
+}
+
+AtTrackbar*
+at_imagewindow_add_trackbar(AtImageWindow *window, const char *trackname, double* variable, double vmin, double vmax){
+  AtImageWindowPrivate* priv = at_imagewindow_get_instance_private(window);
+  if(g_hash_table_contains(priv->trackbars,trackname))
+    return AT_TRACKBAR(g_hash_table_lookup(priv->trackbars,trackname));
+
+  AtTrackbar* t = at_trackbar_new_named(trackname);
+  at_trackbar_set_variable(t,variable);
+  at_trackbar_set_min(t,vmin);
+  at_trackbar_set_max(t,vmax);
+  g_hash_table_insert(priv->trackbars,(gpointer)trackname,t);
+  gtk_box_pack_end(GTK_BOX(priv->box_main),GTK_WIDGET(t),FALSE,FALSE,0);
+  return t;
+}
+
+void
+at_imagewindow_remove_trackbar(AtImageWindow *window, const char *trackname){
+  AtImageWindowPrivate* priv = at_imagewindow_get_instance_private(window);
+  if(g_hash_table_contains(priv->trackbars,trackname)){
+    AtTrackbar* t = g_hash_table_lookup(priv->trackbars,trackname);
+    gtk_container_remove(GTK_CONTAINER(priv->box_main),GTK_WIDGET(t));
+    g_hash_table_remove(priv->trackbars,trackname);
+  }
 }

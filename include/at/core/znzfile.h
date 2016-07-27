@@ -15,10 +15,12 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
+#if !defined(AT_CORE_H_INSIDE)
+#error "Only <at/core.h> can be included directly."
+#endif
 #ifndef AT_ZNZFILE_H
 #define AT_ZNZFILE_H
-#include <at/core/macro.h>
-#include <at/core/error.h>
+#include <at/core.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <zlib.h>

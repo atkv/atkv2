@@ -15,13 +15,15 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
+#if !defined(AT_GUI_H_INSIDE)
+#error "Only <at/gui.h> can be included directly."
+#endif
 #ifndef AT_IMAGEVIEWER_H
 #define AT_IMAGEVIEWER_H
 
 #include <gtk/gtk.h>
 #include <stdint.h>
-#include <at/core/array.h>
-#include <at/gui/type.h>
+#include <at/gui.h>
 
 AT_BEGIN_DECLS
 

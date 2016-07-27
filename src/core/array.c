@@ -15,9 +15,7 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#include <at/core/array.h>
-#include <at/core/macro.h>
-#include <at/core/znzfile.h>
+#include <at/core.h>
 /*=============================================================================
  PRIVATE API
  ============================================================================*/
@@ -132,6 +130,23 @@ at_arrayu32_new_with_data(uint8_t dim, uint64_t* shape, uint32_t* data, bool cop
 void
 at_arrayu8_fill(AtArrayU8* array, uint8_t value){
   memset(array->data,value,array->h.num_elements * sizeof(uint8_t));
+}
+
+void
+at_arrayu8_add_scalar(AtArrayU8* array, uint8_t value){
+  uint64_t i;
+  for(i = 0; i < array->h.num_elements; i++)
+    array->data[i] += value;
+}
+void
+at_arrayu8_add_scalar_clamped(AtArrayU8* array, uint8_t value){
+  uint64_t i;
+  uint8_t  c;
+  for(i = 0; i < array->h.num_elements; i++){
+    c = array->data[i] + value;
+    if(c < array->data[i]) c = UINT8_MAX;
+    array->data[i] = c;
+  }
 }
 
 uint8_t

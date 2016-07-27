@@ -16,7 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/gui/display.h>
+#include <at/gui.h>
 
 /*=============================================================================
  PRIVATE API
@@ -58,7 +58,15 @@ at_display_key_press_event(GtkWidget* widget,
     lastKey = AT_KEY_ESCAPE;break;
   }
 
-  if(eventkey->keyval != GDK_KEY_space)
+  if(eventkey->keyval != GDK_KEY_space &&
+     eventkey->keyval != GDK_KEY_Super_L &&
+     eventkey->keyval != GDK_KEY_Super_R &&
+     eventkey->keyval != GDK_KEY_Control_L &&
+     eventkey->keyval != GDK_KEY_Control_R &&
+     eventkey->keyval != GDK_KEY_Shift_L &&
+     eventkey->keyval != GDK_KEY_Shift_R &&
+     eventkey->keyval != GDK_KEY_Alt_L
+   )
     gtk_main_quit();
   return false;
 }
@@ -119,12 +127,12 @@ at_display_set_mouse_callback(AtImageWindow* window, AtMouseCallback mouse_callb
 }
 
 
-//AtTrackbar*
-//at_display_add_trackbar(AtImageWindow *window, const char *trackname, int vmin, int vmax){
+AtTrackbar*
+at_display_add_trackbar(AtImageWindow *window, const char *trackname, double *variable, double vmin, double vmax){
+  return at_imagewindow_add_trackbar(window, trackname, variable, vmin, vmax);
+}
 
-//}
-
-//void
-//at_display_remove_trackbar(AtImageWindow *window, const char *trackname){
-
-//}
+void
+at_display_remove_trackbar(AtImageWindow *window, const char *trackname){
+  at_imagewindow_remove_trackbar(window, trackname);
+}
