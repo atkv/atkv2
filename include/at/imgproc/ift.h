@@ -15,14 +15,13 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
+#if !defined(AT_IMGPROC_H_INSIDE)
+#error "Only <at/imgproc.h> can be included directly."
+#endif
 #ifndef AT_IFT_H
 #define AT_IFT_H
-#include <at/core/array.h>
-#include <at/core/grapharray.h>
-#include <at/core/optimization.h>
-#include <at/core/macro.h>
-#include <at/core/scc.h>
-#include <at/imgproc/seed.h>
+#include <at/core.h>
+#include <at/imgproc.h>
 AT_BEGIN_DECLS
 /**
  * Necessary info for IFT

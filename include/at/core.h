@@ -19,19 +19,49 @@
 #ifndef AT_CORE_H
 #define AT_CORE_H
 
+#define AT_CORE_H_INSIDE
+#ifndef AT_VERSION_H
 #include <at/core/version.h>
+#endif
+#ifndef AT_MACRO_H
 #include <at/core/macro.h>
+#endif
+#ifndef AT_I18N_LIB_H
 #include <at/core/i18n-lib.h>
+#endif
+#ifndef AT_OPTIMIZATION_H
 #include <at/core/optimization.h>
+#endif
+#ifndef AT_TYPE_H
 #include <at/core/type.h>
+#endif
+#ifndef AT_ERROR_H
 #include <at/core/error.h>
+#endif
+#ifndef AT_ARRAY_H
 #include <at/core/array.h>
+#endif
+#ifndef AT_GRAPHARRAY_H
 #include <at/core/grapharray.h>
+#endif
+#ifndef AT_LIST_H
 #include <at/core/list.h>
-#include <at/core/pqueue.h>
+#endif
+#ifndef AT_QUEUE_H
 #include <at/core/queue.h>
+#endif
+#ifndef AT_PQUEUE_H
+#include <at/core/pqueue.h>
+#endif
+#ifndef AT_SCC_H
 #include <at/core/scc.h>
+#endif
+#ifndef AT_VEC_H
 #include <at/core/vec.h>
+#endif
+#ifndef AT_ZNZFILE_H
 #include <at/core/znzfile.h>
+#endif
 
+#undef AT_CORE_H_INSIDE
 #endif

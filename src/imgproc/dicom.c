@@ -15,7 +15,7 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#include <at/imgproc/dicom.h>
+#include <at/imgproc.h>
 #include <stdio.h>
 #include <ctype.h>
 /*=============================================================================

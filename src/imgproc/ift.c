@@ -15,13 +15,10 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#include <at/imgproc/ift.h>
-#include <at/imgproc/color.h>
-#include <at/core/pqueue.h>
 #include <math.h>
-#include <at/core/macro.h>
 #include <time.h>
 #include <stdio.h>
+#include <at/imgproc.h>
 
 /*=============================================================================
  PRIVATE API

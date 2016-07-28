@@ -15,13 +15,18 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
+
+#if !defined(AT_CORE_H_INSIDE)
+#error "Only <at/core.h> can be included directly."
+#endif
+
 #ifndef AT_ARRAY_H
 #define AT_ARRAY_H
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <at/core/macro.h>
+#include <at/core.h>
 AT_BEGIN_DECLS
 /*=============================================================================
  STRUCTURE
@@ -234,6 +239,20 @@ at_arrayu8_ones(uint8_t dim, uint64_t* shape);
  */
 void
 at_arrayu8_fill(AtArrayU8* array, uint8_t value);
+/**
+ * @brief at_arrayu8_add_scalar
+ * @param array
+ * @param value
+ */
+void
+at_arrayu8_add_scalar(AtArrayU8* array, uint8_t value);
+/**
+ * @brief at_arrayu8_add_scalar_clamped
+ * @param array
+ * @param value
+ */
+void
+at_arrayu8_add_scalar_clamped(AtArrayU8* array, uint8_t value);
 /**
  * @brief at_arrayu8_max
  * @param array

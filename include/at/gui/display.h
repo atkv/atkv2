@@ -15,11 +15,13 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
+#if !defined(AT_GUI_H_INSIDE)
+#error "Only <at/gui.h> can be included directly."
+#endif
 #ifndef AT_DISPLAY_H
 #define AT_DISPLAY_H
-#include <at/core/array.h>
-#include <at/gui/imagewindow.h>
-#include <at/gui/trackbar.h>
+#include <at/core.h>
+#include <at/gui.h>
 AT_BEGIN_DECLS
 /*=============================================================================
  PUBLIC STRUCTURES
@@ -83,15 +85,15 @@ at_display_set_mouse_callback(AtImageWindow* window, AtMouseCallback mouse_callb
  * @param vmax
  * @return
  */
-//AtTrackbar*
-//at_display_add_trackbar(AtImageWindow* window, const char* trackname, int vmin, int vmax);
+AtTrackbar*
+at_display_add_trackbar(AtImageWindow* window, const char* trackname, double *variable, double vmin, double vmax);
 /**
  * @brief at_display_remove_trackbar
  * @param window
  * @param trackname
  */
-//void
-//at_display_remove_trackbar(AtImageWindow* window, const char* trackname);
+void
+at_display_remove_trackbar(AtImageWindow* window, const char* trackname);
 
 AT_END_DECLS
 #endif

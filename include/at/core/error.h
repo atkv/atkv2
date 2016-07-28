@@ -15,9 +15,12 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
+#if !defined(AT_CORE_H_INSIDE)
+#error "Only <at/core.h> can be included directly."
+#endif
 #ifndef AT_ERROR_H
 #define AT_ERROR_H
-#include <at/core/macro.h>
+#include <at/core.h>
 AT_BEGIN_DECLS
 /**
  * @brief error

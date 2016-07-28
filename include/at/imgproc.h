@@ -19,13 +19,30 @@
 #ifndef AT_IMGPROC_H
 #define AT_IMGPROC_H
 
+#define AT_IMGPROC_H_INSIDE
+#ifndef AT_CORE_H
 #include <at/core.h>
+#endif
+#ifndef AT_COLOR_H
 #include <at/imgproc/color.h>
+#endif
+#ifndef AT_DICOM_H
 #include <at/imgproc/dicom.h>
+#endif
+#ifndef AT_DRAWING_H
 #include <at/imgproc/drawing.h>
+#endif
+#ifndef AT_SEED_H
 #include <at/imgproc/seed.h>
+#endif
+#ifndef AT_IFT_H
 #include <at/imgproc/ift.h>
+#endif
+#ifndef AT_IMGIO_H
 #include <at/imgproc/img_io.h>
+#endif
+#ifndef AT_NIFTI_H
 #include <at/imgproc/nifti.h>
-
+#endif
+#undef AT_IMGPROC_H_INSIDE
 #endif
