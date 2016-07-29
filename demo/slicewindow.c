@@ -16,39 +16,22 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#ifndef AT_GUI_H
-#define AT_GUI_H
+#include <at/gui.h>
+static void
+activate(GtkApplication* app, gpointer user_data){
+  AtNiftiImage * nifti     = at_niftiimage_read("MRHead.nii.gz", true, NULL);
+  AtSliceWindow* window = at_slicewindow_new();
+  at_slicewindow_set_nifti(window, nifti);
+  gtk_widget_show_all(GTK_WIDGET(window));
+  g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+  gtk_main();
+  at_niftiimage_destroy(&nifti);
+}
 
-#define AT_GUI_H_INSIDE
-
-#ifndef AT_CORE_H
-#include <at/core.h>
-#endif
-#ifndef AT_IMGPROC_H
-#include <at/imgproc.h>
-#endif
-#ifndef AT_GUI_TYPE_H
-#include <at/gui/type.h>
-#endif
-#ifndef AT_IMAGEVIEWER_H
-#include <at/gui/imageviewer.h>
-#endif
-#ifndef AT_TRACKBAR_H
-#include <at/gui/trackbar.h>
-#endif
-#ifndef AT_IMAGEWINDOW_H
-#include <at/gui/imagewindow.h>
-#endif
-#ifndef AT_SLICEVIEWER_H
-#include <at/gui/sliceviewer.h>
-#endif
-#ifndef AT_SLICEWINDOW_H
-#include <at/gui/slicewindow.h>
-#endif
-#ifndef AT_DISPLAY_H
-#include <at/gui/display.h>
-#endif
-
-#undef AT_GUI_H_INSIDE
-
-#endif
+int main(int argc, char* argv[]){
+  GtkApplication* app = gtk_application_new("io.github.atkv",G_APPLICATION_FLAGS_NONE);
+  g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
+  int status = g_application_run(G_APPLICATION(app),argc, argv);
+  g_object_unref(app);
+  return status;
+}

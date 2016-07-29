@@ -34,7 +34,7 @@ at_display_activate(GtkApplication* app, gpointer user_data){
 static void __attribute__((constructor))
 at_display_init(){
   hash = g_hash_table_new(g_str_hash,g_str_equal);
-  app  = gtk_application_new("io.github.atkv",G_APPLICATION_FLAGS_NONE);
+  app  = gtk_application_new("io.github.atkv.display",G_APPLICATION_FLAGS_NONE);
   g_signal_connect(app, "activate", G_CALLBACK(at_display_activate), NULL);
   g_application_run(G_APPLICATION(app), 0, NULL);
 }

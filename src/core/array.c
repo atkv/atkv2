@@ -410,7 +410,8 @@ at_arrayheader_sub(AtArrayHeader* h, AtArrayHeader* parent_h, AtRange* ranges){
   output->data = realloc(output->data,output->h.num_elements);   \
   output->h.owns_data = true;                                    \
   for(i = 0; i < output->h.num_elements; i++){                   \
-    at_index_to_nd(output->h.dim,output->h.step,i,cnd);         \
+    at_index_to_nd(output->h.dim,output->h.step,i,cnd);          \
+    p1d = 0;                                                     \
     for(k = 0; k < output->h.dim; k++)                           \
       p1d += (cnd[k] + ranges[k].from)*ar->h.step[k];            \
     output->data[i] = ar->data[p1d];                             \
@@ -425,24 +426,7 @@ at_arrayu16_sub_u8(AtArrayU16* ar, AtRange* ranges, AtArrayU8** outputp){
   at_arrayheader_sub(&output->h,&ar->h,ranges);
   output->h.elemsize     = 1;
   *outputp = output;
-  //COPY(ar,output,i,k)
-
-  uint64_t *cnd   = malloc(output->h.dim << 3);
-  uint64_t  p1d;
-  output->h.step[output->h.dim-1] = 1;
-  for(i = output->h.dim-2; i < output->h.dim; i--)
-    output->h.step[i] = output->h.step[i+1]*output->h.shape[i+1];
-  output->data = realloc(output->data,output->h.num_elements);
-  output->h.owns_data = true;
-  for(i = 0; i < output->h.num_elements; i++){
-    at_index_to_nd(output->h.dim,output->h.step,i,cnd);
-    p1d = 0;
-    for(k = 0; k < output->h.dim; k++)
-      p1d += (cnd[k] + ranges[k].from)*ar->h.step[k];
-    output->data[i] = ar->data[p1d];
-  }
-  free(cnd);
-
+  COPY(ar,output,i,k)
 }
 
 void

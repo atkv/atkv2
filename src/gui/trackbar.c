@@ -5,14 +5,16 @@
  ============================================================================*/
 
 typedef struct AtTrackbarPrivate{
-  double        * variable;
-  const char    * name;
-  GtkWidget     * scale;
-  GtkWidget     * hbox;
-  GtkWidget     * lbl_min;
-  GtkWidget     * lbl_max;
-  GtkWidget     * lbl_name;
-  AtTrackbarFunc  cb;
+  double           * variable;
+  const char       * name;
+  GtkWidget        * scale;
+  GtkWidget        * hbox;
+  GtkWidget        * lbl_min;
+  GtkWidget        * lbl_max;
+  GtkWidget        * lbl_name;
+  AtTrackbarFunc     cb;
+  AtTrackbarDataFunc cbd;
+  void*              cbd_data;
 }AtTrackbarPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE(AtTrackbar, at_trackbar, GTK_TYPE_BOX)
@@ -22,7 +24,8 @@ at_trackbar_changed(GtkRange* range, GtkScrollType type, gdouble value, gpointer
   AtTrackbar* t = AT_TRACKBAR(user_data);
   AtTrackbarPrivate* priv = at_trackbar_get_instance_private(t);
   if(priv->variable) *(priv->variable) = value;
-  if(priv->cb)       priv->cb(value);
+  if(priv->cb)       priv->cb(t, value);
+  if(priv->cbd)      priv->cbd(t, value,priv->cbd_data);
   return false;
 }
 
@@ -134,4 +137,11 @@ void
 at_trackbar_on_change(AtTrackbar* t, AtTrackbarFunc cb){
   AtTrackbarPrivate* priv = at_trackbar_get_instance_private(t);
   priv->cb = cb;
+}
+
+void
+at_trackbar_on_change_data(AtTrackbar* t, AtTrackbarDataFunc cbd, void* data){
+  AtTrackbarPrivate* priv = at_trackbar_get_instance_private(t);
+  priv->cbd = cbd;
+  priv->cbd_data = data;
 }

@@ -18,52 +18,77 @@
 #if !defined(AT_GUI_H_INSIDE)
 #error "Only <at/gui.h> can be included directly."
 #endif
-#ifndef AT_IMAGEWINDOW_H
-#define AT_IMAGEWINDOW_H
+#ifndef AT_SLICEVIEWER_H
+#define AT_SLICEVIEWER_H
 #include <at/gui.h>
 AT_BEGIN_DECLS
-/*=============================================================================
- STRUCTURE
- ============================================================================*/
-#define AT_TYPE_IMAGEWINDOW at_imagewindow_get_type()
-G_DECLARE_DERIVABLE_TYPE(AtImageWindow, at_imagewindow, AT, IMAGEWINDOW, GtkWindow)
 
-struct _AtImageWindowClass{
-  GtkWindowClass parent_class;
-};
+/*=============================================================================
+ PUBLIC STRUCTURE
+ ============================================================================*/
+typedef enum{
+  AT_SLICEVIEWER_3_1,
+  AT_SLICEVIEWER_2_2
+}AtSliceViewerLayout;
+
+typedef enum{
+  AT_AXIAL   = 0,
+  AT_CORONAL = 1,
+  AT_SAGITAL = 2
+}AtSliceType;
+
+#define AT_TYPE_SLICEVIEWER at_sliceviewer_get_type()
+G_DECLARE_DERIVABLE_TYPE(AtSliceViewer,at_sliceviewer,AT,SLICEVIEWER,GtkBin)
+typedef struct _AtSliceViewerClass{
+  GtkBinClass parent_class;
+}AtSliceViewerClass;
+
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
+
 /**
- * @brief at_imagewindow_new
+ * @brief at_sliceviewer_new
  * @return
  */
-AtImageWindow*
-at_imagewindow_new();
+AtSliceViewer*
+at_sliceviewer_new();
+
 /**
- * @brief at_imagewindow_set
- * @param window
- * @param array
+ * @brief at_sliceviewer_set_layout
+ * @param viewer
+ * @param layout
  */
 void
-at_imagewindow_set(AtImageWindow* window, AtArrayU8* array);
+at_sliceviewer_set_layout(AtSliceViewer* viewer, AtSliceViewerLayout layout);
 /**
- * @brief at_imagewindow_set_mouse_callback
- * @param window
- * @param mouse_callback
- * @param user_data
+ * @brief at_sliceviewer_set_nifti
+ * @param viewer
+ * @param nifti
  */
 void
-at_imagewindow_set_mouse_callback(AtImageWindow* window,
-                                  AtMouseCallback mouse_callback,
-                                  void* user_data);
-
-
-AtTrackbar*
-at_imagewindow_add_trackbar(AtImageWindow *window, const char *trackname, double *variable, double vmin, double vmax);
-
+at_sliceviewer_set_nifti(AtSliceViewer* viewer, AtNiftiImage* nifti);
+/**
+ * @brief at_sliceviewer_rotate_cw
+ * @param viewer
+ * @param type
+ */
 void
-at_imagewindow_remove_trackbar(AtImageWindow *window, const char *trackname);
-
+at_sliceviewer_rotate_cw(AtSliceViewer* viewer, AtSliceType type);
+/**
+ * @brief at_sliceviewer_rotate_ccw
+ * @param viewer
+ * @param type
+ */
+void
+at_sliceviewer_rotate_ccw(AtSliceViewer* viewer, AtSliceType type);
+/**
+ * @brief at_sliceviewer_set_index
+ * @param viewer
+ * @param type
+ * @param index
+ */
+void
+at_sliceviewer_set_index(AtSliceViewer* viewer, AtSliceType type, uint16_t index);
 AT_END_DECLS
 #endif

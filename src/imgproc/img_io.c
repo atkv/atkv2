@@ -307,7 +307,7 @@ at_arrayu8_write_png(AtArrayU8* array, const char* filename, AtError** error){
   else color_type = PNG_COLOR_TYPE_RGBA;
 
   png_set_IHDR(png_ptr, info_ptr, shape[1], shape[0],
-               sizeof(uint8_t) << 3, color_type, PNG_INTERLACE_NONE,
+               array->h.elemsize << 3, color_type, PNG_INTERLACE_NONE,
                PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
   png_write_info(png_ptr, info_ptr);
@@ -321,7 +321,7 @@ at_arrayu8_write_png(AtArrayU8* array, const char* filename, AtError** error){
   }
 
   buffer = malloc(sizeof(uint8_t*)*shape[0]);
-  for(i = 0; i < shape[0]; i++) buffer[i] = data + step[0] * i * sizeof(uint8_t);
+  for(i = 0; i < shape[0]; i++) buffer[i] = data + step[0] * i * array->h.elemsize;
   png_write_image(png_ptr, buffer);
 
   /* end write */

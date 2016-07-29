@@ -365,7 +365,7 @@ at_niftiimage_load(AtNiftiImage* nim, AtNiftiFile* nfp){
   // extract file info
 
   imgnfp = at_extract_nifti_finfo(nfp->fname);
-  uint64_t shape[3] = {nim->dim[0],nim->dim[1],nim->dim[2]};
+  uint64_t shape[3] = {nim->dim[2],nim->dim[1],nim->dim[0]};
   nim->ar = at_arrayu16_new(nim->ndim,shape);
 
   // open the file and position the filepointer
