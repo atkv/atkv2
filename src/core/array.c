@@ -19,6 +19,28 @@
 /*=============================================================================
  PRIVATE API
  ============================================================================*/
+
+
+static uint64_t
+at_arrayu16_1d_to_p1d(AtArrayU16* ar, uint64_t idx){
+  uint64_t p1d = 0;
+  uint8_t  k,  f = ar->h.cstep == NULL;
+  if(f) ar->h.cstep = at_arrayu16_get_child_step(ar);
+  for(k = 0; k < ar->h.dim; k++){
+    p1d += (idx/ar->h.cstep[k])*ar->h.step[k];
+    idx %= ar->h.cstep[k];
+  }
+  if(f) {free(ar->h.cstep);ar->h.cstep = NULL;}
+  return p1d;
+}
+static uint64_t
+at_arrayu16_nd_to_p1d(AtArrayU16* ar, uint64_t* idx){
+  uint64_t p1d = 0;
+  uint8_t k;
+  for(k = 0; k < ar->h.dim; k++)
+    p1d += idx[k]*ar->h.step[k];
+  return p1d;
+}
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
@@ -45,87 +67,81 @@ at_array_header_set(AtArrayHeader* header, uint8_t dim, uint64_t* shape){
   header->num_elements = header->step[0] * header->shape[0];
 }
 
-AtArrayU8*
-at_arrayu8_create(){
-  AtArrayU8* array = malloc(sizeof(AtArrayU8));
-  at_array_header_init(&array->h);
-  array->data = NULL;
-  array->h.elemsize = sizeof(uint8_t);
-  return array;
+#define AT_DEFINE_ARRAY_OP(op)             \
+  op(u8 ,U8 )                               \
+  op(u16,U16)                               \
+  op(u32,U32)                               \
+  op(u64,U64)                               \
+  op(i8 ,I8 )                               \
+  op(i16,I16)                               \
+  op(i32,I32)                               \
+  op(i64,I64)                               \
+  op(f32,F32)                               \
+  op(d64,D64)
+
+#define AT_DEFINE_ARRAY_OP3(op)             \
+  op(u8 ,U8 ,uint8_t )                      \
+  op(u16,U16,uint16_t)                      \
+  op(u32,U32,uint32_t)                      \
+  op(u64,U64,uint64_t)                      \
+  op(i8 ,I8 , int8_t )                      \
+  op(i16,I16, int16_t)                      \
+  op(i32,I32, int32_t)                      \
+  op(i64,I64, int64_t)                      \
+  op(f32,F32,float)                         \
+  op(d64,D64,double)
+
+#define AT_ARRAY_CREATE(lower,UPPER, type)                  \
+AtArray##UPPER*                                             \
+at_array##lower##_create(){                                 \
+  AtArray##UPPER* array = malloc(sizeof(AtArray##UPPER));   \
+  at_array_header_init(&array->h);                          \
+  array->data = NULL;                                       \
+  array->h.elemsize = sizeof(type);                         \
+  return array;                                             \
 }
-AtArrayU32*
-at_arrayu32_create(){
-  AtArrayU32* array = malloc(sizeof(AtArrayU32));
-  at_array_header_init(&array->h);
-  array->data = NULL;
-  array->h.elemsize = sizeof(uint32_t);
-  return array;
+AT_DEFINE_ARRAY_OP3(AT_ARRAY_CREATE)
+#undef AT_ARRAY_CREATE
+
+#define AT_ARRAY_NEW(lower,UPPER, type)                           \
+AtArray##UPPER*                                                   \
+at_array##lower##_new(uint8_t dim, uint64_t* shape){              \
+  AtArray##UPPER* array = at_array##lower##_create();             \
+  at_array_header_set(&array->h, dim, shape);                     \
+  array->data = malloc(array->h.num_elements * array->h.elemsize);\
+  return array;                                                   \
 }
-AtArrayU64*
-at_arrayu64_create(){
-  AtArrayU64* array = malloc(sizeof(AtArrayU64));
-  at_array_header_init(&array->h);
-  array->data = NULL;
-  array->h.elemsize = sizeof(uint64_t);
-  return array;
+AT_DEFINE_ARRAY_OP3(AT_ARRAY_NEW)
+#undef AT_ARRAY_NEW
+
+#define AT_ARRAY_NEW_WITH_DATA(lower, UPPER, type)                                    \
+AtArray##UPPER*                                                                       \
+at_array##lower##_new_with_data(uint8_t dim, uint64_t* shape, type* data, bool copy){ \
+  AtArray##UPPER* array = at_array##lower##_create();                                 \
+  uint64_t num_bytes;                                                                 \
+  at_array_header_set(&array->h, dim, shape);                                         \
+                                                                                      \
+  if(!copy){                                                                          \
+    array->data = data;                                                               \
+    array->h.owns_data = false;                                                       \
+  }else{                                                                              \
+    num_bytes   = array->h.num_elements * array->h.elemsize;                          \
+    array->data = malloc(num_bytes);                                                  \
+    memcpy(array->data, data, num_bytes);                                             \
+  }                                                                                   \
+  return array;                                                                       \
 }
 
-AtArrayU8*
-at_arrayu8_new(uint8_t dim, uint64_t* shape){
-  AtArrayU8* array = at_arrayu8_create();
-  at_array_header_set(&array->h, dim, shape);
-  array->data = malloc(array->h.num_elements * sizeof(uint8_t));
-  return array;
-}
-
-AtArrayU8*
-at_arrayu8_new_with_data(uint8_t dim, uint64_t* shape, uint8_t* data, bool copy){
-  AtArrayU8* array = at_arrayu8_create();
-  uint64_t num_bytes;
-  at_array_header_set(&array->h, dim, shape);
-
-  if(!copy){
-    array->data = data;
-    array->h.owns_data = false;
-  }
-  else{
-    num_bytes   = array->h.num_elements * sizeof(uint8_t);
-    array->data = malloc(num_bytes);
-    memcpy(array->data, data, num_bytes);
-  }
-  return array;
-}
-
-AtArrayU64*
-at_arrayu64_new_with_data(uint8_t dim, uint64_t* shape, uint64_t* data, bool copy){
-  AtArrayU64* array = at_arrayu64_create();
-  uint64_t num_bytes;
-  at_array_header_set(&array->h, dim, shape);
-
-  if(!copy)
-    array->data = data;
-  else{
-    num_bytes   = array->h.num_elements * sizeof(uint64_t);
-    array->data = malloc(num_bytes);
-    memcpy(array->data, data, num_bytes);
-  }
-  return array;
-}
-AtArrayU32*
-at_arrayu32_new_with_data(uint8_t dim, uint64_t* shape, uint32_t* data, bool copy){
-  AtArrayU32* array = at_arrayu32_create();
-  uint64_t num_bytes;
-  at_array_header_set(&array->h, dim, shape);
-
-  if(!copy)
-    array->data = data;
-  else{
-    num_bytes   = array->h.num_elements * array->h.elemsize;
-    array->data = malloc(num_bytes);
-    memcpy(array->data, data, num_bytes);
-  }
-  return array;
-}
+AT_ARRAY_NEW_WITH_DATA(u8 ,U8 ,uint8_t )
+AT_ARRAY_NEW_WITH_DATA(u16,U16,uint16_t)
+AT_ARRAY_NEW_WITH_DATA(u32,U32,uint32_t)
+AT_ARRAY_NEW_WITH_DATA(u64,U64,uint64_t)
+AT_ARRAY_NEW_WITH_DATA(i8 ,I8 , int8_t )
+AT_ARRAY_NEW_WITH_DATA(i16,I16, int16_t)
+AT_ARRAY_NEW_WITH_DATA(i32,I32, int32_t)
+AT_ARRAY_NEW_WITH_DATA(i64,I64, int64_t)
+AT_ARRAY_NEW_WITH_DATA(f32,F32,float)
+AT_ARRAY_NEW_WITH_DATA(d64,D64,double)
 
 void
 at_arrayu8_fill(AtArrayU8* array, uint8_t value){
@@ -214,22 +230,6 @@ at_index_to_1d(uint8_t dim, uint64_t* step, int64_t* s_nd, uint64_t* s){
 
 #define at_array_index_to_nd(array, s, s_nd) at_index_to_nd(array->h.dim, array->h.step,s,s_nd)
 #define at_array_index_to_1d(array, s_nd, s) at_index_to_1d(array->h.dim, array->h.step,s_nd,s)
-
-AtArrayU16*
-at_arrayu16_create(){
-  AtArrayU16* array = malloc(sizeof(AtArrayU16));
-  at_array_header_init(&array->h);
-  array->h.elemsize = sizeof(uint16_t);
-  array->data = NULL;
-  return array;
-}
-AtArrayU16*
-at_arrayu16_new(uint8_t dim, uint64_t* shape){
-  AtArrayU16* array = at_arrayu16_create();
-  at_array_header_set(&array->h, dim, shape);
-  array->data = malloc(array->h.num_elements * sizeof(uint16_t));
-  return array;
-}
 
 void
 at_arrayu8_save(AtArrayU8** arrays, char** names, uint8_t num, const char* filename){
@@ -358,16 +358,10 @@ at_arrayu64_destroy(AtArrayU64** array_ptr){
 
 void
 at_array_header_dispose(AtArrayHeader* header){
-  free(header->shape);
+  if(header->shape) free(header->shape);
+  if(header->cstep) free(header->cstep);
 }
 
-AtArrayU32*
-at_arrayu32_new(uint8_t dim, uint64_t* shape){
-  AtArrayU32* array = at_arrayu32_create();
-  at_array_header_set(&array->h, dim, shape);
-  array->data = malloc(array->h.num_elements * array->h.elemsize);
-  return array;
-}
 void
 at_arrayu32_destroy(AtArrayU32** array_ptr){
   if(array_ptr){
@@ -380,4 +374,117 @@ at_arrayu32_destroy(AtArrayU32** array_ptr){
     }
     *array_ptr = NULL;
   }
+}
+void
+at_arrayheader_sub(AtArrayHeader* h, AtArrayHeader* parent_h, AtRange* ranges){
+  AtRange range;
+  uint8_t i;
+
+  h->dim          = parent_h->dim;
+  h->elemsize     = parent_h->elemsize;
+  h->shape        = realloc(h->shape,h->dim << 4);
+  h->step         = &h->shape[h->dim];
+  h->owns_data    = parent_h->owns_data;
+  h->num_elements = 1;
+
+  for(i = parent_h->dim-1; i < parent_h->dim; i--){
+    range = ranges[i];
+    h->shape[i] = min(range.to-range.from,parent_h->shape[i]);
+    if(h->shape[i] == 0) h->shape[i] == 1;
+    h->num_elements *= h->shape[i];
+  }
+  memcpy(h->step,parent_h->step,parent_h->dim<<3);
+}
+
+void
+at_arrayu16_sub_u8(AtArrayU16* ar, AtRange* ranges, AtArrayU8** outputp){
+  AtArrayU8* output = *outputp;
+  uint64_t i, k;
+  if(output == NULL) output = at_arrayu8_create();
+  at_arrayheader_sub(&output->h,&ar->h,ranges);
+  output->h.elemsize     = 1;
+  *outputp = output;
+  // fill another (new) array or just offset it
+  uint64_t *ostep = malloc(output->h.dim << 3);
+  uint64_t *cnd   = malloc(output->h.dim << 3);
+  uint64_t  p1d;
+  ostep[output->h.dim-1] = 1;
+  for(i = output->h.dim-2; i < output->h.dim; i--)
+    ostep[i] = ostep[i+1]*output->h.shape[i+1];
+
+  output->data = realloc(output->data,output->h.num_elements);
+  output->h.owns_data = true;
+  for(i = 0; i < output->h.num_elements; i++){
+    p1d = 0;
+    // from child 1D to parent 1D
+    at_index_to_nd(output->h.dim,ostep,i,cnd);
+    for(k = 0; k < output->h.dim; k++)
+      p1d += (cnd[k] + ranges[k].from)*ar->h.step[k];
+    output->data[i] = ar->data[p1d];
+  }
+  free(ostep);
+  free(cnd);
+}
+
+void
+at_arrayu16_sub(AtArrayU16* ar, AtRange* ranges, AtArrayU16** outputp, uint8_t copy){
+  AtArrayU16* output = *outputp;
+  uint64_t i, k;
+  if(output == NULL) output = at_arrayu16_create();
+  at_arrayheader_sub(&output->h,&ar->h,ranges);
+  *outputp = output;
+  output->h.cstep = at_arrayu16_get_child_step(output);
+  // fill another (new) array or just offset it
+  if(copy){
+    uint64_t *cnd   = malloc(output->h.dim << 3);
+    uint64_t  p1d;
+
+    output->data = realloc(output->data,output->h.num_elements);
+    output->h.owns_data = true;
+    for(i = 0; i < output->h.num_elements; i++){
+      // from child 1D to parent 1D
+      at_index_to_nd(output->h.dim,output->h.cstep,i,cnd);
+      for(k = 0; k < output->h.dim; k++)
+        p1d += (cnd[k] + ranges[k].from)*ar->h.step[k];
+      output->data[i] = ar->data[p1d];
+    }
+    free(output->h.cstep);
+    output->h.cstep = NULL;
+    free(cnd);
+  }
+  else{
+    output->data = ar->data;
+    for(i = 0; i < output->h.dim; i++)
+      output->data += ranges[i].from * output->h.step[i];
+  }
+}
+
+void
+at_arrayu16_set_1d(AtArrayU16* ar, uint64_t idx, uint16_t value){
+  ar->data[at_arrayu16_1d_to_p1d(ar,idx)] = value;
+}
+
+void
+at_arrayu16_set_nd(AtArrayU16* ar, uint64_t* idx, uint16_t value){
+  ar->data[at_arrayu16_nd_to_p1d(ar,idx)] = value;
+}
+
+uint16_t
+at_arrayu16_get_1d(AtArrayU16* ar, uint64_t idx){
+  return ar->data[at_arrayu16_1d_to_p1d(ar,idx)];
+}
+
+uint16_t
+at_arrayu16_get_nd(AtArrayU16* ar, uint64_t* idx){
+  return ar->data[at_arrayu16_nd_to_p1d(ar,idx)];
+}
+
+uint64_t*
+at_arrayu16_get_child_step(AtArrayU16* ar){
+  uint64_t* cstep, i;
+  cstep = malloc(ar->h.dim << 3);
+  cstep[ar->h.dim-1] = 1;
+  for(i = ar->h.dim-2; i < ar->h.dim; i--)
+    cstep[i] = cstep[i+1]*ar->h.shape[i+1];
+  return cstep;
 }

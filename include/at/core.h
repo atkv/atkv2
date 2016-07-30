@@ -38,6 +38,9 @@
 #ifndef AT_ERROR_H
 #include <at/core/error.h>
 #endif
+#ifndef AT_RANGE_H
+#include <at/core/range.h>
+#endif
 #ifndef AT_ARRAY_H
 #include <at/core/array.h>
 #endif
