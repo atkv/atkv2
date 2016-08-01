@@ -20,27 +20,40 @@
  PRIVATE API
  ============================================================================*/
 
+static uint64_t*
+at_arrayheader_get_child_step(AtArrayHeader* h){
+  uint64_t* cstep, i;
+  cstep = malloc(h->dim << 3);
+  cstep[h->dim-1] = 1;
+  for(i = h->dim-2; i < h->dim; i--)
+    cstep[i] = cstep[i+1]*h->shape[i+1];
+  return cstep;
+}
+static uint64_t
+at_arrayheader_1d_to_p1d(AtArrayHeader*h, uint64_t idx){
+  uint64_t p1d = 0;
+  uint8_t  k,  f = h->cstep == NULL;
+  if(f) h->cstep = at_arrayheader_get_child_step(h);
+  for(k = 0; k < h->dim; k++){
+    p1d += (idx/h->cstep[k])*h->step[k];
+    idx %= h->cstep[k];
+  }
+  if(f) {free(h->cstep);h->cstep = NULL;}
+  return p1d;
+}
 
 static uint64_t
-at_arrayu16_1d_to_p1d(AtArrayU16* ar, uint64_t idx){
-  uint64_t p1d = 0;
-  uint8_t  k,  f = ar->h.cstep == NULL;
-  if(f) ar->h.cstep = at_arrayu16_get_child_step(ar);
-  for(k = 0; k < ar->h.dim; k++){
-    p1d += (idx/ar->h.cstep[k])*ar->h.step[k];
-    idx %= ar->h.cstep[k];
-  }
-  if(f) {free(ar->h.cstep);ar->h.cstep = NULL;}
-  return p1d;
-}
-static uint64_t
-at_arrayu16_nd_to_p1d(AtArrayU16* ar, uint64_t* idx){
+at_arrayheader_nd_to_p1d(AtArrayHeader* h, uint64_t* idx){
   uint64_t p1d = 0;
   uint8_t k;
-  for(k = 0; k < ar->h.dim; k++)
-    p1d += idx[k]*ar->h.step[k];
+  for(k = 0; k < h->dim; k++)
+    p1d += idx[k]*h->step[k];
   return p1d;
 }
+
+#define at_array_1d_to_p1d(ar,idx) at_arrayheader_1d_to_p1d(&ar->h,idx)
+#define at_array_nd_to_p1d(ar,idx) at_arrayheader_nd_to_p1d(&ar->h,idx)
+
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
@@ -131,17 +144,8 @@ at_array##lower##_new_with_data(uint8_t dim, uint64_t* shape, type* data, bool c
   }                                                                                   \
   return array;                                                                       \
 }
-
-AT_ARRAY_NEW_WITH_DATA(u8 ,U8 ,uint8_t )
-AT_ARRAY_NEW_WITH_DATA(u16,U16,uint16_t)
-AT_ARRAY_NEW_WITH_DATA(u32,U32,uint32_t)
-AT_ARRAY_NEW_WITH_DATA(u64,U64,uint64_t)
-AT_ARRAY_NEW_WITH_DATA(i8 ,I8 , int8_t )
-AT_ARRAY_NEW_WITH_DATA(i16,I16, int16_t)
-AT_ARRAY_NEW_WITH_DATA(i32,I32, int32_t)
-AT_ARRAY_NEW_WITH_DATA(i64,I64, int64_t)
-AT_ARRAY_NEW_WITH_DATA(f32,F32,float)
-AT_ARRAY_NEW_WITH_DATA(d64,D64,double)
+AT_DEFINE_ARRAY_OP3(AT_ARRAY_NEW_WITH_DATA)
+#undef AT_ARRAY_NEW_WITH_DATA
 
 void
 at_arrayu8_fill(AtArrayU8* array, uint8_t value){
@@ -311,12 +315,12 @@ at_array_load(char*** namesp, uint8_t *nump, const char* filename){
   return ar;
 }
 
-void
-at_arrayu8_set_nd(AtArrayU8* ar, uint64_t *coords, uint8_t value){
-  uint64_t coord = 0;
-  at_array_index_to_1d(ar,coords,&coord);
-  ar->data[coord] = value;
-}
+//void
+//at_arrayu8_set_nd(AtArrayU8* ar, uint64_t *coords, uint8_t value){
+//  uint64_t coord = 0;
+//  at_array_index_to_1d(ar,coords,&coord);
+//  ar->data[coord] = value;
+//}
 
 void
 at_arrayu8_set_nd_many(AtArrayU8* ar, uint64_t *coords, uint8_t* value){
@@ -384,6 +388,7 @@ at_arrayheader_sub(AtArrayHeader* h, AtArrayHeader* parent_h, AtRange* ranges){
   h->elemsize     = parent_h->elemsize;
   h->shape        = realloc(h->shape,h->dim << 4);
   h->step         = &h->shape[h->dim];
+  h->cstep        = NULL;
   h->owns_data    = parent_h->owns_data;
   h->num_elements = 1;
 
@@ -396,6 +401,22 @@ at_arrayheader_sub(AtArrayHeader* h, AtArrayHeader* parent_h, AtRange* ranges){
   memcpy(h->step,parent_h->step,parent_h->dim<<3);
 }
 
+#define COPY(ar, output, i, k)                                   \
+  uint64_t *cnd   = malloc(output->h.dim << 3);                  \
+  uint64_t  p1d;                                                 \
+  output->h.step[output->h.dim-1] = 1;                           \
+  for(i = output->h.dim-2; i < output->h.dim; i--)               \
+    output->h.step[i] = output->h.step[i+1]*output->h.shape[i+1];\
+  output->data = realloc(output->data,output->h.num_elements);   \
+  output->h.owns_data = true;                                    \
+  for(i = 0; i < output->h.num_elements; i++){                   \
+    at_index_to_nd(output->h.dim,output->h.step,i,cnd);         \
+    for(k = 0; k < output->h.dim; k++)                           \
+      p1d += (cnd[k] + ranges[k].from)*ar->h.step[k];            \
+    output->data[i] = ar->data[p1d];                             \
+  }                                                              \
+  free(cnd);
+
 void
 at_arrayu16_sub_u8(AtArrayU16* ar, AtRange* ranges, AtArrayU8** outputp){
   AtArrayU8* output = *outputp;
@@ -404,26 +425,24 @@ at_arrayu16_sub_u8(AtArrayU16* ar, AtRange* ranges, AtArrayU8** outputp){
   at_arrayheader_sub(&output->h,&ar->h,ranges);
   output->h.elemsize     = 1;
   *outputp = output;
-  // fill another (new) array or just offset it
-  uint64_t *ostep = malloc(output->h.dim << 3);
+  //COPY(ar,output,i,k)
+
   uint64_t *cnd   = malloc(output->h.dim << 3);
   uint64_t  p1d;
-  ostep[output->h.dim-1] = 1;
+  output->h.step[output->h.dim-1] = 1;
   for(i = output->h.dim-2; i < output->h.dim; i--)
-    ostep[i] = ostep[i+1]*output->h.shape[i+1];
-
+    output->h.step[i] = output->h.step[i+1]*output->h.shape[i+1];
   output->data = realloc(output->data,output->h.num_elements);
   output->h.owns_data = true;
   for(i = 0; i < output->h.num_elements; i++){
+    at_index_to_nd(output->h.dim,output->h.step,i,cnd);
     p1d = 0;
-    // from child 1D to parent 1D
-    at_index_to_nd(output->h.dim,ostep,i,cnd);
     for(k = 0; k < output->h.dim; k++)
       p1d += (cnd[k] + ranges[k].from)*ar->h.step[k];
     output->data[i] = ar->data[p1d];
   }
-  free(ostep);
   free(cnd);
+
 }
 
 void
@@ -433,58 +452,69 @@ at_arrayu16_sub(AtArrayU16* ar, AtRange* ranges, AtArrayU16** outputp, uint8_t c
   if(output == NULL) output = at_arrayu16_create();
   at_arrayheader_sub(&output->h,&ar->h,ranges);
   *outputp = output;
-  output->h.cstep = at_arrayu16_get_child_step(output);
   // fill another (new) array or just offset it
   if(copy){
-    uint64_t *cnd   = malloc(output->h.dim << 3);
-    uint64_t  p1d;
-
-    output->data = realloc(output->data,output->h.num_elements);
-    output->h.owns_data = true;
-    for(i = 0; i < output->h.num_elements; i++){
-      // from child 1D to parent 1D
-      at_index_to_nd(output->h.dim,output->h.cstep,i,cnd);
-      for(k = 0; k < output->h.dim; k++)
-        p1d += (cnd[k] + ranges[k].from)*ar->h.step[k];
-      output->data[i] = ar->data[p1d];
-    }
-    free(output->h.cstep);
-    output->h.cstep = NULL;
-    free(cnd);
-  }
-  else{
+    COPY(ar,output,i,k)
+  }else{
+    output->h.cstep = at_arrayheader_get_child_step(&output->h);
     output->data = ar->data;
     for(i = 0; i < output->h.dim; i++)
       output->data += ranges[i].from * output->h.step[i];
   }
 }
 
-void
-at_arrayu16_set_1d(AtArrayU16* ar, uint64_t idx, uint16_t value){
-  ar->data[at_arrayu16_1d_to_p1d(ar,idx)] = value;
+#define AT_DEFINE_ARRAY_SET_1D(lower, UPPER, type) void          \
+at_array##lower##_set_1d(AtArray##UPPER* ar, uint64_t idx, type value){\
+  ar->data[at_array_1d_to_p1d(ar,idx)] = value;                  \
 }
+#define AT_DEFINE_ARRAY_SET_ND(lower, UPPER, type) void          \
+at_array##lower##_set_nd(AtArray##UPPER* ar, uint64_t* idx, type value){\
+  ar->data[at_array_nd_to_p1d(ar,idx)] = value;                  \
+}
+#define AT_DEFINE_ARRAY_GET_1D(lower, UPPER, type) type          \
+at_array##lower##_get_1d(AtArray##UPPER* ar, uint64_t idx){      \
+  if(ar->h.cstep)                                                \
+    return ar->data[at_array_1d_to_p1d(ar,idx)];                 \
+  else                                                           \
+    return ar->data[idx];                                        \
+}
+#define AT_DEFINE_ARRAY_GET_ND(lower, UPPER, type) type          \
+at_array##lower##_get_nd(AtArray##UPPER* ar, uint64_t* idx){     \
+  uint64_t i;                                                    \
+  if(ar->h.cstep)                                                \
+    return ar->data[at_array_nd_to_p1d(ar,idx)];                 \
+  else{                                                          \
+    at_index_to_1d(ar->h.dim, ar->h.step, idx, &i);              \
+    return ar->data[i];                                          \
+  }                                                              \
+}
+
+AT_DEFINE_ARRAY_OP3(AT_DEFINE_ARRAY_SET_1D)
+AT_DEFINE_ARRAY_OP3(AT_DEFINE_ARRAY_SET_ND)
+AT_DEFINE_ARRAY_OP3(AT_DEFINE_ARRAY_GET_1D)
+AT_DEFINE_ARRAY_OP3(AT_DEFINE_ARRAY_GET_ND)
+
+#undef AT_DEFINE_ARRAY_SET_1D
+#undef AT_DEFINE_ARRAY_SET_ND
+#undef AT_DEFINE_ARRAY_GET_1D
+#undef AT_DEFINE_ARRAY_GET_ND
 
 void
-at_arrayu16_set_nd(AtArrayU16* ar, uint64_t* idx, uint16_t value){
-  ar->data[at_arrayu16_nd_to_p1d(ar,idx)] = value;
-}
-
-uint16_t
-at_arrayu16_get_1d(AtArrayU16* ar, uint64_t idx){
-  return ar->data[at_arrayu16_1d_to_p1d(ar,idx)];
-}
-
-uint16_t
-at_arrayu16_get_nd(AtArrayU16* ar, uint64_t* idx){
-  return ar->data[at_arrayu16_nd_to_p1d(ar,idx)];
-}
-
-uint64_t*
-at_arrayu16_get_child_step(AtArrayU16* ar){
-  uint64_t* cstep, i;
-  cstep = malloc(ar->h.dim << 3);
-  cstep[ar->h.dim-1] = 1;
-  for(i = ar->h.dim-2; i < ar->h.dim; i--)
-    cstep[i] = cstep[i+1]*ar->h.shape[i+1];
-  return cstep;
+at_arrayheader_squeeze(AtArrayHeader* h){
+  uint64_t* step = h->step;
+  uint8_t cpos = 0,i;
+  for(i = cpos; i < h->dim; i++){
+    if(h->shape[i] != 1) {
+      h->shape[cpos] = h->shape[i];
+      step[cpos]= step[i];
+      if(h->cstep) h->cstep[cpos]= h->cstep[i];
+      cpos++;
+    }
+  }
+  h->dim = cpos;
+  h->step = &h->shape[h->dim];
+  for(i = 0; i < h->dim; i++)
+    h->step[i] = step[i];
+  h->shape = realloc(h->shape, cpos << 4);
+  if(h->cstep) h->cstep = realloc(h->cstep, cpos << 3);
 }

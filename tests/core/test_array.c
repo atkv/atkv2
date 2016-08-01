@@ -204,6 +204,16 @@ test_array_sub(void** state){
     val8 = array->data[k];
     assert_int_equal(subar->data[i], val8);
   }
+  at_arrayu8_squeeze(subar);
+  assert_int_equal(subar->h.dim, 2);
+  assert_int_equal(subar->h.shape[0], 3);
+  assert_int_equal(subar->h.shape[1], 3);
+  for(i = 0; i < 9; i++){
+    k = (i%3)+3 +(i/3)*9;
+    val8 = array->data[k];
+    assert_int_equal(subar->data[i], val8);
+    assert_int_equal(at_arrayu8_get_1d(subar,i), val8);
+  }
   at_arrayu8_destroy(&subar);
 
   // Not copy
@@ -221,6 +231,13 @@ test_array_sub(void** state){
     val16 = array->data[k];
     assert_int_equal(at_arrayu16_get_1d(subar16,i), val16);
   }
+  at_arrayu16_squeeze(subar16);
+  assert_int_equal(subar16->h.dim, 2);
+  assert_int_equal(subar16->h.shape[0],3);
+  assert_int_equal(subar16->h.shape[1],3);
+  assert_int_equal(at_arrayu16_get_1d(subar16,4),22);
+  nd[1] = 1;
+  assert_int_equal(at_arrayu16_get_nd(subar16,nd),21);
   at_arrayu16_destroy(&subar16);
   at_arrayu16_destroy(&array);
 }
