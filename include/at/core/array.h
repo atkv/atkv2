@@ -164,57 +164,68 @@ at_array_header_dispose(AtArrayHeader* header);
   op(d64,D64,double)
 
 // at_array_create
-#define AT_DECLARE_ARRAY_CREATE(lower, UPPER) AtArray##UPPER* at_array##lower##_create();
-AT_DECLARE_ARRAY_OP(AT_DECLARE_ARRAY_CREATE)
-#undef AT_DECLARE_ARRAY_CREATE
-
-// at_array_new
-#define AT_DECLARE_ARRAY_NEW(lower, UPPER)    AtArray##UPPER* at_array##lower##_new(uint8_t dim, uint64_t* shape);
-AT_DECLARE_ARRAY_OP(AT_DECLARE_ARRAY_NEW)
-#undef AT_DECLARE_ARRAY_NEW
-
-// at_array_new_with_data
+#define AT_DECLARE_ARRAY_CREATE(lower, UPPER)              AtArray##UPPER* at_array##lower##_create();
+#define AT_DECLARE_ARRAY_NEW(lower, UPPER)                 AtArray##UPPER* at_array##lower##_new(uint8_t dim, uint64_t* shape);
 #define AT_DECLARE_ARRAY_NEW_WITH_DATA(lower, UPPER, type) AtArray##UPPER* at_array##lower##_new_with_data(uint8_t dim, uint64_t* shape, type* data, bool copy);
+#define AT_DECLARE_ARRAY_ZEROS(lower, UPPER)               AtArray##UPPER* at_array##lower##_zeros(uint8_t dim, uint64_t* shape);
+#define AT_DECLARE_ARRAY_ONES(lower, UPPER)                AtArray##UPPER* at_array##lower##_ones(uint8_t dim, uint64_t* shape);
+#define AT_DECLARE_ARRAY_FILL(lower, UPPER, type)                     void at_array##lower##_fill(AtArray##UPPER* array, type value);
+#define AT_DECLARE_ARRAY_ADD_SCALAR(lower, UPPER, type)               void at_array##lower##_add_scalar(AtArray##UPPER* array, type value);
+#define AT_DECLARE_ARRAY_ADD_SCALAR_CLAMPED(lower, UPPER, type)       void at_array##lower##_add_scalar_clamped(AtArray##UPPER* array, type value);
+#define AT_DECLARE_ARRAY_MAX(lower, UPPER, type)                      type at_array##lower##_max(AtArray##UPPER* array);
+#define AT_DECLARE_ARRAY_DESTROY(lower, UPPER)                        void at_array##lower##_destroy(AtArray##UPPER** array);
+#define AT_DECLARE_ARRAY_GET_1D(lower, UPPER, type)                   type at_array##lower##_get_1d(AtArray##UPPER* array, uint64_t idx);
+#define AT_DECLARE_ARRAY_GET_ND(lower, UPPER, type)                   type at_array##lower##_get_nd(AtArray##UPPER* array, uint64_t* idx);
+#define AT_DECLARE_ARRAY_SET_1D(lower, UPPER, type)                   void at_array##lower##_set_1d(AtArray##UPPER* array, uint64_t idx, type value);
+#define AT_DECLARE_ARRAY_SET_ND(lower, UPPER, type)                   void at_array##lower##_set_nd(AtArray##UPPER* array, uint64_t* idx, type value);
+#define AT_DECLARE_ARRAY_SUB(lower, UPPER, type)                      void at_array##lower##_sub(AtArray##UPPER* array, AtRange* ranges, AtArray##UPPER** outputp, uint8_t copy);
+
+AT_DECLARE_ARRAY_OP(AT_DECLARE_ARRAY_CREATE)
+AT_DECLARE_ARRAY_OP(AT_DECLARE_ARRAY_NEW)
 AT_DECLARE_ARRAY_OP3(AT_DECLARE_ARRAY_NEW_WITH_DATA)
-#undef AT_DECLARE_ARRAY_NEW_WITH_DATA
-
-// at_array_zeros
-#define AT_DECLARE_ARRAY_ZEROS(lower, UPPER) AtArray##UPPER* at_array##lower##_zeros(uint8_t dim, uint64_t* shape);
 AT_DECLARE_ARRAY_OP(AT_DECLARE_ARRAY_ZEROS)
-#undef AT_DECLARE_ARRAY_ZEROS
-
-// at_array_ones
-#define AT_DECLARE_ARRAY_ONES(lower, UPPER) AtArray##UPPER* at_array##lower##_ones(uint8_t dim, uint64_t* shape);
 AT_DECLARE_ARRAY_OP(AT_DECLARE_ARRAY_ONES)
-#undef AT_DECLARE_ARRAY_ONES
-
-// at_array_fill
-#define AT_DECLARE_ARRAY_FILL(lower, UPPER, type) void at_array##lower##_fill(AtArray##UPPER* array, type value);
 AT_DECLARE_ARRAY_OP3(AT_DECLARE_ARRAY_FILL)
-#undef AT_DECLARE_ARRAY_FILL
-
-// at_array_add_scalar
-#define AT_DECLARE_ARRAY_ADD_SCALAR(lower, UPPER, type) void at_array##lower##_add_scalar(AtArray##UPPER* array, type value);
 AT_DECLARE_ARRAY_OP3(AT_DECLARE_ARRAY_ADD_SCALAR)
-#undef AT_DECLARE_ARRAY_ADD_SCALAR
-
-// at_array_add_scalar_clamped
-#define AT_DECLARE_ARRAY_ADD_SCALAR_CLAMPED(lower, UPPER, type) void at_array##lower##_add_scalar_clamped(AtArray##UPPER* array, type value);
 AT_DECLARE_ARRAY_OP3(AT_DECLARE_ARRAY_ADD_SCALAR_CLAMPED)
-#undef AT_DECLARE_ARRAY_ADD_SCALAR_CLAMPED
-
-// at_array_max
-#define AT_DECLARE_ARRAY_MAX(lower, UPPER, type) type at_array##lower##_max(AtArray##UPPER* array);
 AT_DECLARE_ARRAY_OP3(AT_DECLARE_ARRAY_MAX)
-#undef AT_DECLARE_ARRAY_MAX
-
-// at_array_destroy
-#define AT_DECLARE_ARRAY_DESTROY(lower, UPPER) void at_array##lower##_destroy(AtArray##UPPER** array);
 AT_DECLARE_ARRAY_OP(AT_DECLARE_ARRAY_DESTROY)
+AT_DECLARE_ARRAY_OP3(AT_DECLARE_ARRAY_GET_1D)
+AT_DECLARE_ARRAY_OP3(AT_DECLARE_ARRAY_GET_ND)
+AT_DECLARE_ARRAY_OP3(AT_DECLARE_ARRAY_SET_1D)
+AT_DECLARE_ARRAY_OP3(AT_DECLARE_ARRAY_SET_ND)
+AT_DECLARE_ARRAY_OP3(AT_DECLARE_ARRAY_SUB)
+
+#undef AT_DECLARE_ARRAY_CREATE
+#undef AT_DECLARE_ARRAY_NEW
+#undef AT_DECLARE_ARRAY_NEW_WITH_DATA
+#undef AT_DECLARE_ARRAY_ZEROS
+#undef AT_DECLARE_ARRAY_ONES
+#undef AT_DECLARE_ARRAY_FILL
+#undef AT_DECLARE_ARRAY_ADD_SCALAR
+#undef AT_DECLARE_ARRAY_ADD_SCALAR_CLAMPED
+#undef AT_DECLARE_ARRAY_MAX
 #undef AT_DECLARE_ARRAY_DESTROY
+#undef AT_DECLARE_ARRAY_GET_1D
+#undef AT_DECLARE_ARRAY_GET_ND
+#undef AT_DECLARE_ARRAY_SET_1D
+#undef AT_DECLARE_ARRAY_SET_ND
+#undef AT_DECLARE_ARRAY_SUB
 
 #undef AT_DECLARE_ARRAY_OP
 #undef AT_DECLARE_ARRAY_OP3
+
+#define at_arrayu8_squeeze(ar)  at_arrayheader_squeeze(&ar->h)
+#define at_arrayu16_squeeze(ar) at_arrayheader_squeeze(&ar->h)
+#define at_arrayu32_squeeze(ar) at_arrayheader_squeeze(&ar->h)
+#define at_arrayu64_squeeze(ar) at_arrayheader_squeeze(&ar->h)
+#define at_arrayi8_squeeze(ar)  at_arrayheader_squeeze(&ar->h)
+#define at_arrayi16_squeeze(ar) at_arrayheader_squeeze(&ar->h)
+#define at_arrayi32_squeeze(ar) at_arrayheader_squeeze(&ar->h)
+#define at_arrayi64_squeeze(ar) at_arrayheader_squeeze(&ar->h)
+#define at_arrayf32_squeeze(ar) at_arrayheader_squeeze(&ar->h)
+#define at_arrayd64_squeeze(ar) at_arrayheader_squeeze(&ar->h)
+
 /// @endcond
 
 /**
@@ -239,15 +250,6 @@ at_arrayu8_save(AtArrayU8** arrays, char** names, uint8_t num, const char* filen
  */
 AtArrayU8*
 at_array_load(char*** namesp, uint8_t *nump, const char* filename);
-
-/**
- * @brief at_arrayu8_set_nd
- * @param ar
- * @param coords
- * @param value
- */
-void
-at_arrayu8_set_nd(AtArrayU8* ar, uint64_t* coords, uint8_t value);
 /**
  * @brief at_arrayu8_set_nd_many
  * @param ar
@@ -265,52 +267,11 @@ at_arrayu8_set_nd_many(AtArrayU8* ar, uint64_t *coords, uint8_t* value);
 void
 at_arrayu16_sub_u8(AtArrayU16* ar, AtRange* ranges, AtArrayU8 **output);
 /**
- * @brief at_arrayu16_sub
- * @param ar
- * @param ranges
- * @param outputp
- * @param copy
+ * @brief at_arrayheader_squeeze
+ * @param h
  */
 void
-at_arrayu16_sub(AtArrayU16* ar, AtRange* ranges, AtArrayU16** outputp, uint8_t copy);
-/**
- * @brief at_arrayu16_set_1d
- * @param ar
- * @param idx
- * @param value
- */
-void
-at_arrayu16_set_1d(AtArrayU16* ar, uint64_t idx, uint16_t value);
-/**
- * @brief at_arrayu16_set_nd
- * @param ar
- * @param idx
- * @param value
- */
-void
-at_arrayu16_set_nd(AtArrayU16* ar, uint64_t* idx, uint16_t value);
-/**
- * @brief at_arrayu16_get_1d
- * @param ar
- * @param idx
- * @return
- */
-uint16_t
-at_arrayu16_get_1d(AtArrayU16* ar, uint64_t idx);
-/**
- * @brief at_arrayu16_get_nd
- * @param ar
- * @param idx
- * @return
- */
-uint16_t
-at_arrayu16_get_nd(AtArrayU16* ar, uint64_t* idx);
-/**
- * @brief at_arrayu16_get_child_step
- * @param ar
- * @return
- */
-uint64_t*
-at_arrayu16_get_child_step(AtArrayU16* ar);
+at_arrayheader_squeeze(AtArrayHeader* h);
+
 AT_END_DECLS
 #endif
