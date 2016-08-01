@@ -23,6 +23,7 @@
 #include <setjmp.h>
 #include <cmocka.h>
 #include <unistd.h>
+#include <time.h>
 
 void
 test_header(AtArrayHeader* header1, AtArrayHeader* header2){
@@ -158,11 +159,78 @@ void test_array_64(void** state){
   at_array_header_dispose(&header);
 }
 
+void
+test_array_sub(void** state){
+  srand ( time(NULL) );
+  AtArrayU16* array = NULL, *subar16 = NULL;
+  AtArrayU8*  subar = NULL;
+  uint64_t    shape[3]  = {3,3,3};
+  uint16_t    data[27];
+  AtRange     ranges[3] = {AT_RANGE_ALL, AT_RANGE_ALL, AT_RANGE_ALL};
+  uint8_t     i;
+  uint8_t     val8;
+  for(i = 0; i < 27; i++) data[i] = rand();
+  array = at_arrayu16_new_with_data(3,shape,data,false);
+
+  // Whole array (u16 => u8)
+  at_arrayu16_sub_u8(array,ranges,&subar);
+  assert_int_equal(subar->h.dim, array->h.dim);
+  assert_int_equal(subar->h.elemsize, 1);
+  assert_int_equal(subar->h.owns_data,true);
+  assert_int_equal(subar->h.shape[0],array->h.shape[0]);
+  assert_int_equal(subar->h.shape[1],array->h.shape[1]);
+  assert_int_equal(subar->h.shape[2],array->h.shape[2]);
+  at_arrayu8_destroy(&subar);
+
+  // First slice (u16 => u8)
+  ranges[0] = at_range_at(0);
+  at_arrayu16_sub_u8(array,ranges,&subar);
+  assert_int_equal(subar->h.shape[0],1);
+  for(i = 0; i < 9; i++){
+    val8 = array->data[i];
+    assert_int_equal(subar->data[i], val8);
+  }
+  at_arrayu8_destroy(&subar);
+
+  // 2nd axis (u16 => u8)
+  ranges[0] = AT_RANGE_ALL;
+  ranges[1] = at_range_at(1);
+  at_arrayu16_sub_u8(array,ranges,&subar);
+  assert_int_equal(subar->h.shape[0],3);
+  assert_int_equal(subar->h.shape[1],1);
+  uint64_t k;
+  for(i = 0; i < 9; i++){
+    k = (i%3)+3 +(i/3)*9;
+    val8 = array->data[k];
+    assert_int_equal(subar->data[i], val8);
+  }
+  at_arrayu8_destroy(&subar);
+
+  // Not copy
+  at_arrayu16_sub(array,ranges,&subar16,false);
+  assert_int_equal(subar16->h.shape[0],3);
+  assert_int_equal(subar16->h.shape[1],1);
+  uint16_t  val16;
+  at_arrayu16_set_1d(subar16,4,22);
+  assert_int_equal(array->data[13],22);
+  uint64_t nd[3] = {2,0,1};
+  at_arrayu16_set_nd(subar16,nd,21);
+  assert_int_equal(array->data[22],21);
+  for(i = 0; i < 9; i++){
+    k = (i%3)+3 +(i/3)*9;
+    val16 = array->data[k];
+    assert_int_equal(at_arrayu16_get_1d(subar16,i), val16);
+  }
+  at_arrayu16_destroy(&subar16);
+  at_arrayu16_destroy(&array);
+}
+
 int main(void){
-  const struct CMUnitTest tests[3] = {
+  const struct CMUnitTest tests[4] = {
     cmocka_unit_test(test_array),
     cmocka_unit_test(test_array_64),
-    cmocka_unit_test(test_array_save_load)
+    cmocka_unit_test(test_array_save_load),
+    cmocka_unit_test(test_array_sub),
   };
   return cmocka_run_group_tests(tests, NULL, NULL);
 }
