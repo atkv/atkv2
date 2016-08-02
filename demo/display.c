@@ -101,7 +101,7 @@ int main(){
   printf("Time taken %d seconds %d milliseconds\n", msec/1000, msec%1000);
 
   // Showing Results
-  memcpy(labels->data, ift->l, labels->h.num_elements*labels->h.elemsize);
+  memcpy(labels->data, ift->l, labels->h.nelem*labels->h.elemsize);
   at_display_show_image(window,labels);
   at_display_wait_key();
 

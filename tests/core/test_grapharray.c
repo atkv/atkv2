@@ -25,10 +25,10 @@
 #include <math.h>
 #include <time.h>
 void
-test_grapharray_values(AtGraphArray* graph1, AtGraphArray* graph2, uint64_t num_elements){
+test_grapharray_values(AtGraphArray* graph1, AtGraphArray* graph2, uint64_t nelem){
   uint64_t i;
   double delta = 1e-5;
-  for(i = 0; i < num_elements; i++){
+  for(i = 0; i < nelem; i++){
     assert_int_equal(graph1->active[i]   , graph2->active[i]);
     assert_int_equal(graph1->neighbors[i], graph2->neighbors[i]);
     assert_true(fabs(graph1->weights[i]  - graph2->weights[i]) < delta);
@@ -60,7 +60,7 @@ test_grapharray(void** state){
   grapharray_t.weights   = weights;
   grapharray_t.neighbors = neighbors;
 
-  test_grapharray_values(grapharray, &grapharray_t, array->h.num_elements * AT_ADJACENCY_4);
+  test_grapharray_values(grapharray, &grapharray_t, array->h.nelem * AT_ADJACENCY_4);
 
   at_grapharray_destroy(&grapharray);
   at_arrayu8_destroy(&array);

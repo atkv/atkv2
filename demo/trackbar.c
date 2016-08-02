@@ -26,7 +26,7 @@ static void
 trackbar_changed(AtTrackbar* t, double pos){
   uint64_t i, j;
   uint8_t c;
-  memcpy(copy->data,img->data,copy->h.num_elements);
+  memcpy(copy->data,img->data,copy->h.nelem);
   at_arrayu8_add_brightness(copy,pos);
   at_display_show_image(window,copy);
 }

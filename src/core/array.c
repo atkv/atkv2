@@ -77,7 +77,7 @@ at_array_header_set(AtArrayHeader* header, uint8_t dim, uint64_t* shape){
     header->step[i] = tmp;
     tmp *= header->shape[i];
   }
-  header->num_elements = header->step[0] * header->shape[0];
+  header->nelem = header->step[0] * header->shape[0];
 }
 
 #define AT_DEFINE_ARRAY_OP(op)             \
@@ -121,7 +121,7 @@ AtArray##UPPER*                                                   \
 at_array##lower##_new(uint8_t dim, uint64_t* shape){              \
   AtArray##UPPER* array = at_array##lower##_create();             \
   at_array_header_set(&array->h, dim, shape);                     \
-  array->data = malloc(array->h.num_elements * array->h.elemsize);\
+  array->data = malloc(array->h.nelem * array->h.elemsize);\
   return array;                                                   \
 }
 AT_DEFINE_ARRAY_OP3(AT_ARRAY_NEW)
@@ -138,7 +138,7 @@ at_array##lower##_new_with_data(uint8_t dim, uint64_t* shape, type* data, bool c
     array->data = data;                                                               \
     array->h.owns_data = false;                                                       \
   }else{                                                                              \
-    num_bytes   = array->h.num_elements * array->h.elemsize;                          \
+    num_bytes   = array->h.nelem * array->h.elemsize;                          \
     array->data = malloc(num_bytes);                                                  \
     memcpy(array->data, data, num_bytes);                                             \
   }                                                                                   \
@@ -149,20 +149,20 @@ AT_DEFINE_ARRAY_OP3(AT_ARRAY_NEW_WITH_DATA)
 
 void
 at_arrayu8_fill(AtArrayU8* array, uint8_t value){
-  memset(array->data,value,array->h.num_elements * sizeof(uint8_t));
+  memset(array->data,value,array->h.nelem * sizeof(uint8_t));
 }
 
 void
 at_arrayu8_add_scalar(AtArrayU8* array, uint8_t value){
   uint64_t i;
-  for(i = 0; i < array->h.num_elements; i++)
+  for(i = 0; i < array->h.nelem; i++)
     array->data[i] += value;
 }
 void
 at_arrayu8_add_scalar_clamped(AtArrayU8* array, uint8_t value){
   uint64_t i;
   uint8_t  c;
-  for(i = 0; i < array->h.num_elements; i++){
+  for(i = 0; i < array->h.nelem; i++){
     c = array->data[i] + value;
     if(c < array->data[i]) c = UINT8_MAX;
     array->data[i] = c;
@@ -173,7 +173,7 @@ uint8_t
 at_arrayu8_max(AtArrayU8* array){
   uint64_t i;
   uint8_t  value = 0;
-  for(i = 0; i < array->h.num_elements; i++)
+  for(i = 0; i < array->h.nelem; i++)
     value = max(value, array->data[i]);
   return value;
 }
@@ -181,9 +181,9 @@ at_arrayu8_max(AtArrayU8* array){
 void
 at_arrayu64_fill(AtArrayU64* array, uint64_t value){
   uint64_t i;
-  if(value == 0) memset(array->data, 0, array->h.num_elements * sizeof(uint64_t));
+  if(value == 0) memset(array->data, 0, array->h.nelem * sizeof(uint64_t));
   else
-    for(i = 0; i < array->h.num_elements; i++)
+    for(i = 0; i < array->h.nelem; i++)
       array->data[i] = value;
 }
 
@@ -252,15 +252,15 @@ at_arrayu8_save(AtArrayU8** arrays, char** names, uint8_t num, const char* filen
 
   // write proper arrays
   for(i = 0; i < num; i++){
-    // write num_elements, dim, owns_data and elemsize
-    at_znzfile_write(fp,&arrays[i]->h.num_elements, sizeof(uint64_t)+(sizeof(uint8_t)<<1)+sizeof(uint8_t),1);
+    // write nelem, dim, owns_data and elemsize
+    at_znzfile_write(fp,&arrays[i]->h.nelem, sizeof(uint64_t)+(sizeof(uint8_t)<<1)+sizeof(uint8_t),1);
 
     // write shape and step
     at_znzfile_write(fp,arrays[i]->h.shape, sizeof(uint64_t),arrays[i]->h.dim);
     at_znzfile_write(fp,arrays[i]->h.step, sizeof(uint64_t),arrays[i]->h.dim);
 
     // write data
-    at_znzfile_write(fp,arrays[i]->data, arrays[i]->h.elemsize,arrays[i]->h.num_elements);
+    at_znzfile_write(fp,arrays[i]->data, arrays[i]->h.elemsize,arrays[i]->h.nelem);
   }
 
   // close the file
@@ -296,8 +296,8 @@ at_array_load(char*** namesp, uint8_t *nump, const char* filename){
   // read proper arrays
   ar = malloc(sizeof(AtArrayU8)*num);
   for(i = 0; i < num; i++){
-    // read num_elements, dim, owns_data and elemsize
-    at_znzfile_read(fp,&ar[i].h.num_elements,sizeof(uint64_t)+(sizeof(uint8_t)<<1)+sizeof(uint8_t),1);
+    // read nelem, dim, owns_data and elemsize
+    at_znzfile_read(fp,&ar[i].h.nelem,sizeof(uint64_t)+(sizeof(uint8_t)<<1)+sizeof(uint8_t),1);
 
     // read shape and step
     ar[i].h.shape = malloc(sizeof(uint64_t)*ar[i].h.dim);
@@ -306,8 +306,8 @@ at_array_load(char*** namesp, uint8_t *nump, const char* filename){
     at_znzfile_read(fp,ar[i].h.step ,sizeof(uint64_t),ar[i].h.dim);
 
     // read data
-    ar[i].data = malloc(ar[i].h.elemsize*ar[i].h.num_elements);
-    at_znzfile_read(fp,ar[i].data,ar[i].h.elemsize,ar[i].h.num_elements);
+    ar[i].data = malloc(ar[i].h.elemsize*ar[i].h.nelem);
+    at_znzfile_read(fp,ar[i].data,ar[i].h.elemsize,ar[i].h.nelem);
   }
 
   // close the file
@@ -390,13 +390,13 @@ at_arrayheader_sub(AtArrayHeader* h, AtArrayHeader* parent_h, AtRange* ranges){
   h->step         = &h->shape[h->dim];
   h->cstep        = NULL;
   h->owns_data    = parent_h->owns_data;
-  h->num_elements = 1;
+  h->nelem = 1;
 
   for(i = parent_h->dim-1; i < parent_h->dim; i--){
     range = ranges[i];
     h->shape[i] = min(range.to-range.from,parent_h->shape[i]);
     if(h->shape[i] == 0) h->shape[i] == 1;
-    h->num_elements *= h->shape[i];
+    h->nelem *= h->shape[i];
   }
   memcpy(h->step,parent_h->step,parent_h->dim<<3);
 }
@@ -407,9 +407,9 @@ at_arrayheader_sub(AtArrayHeader* h, AtArrayHeader* parent_h, AtRange* ranges){
   output->h.step[output->h.dim-1] = 1;                           \
   for(i = output->h.dim-2; i < output->h.dim; i--)               \
     output->h.step[i] = output->h.step[i+1]*output->h.shape[i+1];\
-  output->data = realloc(output->data,output->h.num_elements);   \
+  output->data = realloc(output->data,output->h.nelem);   \
   output->h.owns_data = true;                                    \
-  for(i = 0; i < output->h.num_elements; i++){                   \
+  for(i = 0; i < output->h.nelem; i++){                   \
     at_index_to_nd(output->h.dim,output->h.step,i,cnd);          \
     p1d = 0;                                                     \
     for(k = 0; k < output->h.dim; k++)                           \

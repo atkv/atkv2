@@ -374,7 +374,7 @@ at_niftiimage_load(AtNiftiImage* nim, AtNiftiFile* nfp){
   at_znzfile_seek(zfp,ioff,SEEK_SET);
 
   // get total bytes
-  nbytes = nim->ar->h.num_elements * sizeof(uint16_t);
+  nbytes = nim->ar->h.nelem * sizeof(uint16_t);
 
   // read it
   nread = at_znzfile_read(zfp, nim->ar->data, 1, nbytes);
@@ -644,7 +644,7 @@ at_niftiimage_read(const char *name, uint8_t read_data, AtError** error){
 
     nim  = at_niftiimage_from_ascii(sbuf, &txtsize);
     nim->nifti_type = AT_NIFTI_TYPE_ASCII;
-    nbytes = sizeof(uint16_t) * nim->ar->h.num_elements;
+    nbytes = sizeof(uint16_t) * nim->ar->h.nelem;
     remaining = nfp->fsize - txtsize - nbytes;
     if(remaining > 4){
       at_znzfile_seek(zfp, txtsize, SEEK_SET);

@@ -35,14 +35,14 @@ at_seeds_from_list(uint64_t num_seeds, uint64_t* slist, uint8_t* labels){
 AtSeeds*
 at_seeds_from_mask(AtArrayU8* mask){
   AtSeeds* seeds = malloc(sizeof(AtSeeds));
-  seeds->l = malloc(mask->h.num_elements);
-  seeds->s = malloc(mask->h.num_elements<<3);
+  seeds->l = malloc(mask->h.nelem);
+  seeds->s = malloc(mask->h.nelem<<3);
   seeds->n = 0;
   seeds->m = mask;
 
-  uint64_t  * seeds_data = malloc(mask->h.num_elements << 4); // numelem x 2^1 pairs x 2^3 bytes
+  uint64_t  * seeds_data = malloc(mask->h.nelem << 4); // numelem x 2^1 pairs x 2^3 bytes
   uint64_t    k = 0, i;
-  for(i = 0; i < mask->h.num_elements; i++){
+  for(i = 0; i < mask->h.nelem; i++){
     if(mask->data[i] != UINT8_MAX){
       seeds->s[k] = i;
       seeds->l[k] = mask->data[i];
@@ -64,7 +64,7 @@ void
 at_seeds_mask_generate(AtSeeds* seeds, uint8_t dim, uint64_t* shape){
   uint64_t i;
   seeds->m = at_arrayu8_new(dim,shape);                      // creating a mask
-  memset(seeds->m->data,UINT8_MAX,seeds->m->h.num_elements); // UINT8_MAX means "not a seed"
+  memset(seeds->m->data,UINT8_MAX,seeds->m->h.nelem); // UINT8_MAX means "not a seed"
   for(i = 0; i < seeds->n; i++){                             // mark all seeds with their labels
     seeds->m->data[seeds->s[i]] = seeds->l[i];
   }
@@ -90,7 +90,7 @@ at_seeds_split(AtSeeds* seeds, AtSeeds** sbackp, AtSeeds** sobjp, uint64_t lblba
     s[i]->m = NULL;
     if(seeds->m){
       s[i]->m = at_arrayu8_new(seeds->m->h.dim, seeds->m->h.shape);
-      memset(s[i]->m->data,UINT8_MAX,s[i]->m->h.num_elements);
+      memset(s[i]->m->data,UINT8_MAX,s[i]->m->h.nelem);
     }
   }
 
@@ -120,12 +120,12 @@ at_seeds_split(AtSeeds* seeds, AtSeeds** sbackp, AtSeeds** sobjp, uint64_t lblba
 
 
 //  uint64_t a,k,i, size;
-//  size = seeds->h.num_elements << 1;
-//  uint64_t* sbackdata = malloc(seeds->h.num_elements << 3);
-//  uint64_t* sobjdata  = malloc(seeds->h.num_elements << 3);
+//  size = seeds->h.nelem << 1;
+//  uint64_t* sbackdata = malloc(seeds->h.nelem << 3);
+//  uint64_t* sobjdata  = malloc(seeds->h.nelem << 3);
 //  k = 0;
 //  a = 0;
-//  for(i = 0; i < seeds->h.num_elements; i+=2) if(seeds->data[i+1] == lblback){
+//  for(i = 0; i < seeds->h.nelem; i+=2) if(seeds->data[i+1] == lblback){
 //    sbackdata[k++] = seeds->data[i];
 //    sbackdata[k++] = lblback;
 //  }else{
