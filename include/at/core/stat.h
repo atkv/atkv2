@@ -34,9 +34,16 @@ op(i8 ,I8 , int8_t );op(i16,I16, int16_t);op(i32,I32, int32_t);op(i64,I64, int64
 #define AT_DECLARE_ARRAY_JACCARD(lower,UPPER)     \
 double                                            \
 at_array##lower##_jaccard(AtArray##UPPER* a1, AtArray##UPPER* a2);
+#define AT_DECLARE_ARRAY_DICE(lower,UPPER)     \
+double                                            \
+at_array##lower##_dice(AtArray##UPPER* a1, AtArray##UPPER* a2);
+
+
 AT_DECLARE_ARRAY_OP(AT_DECLARE_ARRAY_JACCARD)
+AT_DECLARE_ARRAY_OP(AT_DECLARE_ARRAY_DICE)
 
 #undef AT_DECLARE_ARRAY_JACCARD
+#undef AT_DECLARE_ARRAY_DICE
 #undef AT_DECLARE_ARRAY_OP
 #undef AT_DECLARE_ARRAY_OP3
 

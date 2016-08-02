@@ -20,9 +20,25 @@ at_array##lower##_jaccard(AtArray##UPPER* a1, AtArray##UPPER* a2){ \
   }                                               \
   return (double)in/(double)un;                   \
 }
+
+#define AT_DEFINE_ARRAY_DICE(lower,UPPER)         \
+double                                            \
+at_array##lower##_dice(AtArray##UPPER* a1, AtArray##UPPER* a2){ \
+  uint64_t un=0,in=0, i;                          \
+  for(i = 0; i < a1->h.num_elements;i++){         \
+    un += a1->data[i] + a2->data[i];              \
+    in += a1->data[i] & a2->data[i];              \
+  }                                               \
+  return (double)(in << 1)/(double)un;            \
+}
+
 AT_DEFINE_ARRAY_OP(AT_DEFINE_ARRAY_JACCARD)
+AT_DEFINE_ARRAY_OP(AT_DEFINE_ARRAY_DICE)
+
 #undef AT_DEFINE_ARRAY_JACCARD
+#undef AT_DEFINE_ARRAY_DICE
 
 #undef AT_DEFINE_ARRAY_OP
+#undef AT_DEFINE_ARRAY_OP3
 
 /// @endcond
