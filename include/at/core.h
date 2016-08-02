@@ -44,6 +44,9 @@
 #ifndef AT_ARRAY_H
 #include <at/core/array.h>
 #endif
+#ifndef AT_STAT_H
+#include <at/core/stat.h>
+#endif
 #ifndef AT_GRAPHARRAY_H
 #include <at/core/grapharray.h>
 #endif

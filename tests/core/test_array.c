@@ -25,6 +25,10 @@
 #include <unistd.h>
 #include <time.h>
 
+/*=============================================================================
+ HELPERS
+ ============================================================================*/
+
 void
 test_header(AtArrayHeader* header1, AtArrayHeader* header2){
   uint8_t i;
@@ -52,7 +56,12 @@ test_array_data_64(uint64_t num_elements, uint64_t* data1, uint64_t* data2){
 static inline _Bool is_aligned(const void *restrict pointer, size_t byte_count)
 { return (uintptr_t)pointer % byte_count == 0; }
 
-void test_array(void** state){
+/*=============================================================================
+ TEST CASES
+ ============================================================================*/
+
+static void
+test_array(void** state){
   // Variables
   AtArrayHeader     header;                   // 32 bytes - 32B
   uint8_t           data[16]      = {0,0,0,0, // 16 bytes - 48B
@@ -85,7 +94,8 @@ void test_array(void** state){
   at_array_header_dispose(&header);
 }
 
-void test_array_save_load(){
+static void
+test_array_save_load(){
   char             * names[4]     = {"Anderson", "Carlos","Moreira","Tavares"};
   char            ** nameso;
   AtArrayU16 * arrays[4];
@@ -131,8 +141,8 @@ void test_array_save_load(){
   free(nameso);
 }
 
-
-void test_array_64(void** state){
+static void
+test_array_64(void** state){
   // Variables
   AtArrayHeader     header;                   // 32 bytes - 32B
   uint64_t          data[16]      = {0,0,0,0, // 16 bytes - 48B
@@ -159,7 +169,7 @@ void test_array_64(void** state){
   at_array_header_dispose(&header);
 }
 
-void
+static void
 test_array_sub(void** state){
   srand ( time(NULL) );
   AtArrayU16* array = NULL, *subar16 = NULL;
