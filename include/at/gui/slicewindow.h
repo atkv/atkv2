@@ -15,40 +15,26 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-
-#ifndef AT_GUI_H
-#define AT_GUI_H
-
-#define AT_GUI_H_INSIDE
-
-#ifndef AT_CORE_H
-#include <at/core.h>
-#endif
-#ifndef AT_IMGPROC_H
-#include <at/imgproc.h>
-#endif
-#ifndef AT_GUI_TYPE_H
-#include <at/gui/type.h>
-#endif
-#ifndef AT_IMAGEVIEWER_H
-#include <at/gui/imageviewer.h>
-#endif
-#ifndef AT_TRACKBAR_H
-#include <at/gui/trackbar.h>
-#endif
-#ifndef AT_IMAGEWINDOW_H
-#include <at/gui/imagewindow.h>
-#endif
-#ifndef AT_SLICEVIEWER_H
-#include <at/gui/sliceviewer.h>
+#if !defined(AT_GUI_H_INSIDE)
+#error "Only <at/gui.h> can be included directly."
 #endif
 #ifndef AT_SLICEWINDOW_H
-#include <at/gui/slicewindow.h>
-#endif
-#ifndef AT_DISPLAY_H
-#include <at/gui/display.h>
-#endif
+#define AT_SLICEWINDOW_H
+#include <at/gui.h>
+AT_BEGIN_DECLS
 
-#undef AT_GUI_H_INSIDE
+#define AT_TYPE_SLICEWINDOW at_slicewindow_get_type()
+G_DECLARE_DERIVABLE_TYPE(AtSliceWindow, at_slicewindow, AT, SLICEWINDOW, GtkWindow)
 
+typedef struct _AtSliceWindowClass{
+  GtkWindowClass parent_class;
+}AtSliceWindowClass;
+
+AtSliceWindow*
+at_slicewindow_new();
+
+void
+at_slicewindow_set_nifti(AtSliceWindow* window, AtNiftiImage* nifti);
+
+AT_END_DECLS
 #endif

@@ -96,9 +96,9 @@ at_imageviewer_get_size(AtImageViewer* self, GtkOrientation direction,int* minim
 
   switch(direction){
   case GTK_ORIENTATION_HORIZONTAL:
-    index = 1;size_min = 320;break;
+    index = 1;size_min = 10;break;
   case GTK_ORIENTATION_VERTICAL:
-    index = 0;size_min = 240;break;
+    index = 0;size_min = 10;break;
   }
 
   // Minimal size
@@ -214,10 +214,12 @@ at_imageviewer_motion_notify_event(GtkWidget* widget, GdkEvent* event, gpointer 
     priv->last[0] = eventmotion->x;
     priv->last[1] = eventmotion->y;
     priv->mouseevent.type = AT_MOUSE_MOVE;
-    at_imageviewer_get_array_pos(self,priv->ar_pos,eventmotion->x,eventmotion->y);
-    priv->mouseevent.x    = priv->ar_pos[0];
-    priv->mouseevent.y    = priv->ar_pos[1];
-    if(priv->mousecallback) priv->mousecallback(&priv->mouseevent,priv->mousecallbackdata);
+    if(priv->array){
+      at_imageviewer_get_array_pos(self,priv->ar_pos,eventmotion->x,eventmotion->y);
+      priv->mouseevent.x    = priv->ar_pos[0];
+      priv->mouseevent.y    = priv->ar_pos[1];
+      if(priv->mousecallback) priv->mousecallback(&priv->mouseevent,priv->mousecallbackdata);
+    }
   }
   return false;
 }

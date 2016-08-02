@@ -35,8 +35,8 @@ typedef struct _AtTrackbarClass{
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
-typedef void (*AtTrackbarFunc)(double pos);
-typedef void (*AtTrackbarDataFunc)(double pos, void* user_data);
+typedef void (*AtTrackbarFunc)(AtTrackbar* t, double pos);
+typedef void (*AtTrackbarDataFunc)(AtTrackbar* t, double pos, void* user_data);
 
 /**
  * @brief at_trackbar_new
@@ -125,5 +125,13 @@ at_trackbar_get_name(AtTrackbar* t);
  */
 void
 at_trackbar_on_change(AtTrackbar* t, AtTrackbarFunc cb);
+/**
+ * @brief at_trackbar_on_change_data
+ * @param t
+ * @param cbd
+ * @param data
+ */
+void
+at_trackbar_on_change_data(AtTrackbar* t, AtTrackbarDataFunc cbd, void* data);
 G_END_DECLS
 #endif

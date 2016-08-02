@@ -15,55 +15,40 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#if !defined(AT_GUI_H_INSIDE)
-#error "Only <at/gui.h> can be included directly."
-#endif
-#ifndef AT_IMAGEWINDOW_H
-#define AT_IMAGEWINDOW_H
 #include <at/gui.h>
-AT_BEGIN_DECLS
 /*=============================================================================
- STRUCTURE
+ PRIVATE API
  ============================================================================*/
-#define AT_TYPE_IMAGEWINDOW at_imagewindow_get_type()
-G_DECLARE_DERIVABLE_TYPE(AtImageWindow, at_imagewindow, AT, IMAGEWINDOW, GtkWindow)
+typedef struct _AtSliceWindowPrivate{
+  AtSliceViewer* viewer;
+  GtkWidget    * box;
+}AtSliceWindowPrivate;
+G_DEFINE_TYPE_WITH_PRIVATE(AtSliceWindow, at_slicewindow, GTK_TYPE_WINDOW)
 
-struct _AtImageWindowClass{
-  GtkWindowClass parent_class;
-};
+static void
+at_slicewindow_init(AtSliceWindow *self){
+  AtSliceWindowPrivate* priv = at_slicewindow_get_instance_private(self);
+  priv->viewer = at_sliceviewer_new();
+  priv->box = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
+  gtk_box_pack_start(GTK_BOX(priv->box),GTK_WIDGET(priv->viewer),TRUE, TRUE, 0);
+  gtk_container_add(GTK_CONTAINER(self),priv->box);
+}
+
+static void
+at_slicewindow_class_init(AtSliceWindowClass *klass){
+
+}
+
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
-/**
- * @brief at_imagewindow_new
- * @return
- */
-AtImageWindow*
-at_imagewindow_new();
-/**
- * @brief at_imagewindow_set
- * @param window
- * @param array
- */
-void
-at_imagewindow_set(AtImageWindow* window, AtArrayU8* array);
-/**
- * @brief at_imagewindow_set_mouse_callback
- * @param window
- * @param mouse_callback
- * @param user_data
- */
-void
-at_imagewindow_set_mouse_callback(AtImageWindow* window,
-                                  AtMouseCallback mouse_callback,
-                                  void* user_data);
-
-
-AtTrackbar*
-at_imagewindow_add_trackbar(AtImageWindow *window, const char *trackname, double *variable, double vmin, double vmax);
+AtSliceWindow*
+at_slicewindow_new(){
+  return g_object_new(AT_TYPE_SLICEWINDOW, NULL);
+}
 
 void
-at_imagewindow_remove_trackbar(AtImageWindow *window, const char *trackname);
-
-AT_END_DECLS
-#endif
+at_slicewindow_set_nifti(AtSliceWindow* window, AtNiftiImage* nifti){
+  AtSliceWindowPrivate* priv = at_slicewindow_get_instance_private(window);
+  at_sliceviewer_set_nifti(priv->viewer,nifti);
+}

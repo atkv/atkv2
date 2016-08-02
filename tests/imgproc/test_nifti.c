@@ -31,6 +31,9 @@ test_at_nifti_read(void** state){
   assert_int_equal(nifti->dim[0],256);
   assert_int_equal(nifti->dim[1],256);
   assert_int_equal(nifti->dim[2],130);
+  assert_int_equal(nifti->ar->h.shape[0],130);
+  assert_int_equal(nifti->ar->h.shape[1],256);
+  assert_int_equal(nifti->ar->h.shape[2],256);
   at_niftiimage_destroy(&nifti);
 }
 
