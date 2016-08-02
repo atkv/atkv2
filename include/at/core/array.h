@@ -41,7 +41,7 @@ struct AtArrayHeader{
   uint64_t* shape;       /*!< size of each dimension */                               /*00+8*/
   uint64_t* step;        /*!< offset between consecutive elements of each dimension *//*08+8*/
   uint64_t* cstep;       /*!< offsets in local (non-parent) space */                  /*16+8*/
-  uint64_t  num_elements;/*!< total number of elements */                             /*24+8*/
+  uint64_t  nelem;       /*!< total number of elements */                             /*24+8*/
   uint8_t   dim;         /*!< dimension */                                            /*32+1*/
   uint8_t   owns_data;   /*!< true if they can delete its own data */                 /*33+1*/
   uint8_t   elemsize;    /*!< size of element */                                      /*34+1*/

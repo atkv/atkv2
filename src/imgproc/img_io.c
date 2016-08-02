@@ -48,7 +48,7 @@ at_arrayu8_write_pgm_ppm(AtArrayU8 *array, const char *filename, AtError **error
   FILE    * fp;
   uint64_t* shape;
   uint8_t * data;
-  uint64_t  num_elements;
+  uint64_t  nelem;
   uint8_t   array_max;
 
   fp           = fopen(filename, "wb");
@@ -58,13 +58,13 @@ at_arrayu8_write_pgm_ppm(AtArrayU8 *array, const char *filename, AtError **error
   }
   data         = array->data;
   shape        = array->h.shape;
-  num_elements = array->h.num_elements;
+  nelem = array->h.nelem;
   array_max    = at_array_max(array);
 
   fprintf(fp,  "P%d\n", format);
   fprintf(fp,"%d %d\n", (int)shape[1], (int)shape[0]);
   fprintf(fp,   "%d\n", array_max);
-  fwrite(data, sizeof(uint8_t), num_elements, fp);
+  fwrite(data, sizeof(uint8_t), nelem, fp);
   fclose(fp);
 }
 
@@ -200,7 +200,7 @@ at_arrayu8_read_ppm_pgm(const char* filename, AtError** error){
   uint64_t i;
   uint64_t max_gray;
   uint64_t shape[3];
-  uint64_t num_elements;
+  uint64_t nelem;
   uint32_t width, height;
   uint16_t dim;
   uint8_t* data;
@@ -227,12 +227,12 @@ at_arrayu8_read_ppm_pgm(const char* filename, AtError** error){
     shape[2]     = 3;
     array        = at_arrayu8_new(dim, shape);
     data         = array->data;
-    num_elements = array->h.num_elements;
+    nelem = array->h.nelem;
     if(version[1] == '2')
-      for(i = 0; i < num_elements; i++)
+      for(i = 0; i < nelem; i++)
         fscanf(fp, "%cu", &data[i]);
     else
-      fread(data, sizeof(uint8_t), num_elements,fp);
+      fread(data, sizeof(uint8_t), nelem,fp);
   }else{
     at_error_set(error, "[at_array_read_ppm_pgm] File %s could not be opened for reading", filename);
   }

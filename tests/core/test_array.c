@@ -37,19 +37,19 @@ test_header(AtArrayHeader* header1, AtArrayHeader* header2){
     assert_int_equal(header1->shape[i]  ,header2->shape[i]);
     assert_int_equal(header1->step[i]   ,header2->step[i]);
   }
-  assert_int_equal(header1->num_elements, header2->num_elements);
+  assert_int_equal(header1->nelem, header2->nelem);
   assert_int_equal(header1->owns_data   , header2->owns_data);
 }
 void
-test_array_data(uint64_t num_elements, uint8_t* data1, uint8_t* data2){
+test_array_data(uint64_t nelem, uint8_t* data1, uint8_t* data2){
   uint64_t i;
-  for(i = 0; i < num_elements; i++)
+  for(i = 0; i < nelem; i++)
     assert_int_equal(data1[i], data2[i]);
 }
 void
-test_array_data_64(uint64_t num_elements, uint64_t* data1, uint64_t* data2){
+test_array_data_64(uint64_t nelem, uint64_t* data1, uint64_t* data2){
   uint64_t i;
-  for(i = 0; i < num_elements; i++)
+  for(i = 0; i < nelem; i++)
     assert_int_equal(data1[i], data2[i]);
 }
 
@@ -84,12 +84,12 @@ test_array(void** state){
   at_array_header_init(&header);
   at_array_header_set (&header, 2, data_shape);
   test_header(&(array->h), &header);
-  test_array_data(header.num_elements, array->data, data);
+  test_array_data(header.nelem, array->data, data);
   assert_int_equal(at_array_max(array),1);
 
   memset(data,0,16);
   at_arrayu8_fill(array,0);
-  test_array_data(header.num_elements, array->data, data);
+  test_array_data(header.nelem, array->data, data);
   at_arrayu8_destroy(&array);
   at_array_header_dispose(&header);
 }
@@ -110,7 +110,7 @@ test_array_save_load(){
   // Writing an array to the file
   for(i = 0; i < 4; i++){
     arrays[i] = at_arrayu16_new(dims[i],shapes[i]);
-    for(k = 0; k < arrays[i]->h.num_elements; k++)
+    for(k = 0; k < arrays[i]->h.nelem; k++)
       arrays[i]->data[k] = rand();
   }
   unlink(filename);
@@ -122,13 +122,13 @@ test_array_save_load(){
   for(i = 0; i < 4; i++){
     assert_string_equal(names[i],nameso[i]);
     assert_int_equal(arrayso[i].h.dim, arrays[i]->h.dim);
-    assert_int_equal(arrayso[i].h.num_elements, arrays[i]->h.num_elements);
+    assert_int_equal(arrayso[i].h.nelem, arrays[i]->h.nelem);
     assert_int_equal(arrayso[i].h.owns_data, arrays[i]->h.owns_data);
     for(k = 0; k < arrays[i]->h.dim; k++){
       assert_int_equal(arrayso[i].h.shape[k], arrays[i]->h.shape[k]);
       assert_int_equal(arrayso[i].h.step[k], arrays[i]->h.step[k]);
     }
-    for(k = 0; k < arrays[i]->h.num_elements; k++){
+    for(k = 0; k < arrays[i]->h.nelem; k++){
       assert_int_equal(arrayso[i].data[k], arrays[i]->data[k]);
     }
     at_arrayu16_destroy(&arrays[i]);
@@ -159,11 +159,11 @@ test_array_64(void** state){
   at_array_header_init(&header);
   at_array_header_set (&header, 2, data_shape);
   test_header(&array->h, &header);
-  test_array_data_64(header.num_elements, array->data, data);
+  test_array_data_64(header.nelem, array->data, data);
 
   memset(data,0,16*sizeof(uint64_t));
   at_arrayu64_fill(array,0);
-  test_array_data_64(header.num_elements, array->data, data);
+  test_array_data_64(header.nelem, array->data, data);
 
   at_arrayu64_destroy(&array);
   at_array_header_dispose(&header);

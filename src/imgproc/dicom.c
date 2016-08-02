@@ -443,7 +443,7 @@ at_dicomu16_read_pixels(AtDicomU16* dicom, size_t offset, FILE* file){
   uint16_t* d            = dicom->image->data;
   int16_t * ds           = (uint16_t*) d;
   uint8_t * d8           = (uint8_t*)  d;
-  uint64_t  nelem        = dicom->image->h.num_elements;
+  uint64_t  nelem        = dicom->image->h.nelem;
   uint64_t  i , i2;          // our counters
   size_t    nbytes       = 2;// bytes per pixel
   uint32_t  p32;             // pixel in 32 bits

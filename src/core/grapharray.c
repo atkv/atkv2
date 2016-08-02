@@ -71,7 +71,7 @@ at_grapharrayu8_new(AtArrayU8*  array,
                     AtAdjacency adjacency,
                     AtWeighting w){
   AtGraphArray* grapharray   = at_grapharray_create();
-  uint64_t      num_elements = array->h.num_elements * adjacency;
+  uint64_t      nelem = array->h.nelem * adjacency;
   uint64_t    * s_nd         = malloc(array->h.dim * sizeof(uint64_t));
   int64_t     * t_nd         = malloc(array->h.dim * sizeof(int64_t));
   int8_t      * neighboring;
@@ -79,21 +79,21 @@ at_grapharrayu8_new(AtArrayU8*  array,
   uint8_t     k;
   bool        out;
 
-  grapharray->neighbors      = malloc(num_elements * sizeof(uint64_t));
-  grapharray->active         = malloc(num_elements * sizeof(uint8_t));
-  grapharray->weights        = malloc(num_elements * sizeof(double));
+  grapharray->neighbors      = malloc(nelem * sizeof(uint64_t));
+  grapharray->active         = malloc(nelem * sizeof(uint8_t));
+  grapharray->weights        = malloc(nelem * sizeof(double));
   grapharray->h              = &array->h;
   grapharray->adjacency      = adjacency;
-  memset(grapharray->neighbors,0,num_elements*sizeof(uint64_t));
-  memset(grapharray->weights  ,0,num_elements*sizeof(double));
-  memset(grapharray->active   ,0,num_elements*sizeof(uint8_t));
+  memset(grapharray->neighbors,0,nelem*sizeof(uint64_t));
+  memset(grapharray->weights  ,0,nelem*sizeof(double));
+  memset(grapharray->active   ,0,nelem*sizeof(uint8_t));
 
   if(array->h.dim == 2) neighboring = neighboring_2D;
   else                  neighboring = neighboring_3D;
 
   // Fill the neighbors and weights by using the weighting function
   // for each pixel
-  for(s = 0; s < array->h.num_elements; s++){
+  for(s = 0; s < array->h.nelem; s++){
     at_array_index_to_nd(array,s, s_nd);
     ss = s*adjacency;
 
@@ -135,7 +135,7 @@ at_grapharrayu8_renew_edges(AtGraphArray* g){
 
   // Fill the neighbors and weights by using the weighting function
   // for each pixel
-  for(s = 0; s < g->h->num_elements; s++){
+  for(s = 0; s < g->h->nelem; s++){
     at_index_to_nd(g->h->dim,g->h->step,s,s_nd);
     ss = s*g->adjacency;
 

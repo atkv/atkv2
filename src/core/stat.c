@@ -14,7 +14,7 @@ op(i8 ,I8 , int8_t );op(i16,I16, int16_t);op(i32,I32, int32_t);op(i64,I64, int64
 double                                            \
 at_array##lower##_jaccard(AtArray##UPPER* a1, AtArray##UPPER* a2){ \
   uint64_t un=0,in=0, i;                          \
-  for(i = 0; i < a1->h.num_elements;i++){         \
+  for(i = 0; i < a1->h.nelem;i++){         \
     un += a1->data[i] | a2->data[i];              \
     in += a1->data[i] & a2->data[i];              \
   }                                               \
@@ -25,7 +25,7 @@ at_array##lower##_jaccard(AtArray##UPPER* a1, AtArray##UPPER* a2){ \
 double                                            \
 at_array##lower##_dice(AtArray##UPPER* a1, AtArray##UPPER* a2){ \
   uint64_t un=0,in=0, i;                          \
-  for(i = 0; i < a1->h.num_elements;i++){         \
+  for(i = 0; i < a1->h.nelem;i++){         \
     un += a1->data[i] + a2->data[i];              \
     in += a1->data[i] & a2->data[i];              \
   }                                               \

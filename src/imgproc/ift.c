@@ -60,24 +60,24 @@ static AtIFT*
 at_ift_new_initu8(AtArrayU8* array){
 
   // Allocating data
-  size_t   num_bytes = sizeof(AtIFT) + array->h.num_elements*(
+  size_t   num_bytes = sizeof(AtIFT) + array->h.nelem*(
                       (sizeof(uint64_t)<<1) + sizeof(double) + sizeof(uint8_t));
   void*    buffer    = malloc(num_bytes);
   AtIFT*   ift       = buffer;
-  size_t   size      = (array->h.num_elements << 3);
+  size_t   size      = (array->h.nelem << 3);
   uint64_t i;
   size_t   sizeIFT   = sizeof(AtIFT);
   ift->p = (uint64_t*)(ift    + 1);
-  ift->r =             ift->p + array->h.num_elements;
-  ift->c = (double*)  (ift->r + array->h.num_elements);
-  ift->l = (uint8_t*) (ift->c + array->h.num_elements);
+  ift->r =             ift->p + array->h.nelem;
+  ift->c = (double*)  (ift->r + array->h.nelem);
+  ift->l = (uint8_t*) (ift->c + array->h.nelem);
 
   // Initializing arrays
-  for(i = 0; i < array->h.num_elements;i++){
+  for(i = 0; i < array->h.nelem;i++){
     ift->p[i] = i;
     ift->r[i] = i;
   }
-  memset(ift->l, 0, array->h.num_elements);
+  memset(ift->l, 0, array->h.nelem);
 
   // Returning
   return ift;
@@ -90,10 +90,10 @@ at_ift_new(){
 static void
 at_ift_initu8(AtIFT* ift, AtArrayU8 array, AtAdjacency adjacency,
                     AtConnFuncu8 connectivity){
-  ift->p = malloc(array.h.num_elements * sizeof(uint64_t));
-  ift->r = malloc(array.h.num_elements * sizeof(uint64_t));
-  ift->c = malloc(array.h.num_elements * sizeof(double));
-  ift->l = malloc(array.h.num_elements * sizeof(uint8_t));
+  ift->p = malloc(array.h.nelem * sizeof(uint64_t));
+  ift->r = malloc(array.h.nelem * sizeof(uint64_t));
+  ift->c = malloc(array.h.nelem * sizeof(double));
+  ift->l = malloc(array.h.nelem * sizeof(uint8_t));
 }
 
 __attribute__((constructor))
@@ -154,13 +154,13 @@ at_ift_add_seeds_to_pqueue(AtIFT* ift, AtPQueueU64* queue, AtSeeds* seeds){
 void
 at_conn_max_arrayu8(AtIFT* ift, AtArrayU8* array){
   uint64_t i;
-  for(i = 0; i < array->h.num_elements; i++)
+  for(i = 0; i < array->h.nelem; i++)
     ift->c[i] = INFINITY;
 }
 void
 at_conn_min_arrayu8(AtIFT* ift,AtArrayU8* array){
   uint64_t i;
-  for(i = 0; i < array->h.num_elements; i++)
+  for(i = 0; i < array->h.nelem; i++)
     ift->c[i] = -INFINITY;
 }
 
@@ -269,9 +269,9 @@ at_ift_apply_arrayu8(AtArrayU8     *ar,
                                   // Total: 88 bytes
                            
   // Create the auxiliary structures
-  r     = calloc(ar->h.num_elements,sizeof(uint8_t));
+  r     = calloc(ar->h.nelem,sizeof(uint8_t));
   ift   = at_ift_new_initu8(ar); // allocate maps (label, root, predec., and connectivity)
-  off   = g->h->num_elements * g->adjacency;
+  off   = g->h->nelem * g->adjacency;
   vmax  = -INFINITY;
   for(i = 0; i < off; i++)       // get maximum value (for allocating queue)
     vmax = max(vmax,g->weights[i]);
@@ -282,7 +282,7 @@ at_ift_apply_arrayu8(AtArrayU8     *ar,
   at_ift_add_seeds_labels(ift, seeds);
 
   // Create priority queue and add seeds
-  q = at_pqueueu64_new_prealloc(c.o,po,(uint64_t)vmax+2,ar->h.num_elements);
+  q = at_pqueueu64_new_prealloc(c.o,po,(uint64_t)vmax+2,ar->h.nelem);
   at_ift_add_seeds_to_pqueue(ift,q,seeds);
 
   // Main loop
@@ -340,7 +340,7 @@ at_orfc_core_arrayu8(AtArrayU8     * array,
   // regenerate graph
   at_grapharrayu8_renew_edges(g);
 
-  size = g->h->num_elements * g->adjacency;
+  size = g->h->nelem * g->adjacency;
   for(i = 0, a = 0; i < size; i += g->adjacency, a++){
     for(k = 0; k < g->adjacency; k++){
       off = i+k;
@@ -357,8 +357,8 @@ at_orfc_core_arrayu8(AtArrayU8     * array,
   AtSCC* scc = at_grapharrayu8_scc(g,sccalgo);
 
   // Remove background SCCs
-  uint64_t *s = malloc(array->h.num_elements << 3);
-  memset(s,0,array->h.num_elements << 3);
+  uint64_t *s = malloc(array->h.nelem << 3);
+  memset(s,0,array->h.nelem << 3);
   //   Create LUT: s[label] = seed (for O(1) lookup)
   for(i = 0, k = 1; i < seeds->n; i++)
     if(s[scc->l[seeds->s[i]]] == 0 && seeds->l[i] != lblback)
@@ -369,11 +369,11 @@ at_orfc_core_arrayu8(AtArrayU8     * array,
   AtArrayU32* scclbl = at_arrayu32_new_with_data(array->h.dim, array->h.shape, scc->l, false);
   scclbl->h.owns_data = false;
   AtArrayU32* scclbl2= at_arrayu32_lut(scclbl,s);
-  memcpy(scc->l, scclbl2->data, scclbl2->h.num_elements << 2);
+  memcpy(scc->l, scclbl2->data, scclbl2->h.nelem << 2);
 
   // Convert to bitmap
 //  uint32_t lbl = scc->l[sobj->data[0]];
-//  for(i = 0; i < array->h.num_elements; i++){
+//  for(i = 0; i < array->h.nelem; i++){
 //    if(scc->l[i] == lbl)      scc->l[i] = 255;
 //    else                      scc->l[i] = 0;
 //  }
@@ -471,7 +471,7 @@ at_orfc_arrayu8(AtArrayU8     * array,
 
   // find energy by applying ift with background seeds
   AtIFT* ift = at_ift_apply_arrayu8(array,g,conn,sback,po);
-  memset(ift->l,0,array->h.num_elements);
+  memset(ift->l,0,array->h.nelem);
 
   // regenerate graph
   at_grapharrayu8_renew_edges(g);
@@ -484,9 +484,9 @@ at_orfc_arrayu8(AtArrayU8     * array,
   quickSort(q,0,sobj->n-1,ift->c);
 
   // apply DFS
-  uint64_t *s  = malloc(array->h.num_elements << 3);
-  uint8_t*  instack = malloc(array->h.num_elements);
-  memset(instack,0,array->h.num_elements);
+  uint64_t *s  = malloc(array->h.nelem << 3);
+  uint8_t*  instack = malloc(array->h.nelem);
+  memset(instack,0,array->h.nelem);
   uint64_t  si = 0;
 
   for(i = 0; i < sobj->n; i++)
@@ -499,7 +499,7 @@ at_orfc_arrayu8(AtArrayU8     * array,
 
 
 //  // remove
-//  size = g->h->num_elements * g->adjacency;
+//  size = g->h->nelem * g->adjacency;
 //  for(i = 0, a = 0; i < size; i += g->adjacency, a++){
 //    for(k = 0; k < g->adjacency; k++){
 //      off = i+k;
@@ -513,8 +513,8 @@ at_orfc_arrayu8(AtArrayU8     * array,
 //  }
 
 //  // find Directed Rooted Tree (DRT)
-//  uint64_t* tree = malloc(array->h.num_elements << 3);
-//  memset(ift->l,lblback,array->h.num_elements);
+//  uint64_t* tree = malloc(array->h.nelem << 3);
+//  memset(ift->l,lblback,array->h.nelem);
 //  uint64_t  top  = 1, offa;
 //  uint8_t lblobj = sobj->l[0];
 

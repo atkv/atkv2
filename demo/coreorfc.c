@@ -95,8 +95,8 @@ int main(int argc, char** argv){
 #endif
   do{
     at_arrayu8_fill(smask,UINT8_MAX);
-    memcpy( arraycp->data, array->data, array->h.num_elements* array->h.elemsize);
-    memcpy(arraygcp->data,arrayg->data,arrayg->h.num_elements*arrayg->h.elemsize);
+    memcpy( arraycp->data, array->data, array->h.nelem* array->h.elemsize);
+    memcpy(arraygcp->data,arrayg->data,arrayg->h.nelem*arrayg->h.elemsize);
 
     // Getting user seeds
 #ifdef AT_SAVE
@@ -105,7 +105,7 @@ int main(int argc, char** argv){
     at_arrayu8_save(&smask,names,1,"mask.gz");
 #else
     smaskload = at_array_load(&nameso,&qtd,"mask.gz");
-    memcpy(smask->data, smaskload->data,smask->h.num_elements*smask->h.elemsize);
+    memcpy(smask->data, smaskload->data,smask->h.nelem*smask->h.elemsize);
 #endif
 
     // Calculating Cores
@@ -117,7 +117,7 @@ int main(int argc, char** argv){
     fflush(stdout);
 
     // Showing components
-    for(i = 0; i < smask->h.num_elements; i++) smask->data[i] = scc->l[i];
+    for(i = 0; i < smask->h.nelem; i++) smask->data[i] = scc->l[i];
     smaskrand = at_arrayu8_lut_random_multi(smask,3);
     at_display_show_image(window,smaskrand);
     k = at_display_wait_key();
