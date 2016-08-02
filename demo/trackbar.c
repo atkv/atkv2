@@ -23,7 +23,7 @@ AtImageWindow* window;
 double         increment;
 
 static void
-trackbar_changed(double pos){
+trackbar_changed(AtTrackbar* t, double pos){
   uint64_t i, j;
   uint8_t c;
   memcpy(copy->data,img->data,copy->h.num_elements);
