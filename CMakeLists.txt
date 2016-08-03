@@ -35,6 +35,7 @@ MACRO(AT_MAKE_MODULE MODULE)
     ADD_LIBRARY           (atkv_${MODULE} SHARED ${HDRS_ABS} ${SRCS_ABS})
     SET(${MODULEUPPER}_LIBRARIES atkv_${MODULE} ${${MODULEUPPER}_DEPS})
     LIST(APPEND ATKV_LIBRARIES ${${MODULEUPPER}_LIBRARIES})
+    LIST(APPEND PKG_CONFIG_LIBS "-latkv_${MODULE}")
   ENDIF()
 ENDMACRO(AT_MAKE_MODULE)
 
@@ -43,6 +44,12 @@ MACRO(AT_MAKE_MODULES MODULES)
     AT_MAKE_MODULE("${MODULE}")
   ENDFOREACH()
 ENDMACRO(AT_MAKE_MODULES)
+
+FUNCTION(JOIN VALUES GLUE OUTPUT)
+  STRING (REGEX REPLACE "([^\\]|^);" "\\1${GLUE}" _TMP_STR "${VALUES}")
+  STRING (REGEX REPLACE "[\\](.)" "\\1" _TMP_STR "${_TMP_STR}") #fixes escaping
+  SET (${OUTPUT} "${_TMP_STR}" PARENT_SCOPE)
+ENDFUNCTION()
 #====================================================================== OPTIONS
 option(BUILD_CORE    "" ON)
 option(BUILD_IMGPROC "" ON)
@@ -86,20 +93,20 @@ endif()
 # ------------------
 # JPEG
 # ------------------
-#if(BUILD_IMGPROC)
+if(BUILD_IMGPROC)
   FIND_PACKAGE(JPEG QUIET)
   INCLUDE_DIRECTORIES(${JPEG_INCLUDE_DIRS})
   ADD_DEFINITIONS(-DHAVE_JPEG)
-#endif()
+endif()
 
 # ------------------
 # PNG
 # ------------------
-#if(BUILD_IMGPROC)
-  find_package(PNG QUIET)
+if(BUILD_IMGPROC)
+  FIND_PACKAGE(PNG QUIET)
   INCLUDE_DIRECTORIES(${PNG_INCLUDE_DIRS})
   ADD_DEFINITIONS(-DHAVE_PNG)
-#endif()
+endif()
 #================================================================= SOURCES
 INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
 SET                   (MDLS core imgproc gui)
@@ -107,11 +114,11 @@ SET                   (CORE_HDRS    type.h i18n-lib.h version.h macro.h optimiza
 SET                   (CORE_SRCS    znzfile.c vec.c range.c array.c stat.c grapharray.c list.c queue.c pqueue.c error.c scc.c)
 SET                   (IMGPROC_HDRS color.h img_io.h seed.h ift.h dicom.h nifti.h drawing.h)
 SET                   (IMGPROC_SRCS color.c img_io.c seed.c ift.c dicom.c nifti.c drawing.c)
-SET                   (GUI_HDRS type.h imageviewer.h imagewindow.h trackbar.h sliceviewer.h slicewindow.h display.h)
-SET                   (GUI_SRCS imageviewer.c imagewindow.c trackbar.c sliceviewer.c slicewindow.c display.c)
-SET                   (CORE_DEPS ${ZLIB_LIBRARIES})
+SET                   (GUI_HDRS     type.h imageviewer.h imagewindow.h trackbar.h sliceviewer.h slicewindow.h display.h)
+SET                   (GUI_SRCS     imageviewer.c imagewindow.c trackbar.c sliceviewer.c slicewindow.c display.c)
+SET                   (CORE_DEPS    ${ZLIB_LIBRARIES})
 SET                   (IMGPROC_DEPS ${CORE_DEPS} ${PNG_LIBRARIES} ${JPEG_LIBRARIES} atkv_core)
-SET                   (GUI_DEPS ${GTK3_LIBRARIES} ${CORE_DEPS} atkv_core)
+SET                   (GUI_DEPS     ${GTK3_LIBRARIES} ${CORE_DEPS} atkv_core)
 
 CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/include/at/core/version.h.in" "${CMAKE_SOURCE_DIR}/include/at/core/version.h")
 
@@ -121,11 +128,12 @@ if (COVERALLS)
   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
 endif(COVERALLS)
 AT_MAKE_MODULES       ("${MDLS}")
-
+#============================================================== PKG-CONFIG
 SET(PKG_CONFIG_REQUIRES    gtk+-3.0)
 SET(PKG_CONFIG_LIBDIR      "\${prefix}/lib")
 SET(PKG_CONFIG_INCLUDEDIR  "\${prefix}/include")
-SET(PKG_CONFIG_LIBS        "-L\${libdir} -latkv_core -latkv_gui -latkv_imgproc -lpng -ljpeg -lz")
+LIST(APPEND PKG_CONFIG_LIBS "-L\${libdir} -lpng -ljpeg -lz")
+JOIN("${PKG_CONFIG_LIBS}" " " PKG_CONFIG_LIBS)
 SET(PKG_CONFIG_CFLAGS      "-I\${includedir}")
 CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.in"
@@ -173,10 +181,9 @@ IF(BUILD_TESTING)
   # Compiling tests
   FOREACH(MODULE ${MDLS})
     STRING(TOUPPER ${MODULE} MODULEUPPER)
-    MESSAGE(STATUS ${MODULEUPPER})
     FOREACH(AT_TEST ${AT_${MODULEUPPER}_TESTS})
       ADD_EXECUTABLE        (test_${AT_TEST} ${CMAKE_SOURCE_DIR}/tests/${MODULE}/test_${AT_TEST}.c)
-      TARGET_LINK_LIBRARIES (test_${AT_TEST} atkv_${MODULE} ${${MODULEUPPER}_DEPS} ${CMOCKA_LIBRARIES})
+      TARGET_LINK_LIBRARIES (test_${AT_TEST} ${${MODULEUPPER}_LIBRARIES} ${CMOCKA_LIBRARIES})
       ADD_TEST              (test_${AT_TEST} test_${AT_TEST})
       if(NOT CMOCKA_FOUND)
         ADD_DEPENDENCIES      (test_${AT_TEST} CMocka)
@@ -221,9 +228,15 @@ endif(Doxygen_FOUND)
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/data/ DESTINATION share/at)
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include)
 INSTALL(FILES    "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION lib/pkgconfig)
-INSTALL(TARGETS   atkv_core      LIBRARY DESTINATION lib)
-INSTALL(TARGETS   atkv_imgproc   LIBRARY DESTINATION lib)
-INSTALL(TARGETS   atkv_gui       LIBRARY DESTINATION lib)
+IF(BUILD_CORE)
+  INSTALL(TARGETS   atkv_core      LIBRARY DESTINATION lib)
+ENDIF(BUILD_CORE)
+IF(BUILD_IMGPROC)
+  INSTALL(TARGETS   atkv_imgproc   LIBRARY DESTINATION lib)
+ENDIF(BUILD_IMGPROC)
+IF(BUILD_GUI)
+  INSTALL(TARGETS   atkv_gui       LIBRARY DESTINATION lib)
+ENDIF(BUILD_GUI)
 
 #CUDA_ADD_LIBRARY      (ift_gpu SHARED ${CMAKE_SOURCE_DIR}/src/ift.cu)
 #ADD_EXECUTABLE        (iftdemo ${CMAKE_SOURCE_DIR}/demos/main.c)
