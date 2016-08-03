@@ -27,24 +27,13 @@ Basta criar o seu código (ex: `seu_programa.c` carrega e exibe um PNG) e compil
 ~~~c
 #include <at/gui.h>
 int main(){
-  AtArrayU8* imagem = at_arrayu8_read_png("imagem.png");
-  at_display_show_image("imagem",imagem);
+  AtArrayU8* imagem = at_arrayu8_read_png("imagem.png",NULL);
+  at_display_show_image_by_name("imagem",imagem);
   at_display_wait_key();
+  at_arrayu8_destroy(&imagem);
   return 0;
 }
 ~~~
-
-~~~bash
-$ gcc seu_programa.c -o seu_programa -latkv_core -latkv_imgproc -latkv_gui -lz -ljpeg -lpng -I<caminho_dos_cabecalhos> -L<caminho_das_bibliotecas> `pkg-config --libs --cflags gtk+3.0`
-~~~
-
-Se você instalou em um lugar já rastreado por ldconfig e inseriu os cabeçalhos no sistema, então o comando se reduz a:
-
-~~~bash
-$ gcc seu_programa.c -o seu_programa -latkv_core -latkv_imgproc -latkv_gui -lz -ljpeg -lpng `pkg-config --libs --cflags gtk+3.0`
-~~~
-
-Quando o nosso arquivo PkgConfig estiver pronto (ainda não está), isto será reduzido a:
 
 ~~~bash
 $ gcc seu_programa.c -o seu_programa `pkg-config --libs --cflags atkv`
