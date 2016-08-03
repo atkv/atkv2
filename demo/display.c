@@ -24,19 +24,14 @@
  * `at_display_wait_key()` to enter a loop waiting the user interaction
  */
 
-#include <at/gui/display.h>    // for GUI
-#include <at/imgproc/img_io.h> // for PNG Reading
-#include <at/imgproc/drawing.h>// for drawing
-#include <at/imgproc/ift.h>    // for IFT
-#include <at/imgproc/color.h>  // for IFT
-
+#include <at/gui.h>     // for GUI and Image processing
 
 #define BACKGROUND 0
 #define OBJECT     255
 AtImageWindow  * window;
 uint8_t          pressed;
 AtArrayU8      * seedsmask;
-AtVec4U8         color[2] = {{127, 0, 255, 255},{255, 0, 0, 255}};
+AtVec4U8         color[2] = {{127, 0, 255, 255},{254, 0, 0, 255}};
 AtMouseEventType mbutton;
 AtVec2I16        p0, p1;
 
@@ -76,14 +71,15 @@ on_mouse(AtMouseEvent* ev, void* user_data){
 
 int main(){
   // Read PNG
-  AtError   * error    = NULL;
+  AtError     * error    = NULL;
   //AtArrayU8 * array    = at_arrayu8_read_jpg("teste.jpg",&error);
   //AtArrayU8 * arrayg   = at_arrayu8_cvt_color(array,AT_RGB, AT_GRAY);
-  AtArrayU8 * array    = at_arrayu8_read_png("teste.png",&error);
-  AtArrayU8 * arrayg   = at_arrayu8_cvt_color(array, AT_RGBA, AT_GRAY);
-  AtArrayU64* seeds;
-  AtArrayU8 * labels   = at_arrayu8_new(2, array->h.shape);
-  AtIFT     * ift;
+  AtArrayU8   * array    = at_arrayu8_read_png("teste.png",&error);
+  AtArrayU8   * arrayg   = at_arrayu8_cvt_color(array, AT_RGBA, AT_GRAY);
+  AtSeeds     * seeds;
+  AtArrayU8   * labels   = at_arrayu8_new(2, array->h.shape);
+  AtIFT       * ift;
+  AtGraphArray* g        = at_grapharrayu8_new(arrayg,AT_ADJACENCY_4,at_wdiffabs);
   seedsmask = at_arrayu8_new(2, array->h.shape);
   at_arrayu8_fill(seedsmask,0);
   if(error){
@@ -99,19 +95,18 @@ int main(){
   // Appyling IFT
   seeds  = at_seeds_from_mask(seedsmask);
   clock_t start = clock(), diff;
-  ift    = at_ift_apply_arrayu8(arrayg,AT_ADJACENCY_4,AT_MINIMIZATION,at_conn_max,at_weighting_diff_abs,seeds,AT_FIFO);
+  ift    = at_ift_apply_arrayu8(arrayg,g,at_conn_max,seeds,AT_FIFO);
   diff = clock() - start;
   int msec = diff * 1000 / CLOCKS_PER_SEC;
   printf("Time taken %d seconds %d milliseconds\n", msec/1000, msec%1000);
 
   // Showing Results
-  memcpy(labels->data, ift->l, labels->h.num_elements*labels->h.elemsize);
+  memcpy(labels->data, ift->l, labels->h.nelem*labels->h.elemsize);
   at_display_show_image(window,labels);
   at_display_wait_key();
 
   at_arrayu8_destroy(&array);
   at_arrayu8_destroy(&arrayg);
-  at_arrayu64_destroy(&seeds);
   at_arrayu8_destroy(&seedsmask);
   at_arrayu8_destroy(&labels);
   free(ift->c);free(ift->l);free(ift->p);free(ift->r);

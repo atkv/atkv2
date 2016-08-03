@@ -15,8 +15,8 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#include <at/imgproc/nifti.h>
-#include <at/core/znzfile.h>
+#include <at/imgproc.h>
+#include <at/core.h>
 #include <sys/stat.h>
 #include <endian.h>
 #include <math.h>
@@ -365,7 +365,7 @@ at_niftiimage_load(AtNiftiImage* nim, AtNiftiFile* nfp){
   // extract file info
 
   imgnfp = at_extract_nifti_finfo(nfp->fname);
-  uint64_t shape[3] = {nim->dim[0],nim->dim[1],nim->dim[2]};
+  uint64_t shape[3] = {nim->dim[2],nim->dim[1],nim->dim[0]};
   nim->ar = at_arrayu16_new(nim->ndim,shape);
 
   // open the file and position the filepointer
@@ -374,7 +374,7 @@ at_niftiimage_load(AtNiftiImage* nim, AtNiftiFile* nfp){
   at_znzfile_seek(zfp,ioff,SEEK_SET);
 
   // get total bytes
-  nbytes = nim->ar->h.num_elements * sizeof(uint16_t);
+  nbytes = nim->ar->h.nelem * sizeof(uint16_t);
 
   // read it
   nread = at_znzfile_read(zfp, nim->ar->data, 1, nbytes);
@@ -644,7 +644,7 @@ at_niftiimage_read(const char *name, uint8_t read_data, AtError** error){
 
     nim  = at_niftiimage_from_ascii(sbuf, &txtsize);
     nim->nifti_type = AT_NIFTI_TYPE_ASCII;
-    nbytes = sizeof(uint16_t) * nim->ar->h.num_elements;
+    nbytes = sizeof(uint16_t) * nim->ar->h.nelem;
     remaining = nfp->fsize - txtsize - nbytes;
     if(remaining > 4){
       at_znzfile_seek(zfp, txtsize, SEEK_SET);

@@ -16,7 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/core/pqueue.h>
+#include <at/core.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdalign.h>

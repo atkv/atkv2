@@ -15,7 +15,7 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#include <at/core/scc.h>
+#include <at/core.h>
 /*=============================================================================
  PRIVATE API
  ============================================================================*/
@@ -123,8 +123,8 @@ at_grapharrayu8_scc_tarjan(AtGraphArray* g, AtSCC* scc, uint64_t v,
 AtSCC*
 at_scc_new(AtGraphArray* g){
   AtSCC* scc = malloc(sizeof(AtSCC));
-  scc->l     = malloc(g->h->num_elements << 2);
-  memset(scc->l,UINT32_MAX,g->h->num_elements << 2);
+  scc->l     = malloc(g->h->nelem << 2);
+  memset(scc->l,UINT32_MAX,g->h->nelem << 2);
   return scc;
 }
 
@@ -147,25 +147,25 @@ at_grapharrayu8_scc(AtGraphArray* g, AtSCCAlgorithm a){
       // if (node is undefined)
       //   apply tarjan algorithm
       //
-      index   = malloc(g->h->num_elements << 2);
-      indseq  = malloc(g->h->num_elements << 2);
-      s       = malloc(g->h->num_elements << 4);
-      sp      = malloc(g->h->num_elements << 4);
-      sf      = malloc(g->h->num_elements * sizeof(StackFuncItem));
+      index   = malloc(g->h->nelem << 2);
+      indseq  = malloc(g->h->nelem << 2);
+      s       = malloc(g->h->nelem << 4);
+      sp      = malloc(g->h->nelem << 4);
+      sf      = malloc(g->h->nelem * sizeof(StackFuncItem));
       si      = 0;
       curindex= 0;
-      memset(index ,UINT32_MAX,g->h->num_elements << 2);
-      memset(indseq,UINT32_MAX,g->h->num_elements << 2);
-      memset(sp    ,UINT32_MAX,g->h->num_elements << 4);
+      memset(index ,UINT32_MAX,g->h->nelem << 2);
+      memset(indseq,UINT32_MAX,g->h->nelem << 2);
+      memset(sp    ,UINT32_MAX,g->h->nelem << 4);
 
       // Calculate tarjan
-      for(i = 0; i < g->h->num_elements; i++)
+      for(i = 0; i < g->h->nelem; i++)
         if(scc->l[i] == UINT32_MAX)
           curindex = at_grapharrayu8_scc_tarjan(g, scc, i, index, curindex, s, &si, sp, sf);
 
       // Consecutive labels
       si = 0;
-      for(i = 0; i < g->h->num_elements; i++){
+      for(i = 0; i < g->h->nelem; i++){
         if(indseq[scc->l[i]] == UINT32_MAX)
           indseq[scc->l[i]] = si++;
         scc->l[i] = indseq[scc->l[i]];
@@ -184,3 +184,11 @@ at_grapharrayu8_scc(AtGraphArray* g, AtSCCAlgorithm a){
 
 
 }
+
+void
+at_scc_destroy(AtSCC** scc){
+  if((*scc)->l) free((*scc)->l);
+  free(*scc);
+  *scc = NULL;
+}
+

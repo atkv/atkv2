@@ -16,9 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/gui/imagewindow.h>
-#include <at/imgproc/img_io.h>
-#include <at/imgproc/color.h>
+#include <at/gui.h>
 static void
 activate(GtkApplication* app, gpointer user_data){
   AtError      * error = NULL;

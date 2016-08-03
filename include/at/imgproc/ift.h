@@ -15,13 +15,13 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
+#if !defined(AT_IMGPROC_H_INSIDE)
+#error "Only <at/imgproc.h> can be included directly."
+#endif
 #ifndef AT_IFT_H
 #define AT_IFT_H
-#include <at/core/array.h>
-#include <at/core/grapharray.h>
-#include <at/core/optimization.h>
-#include <at/core/macro.h>
-#include <at/core/scc.h>
+#include <at/core.h>
+#include <at/imgproc.h>
 AT_BEGIN_DECLS
 /**
  * Necessary info for IFT
@@ -38,19 +38,22 @@ typedef struct AtIFT{
 typedef void
 (*AtConnInitu8)(AtIFT* ift, AtArrayU8* array);
 typedef void
-(*AtConnInitSeeds)(AtIFT* ift, AtArrayU64* seeds);
+(*AtConnInitSeeds)(AtIFT* ift, AtSeeds* seeds);
 typedef double
 (*AtConnFuncu8) (AtIFT* ift, AtGraphArray* graph,
                        uint64_t s, uint64_t t, uint64_t i);
 
 typedef struct AtConnectivity{
-  AtConnInitu8 init;
-  AtConnInitSeeds    seeds;
-  AtConnFuncu8 func;
+  AtConnInitu8    init;
+  AtConnInitSeeds seeds;
+  AtConnFuncu8    func;
+  AtOptimization  o;
 }AtConnectivity;
 
 AtConnectivity at_conn_max;
+AtConnectivity at_conn_maxr;
 AtConnectivity at_conn_min;
+AtConnectivity at_conn_minr;
 AtConnectivity at_conn_sum;
 AtConnectivity at_conn_euc;
 
@@ -58,14 +61,6 @@ AtConnectivity at_conn_euc;
  FUNCTIONS
  ============================================================================*/
 #define at_ift_apply(input) _Generic((input), Array: at_ift_apply_array)
-/**
- * @brief at_seeds_new
- * @param n
- * @param data
- * @return
- */
-AtArrayU64*
-at_seeds_new(uint64_t n, uint64_t* data);
 
 /**
  * @brief at_ift_apply_arrayu8
@@ -80,30 +75,24 @@ at_seeds_new(uint64_t n, uint64_t* data);
  */
 AtIFT*
 at_ift_apply_arrayu8(AtArrayU8*           array,
-                     AtAdjacency          adj,
-                     AtOptimization       o,
+                     AtGraphArray*        g,
                      AtConnectivity       connectivity,
-                     AtWeightingFuncu8    w,
-                     AtArrayU64*          seeds,
+                     AtSeeds*             seeds,
                      AtPolicy             po);
 
 AtSCC*
-at_ift_orfc_core_arrayu8(AtArrayU8*        array,
-                         AtAdjacency       adj,
-                         AtOptimization    o,
-                         AtConnectivity    conn,
-                         AtWeightingFuncu8 w,
-                         AtArrayU64*       seeds,
-                         uint64_t          lblback,
-                         AtPolicy          po,
-                         AtSCCAlgorithm    sccalgo);
+at_orfc_core_arrayu8(AtArrayU8     * array,
+                     AtGraphArray  * g,
+                     AtConnectivity  conn,
+                     AtSeeds       * seeds,
+                     uint64_t        lblback,
+                     AtPolicy        po,
+                     AtSCCAlgorithm  sccalgo);
 AtIFT*
 at_orfc_arrayu8(AtArrayU8*        array,
-                AtAdjacency       adj,
-                AtOptimization    o,
+                AtGraphArray*     g,
                 AtConnectivity    conn,
-                AtWeightingFuncu8 w,
-                AtArrayU64*       seeds,
+                AtSeeds*          seeds,
                 uint64_t          lblback,
                 AtPolicy          po);
 /**
@@ -114,8 +103,7 @@ at_orfc_arrayu8(AtArrayU8*        array,
  * @param mask
  * @return
  */
-AtArrayU64*
-at_seeds_from_mask(AtArrayU8* mask);
+AtSeeds *at_seeds_from_mask(AtArrayU8* mask);
 
 AT_END_DECLS
 #endif

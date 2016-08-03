@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <cmocka.h>
 #include <math.h>
-#include <at/core/vec.h>
+#include <at/core.h>
 static void
 test_vec(void** state){
   AtVec2U8 v1u, v2u, v3u;

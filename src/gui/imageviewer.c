@@ -15,8 +15,7 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#include <at/gui/imageviewer.h>
-#include <at/imgproc/color.h>
+#include <at/gui.h>
 #include <cairo.h>
 /*=============================================================================
  PRIVATE API
@@ -54,25 +53,6 @@ at_imageviewer_draw(GtkWidget* imgv, cairo_t* cr){
     cairo_set_source_rgb(cr,1,0,0);
   }
   cairo_paint (cr);
-
-//  GtkAllocation allocation;
-//  gtk_widget_get_allocation(imgv,&allocation);
-
-
-//  const Gtk::Allocation allocation = get_allocation();
-//    const double scale_x = (double)allocation.get_width() / m_scale;
-//    const double scale_y = (double)allocation.get_height() / m_scale;
-//    auto refStyleContext = get_style_context();
-
-//    GtkStyleContext* stylectx = gtk_widget_get_style_context(imgv);
-//    gtk_style_context_set_background(
-
-//    // paint the background
-//    refStyleContext->render_background(cr,
-//      allocation.get_x(), allocation.get_y(),
-//      allocation.get_width(), allocation.get_height());
-
-
   return false;
 }
 
@@ -116,20 +96,17 @@ at_imageviewer_get_size(AtImageViewer* self, GtkOrientation direction,int* minim
 
   switch(direction){
   case GTK_ORIENTATION_HORIZONTAL:
-    index = 1;size_min = 320;break;
+    index = 1;size_min = 10;break;
   case GTK_ORIENTATION_VERTICAL:
-    index = 0;size_min = 240;break;
+    index = 0;size_min = 10;break;
   }
 
   // Minimal size
-  if(priv->array != NULL)
-    *minimal = priv->array->h.shape[index];
-  else
-    *minimal = size_min;
+  *minimal = size_min;
 
   // Natural size
   if(priv->array != NULL)
-    *natural = *minimal;
+    *natural = *minimal < priv->array->h.shape[index]?priv->array->h.shape[index]:*minimal;
   else
     *natural = *minimal;
 }
@@ -237,10 +214,12 @@ at_imageviewer_motion_notify_event(GtkWidget* widget, GdkEvent* event, gpointer 
     priv->last[0] = eventmotion->x;
     priv->last[1] = eventmotion->y;
     priv->mouseevent.type = AT_MOUSE_MOVE;
-    at_imageviewer_get_array_pos(self,priv->ar_pos,eventmotion->x,eventmotion->y);
-    priv->mouseevent.x    = priv->ar_pos[0];
-    priv->mouseevent.y    = priv->ar_pos[1];
-    if(priv->mousecallback) priv->mousecallback(&priv->mouseevent,priv->mousecallbackdata);
+    if(priv->array){
+      at_imageviewer_get_array_pos(self,priv->ar_pos,eventmotion->x,eventmotion->y);
+      priv->mouseevent.x    = priv->ar_pos[0];
+      priv->mouseevent.y    = priv->ar_pos[1];
+      if(priv->mousecallback) priv->mousecallback(&priv->mouseevent,priv->mousecallbackdata);
+    }
   }
   return false;
 }

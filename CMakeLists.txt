@@ -5,9 +5,11 @@ SET                   (CMAKE_C_STANDARD 11)
 SET                   (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 SET                   (GLOBAL_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
+SET                   (AT_PROJECT_NAME   @kv)
+SET                   (AT_PROJECT_DESCRIPTION "Library for graph problems in C and Python")
 SET                   (AT_VERSION_MAJOR   0)
 SET                   (AT_VERSION_MINOR   0)
-SET                   (AT_VERSION_RELEASE 2)
+SET                   (AT_VERSION_RELEASE 3)
 SET                   (AT_WEBSITE http://atkv.github.io)
 SET                   (AT_VERSION_STRING "${AT_VERSION_MAJOR}.${AT_VERSION_MINOR}.${AT_VERSION_RELEASE}")
 SET                   (AT_INSTALL_PATH ${CMAKE_INSTALL_PREFIX})
@@ -21,6 +23,7 @@ MACRO(AT_MAKE_MODULE MODULE)
     FOREACH(MDLFILE ${${MODULEUPPER}_HDRS})
       LIST(APPEND HDRS_ABS ${CMAKE_SOURCE_DIR}/include/at/${MODULE}/${MDLFILE})
     ENDFOREACH()
+    LIST(APPEND HDRS_ABS ${CMAKE_SOURCE_DIR}/include/at/${MODULE}.h)
 
     # SOURCES
     SET(SRCS_ABS)
@@ -30,7 +33,8 @@ MACRO(AT_MAKE_MODULE MODULE)
     LIST(APPEND AT_SRCS_ABS ${SRCS_ABS})
 
     ADD_LIBRARY           (atkv_${MODULE} SHARED ${HDRS_ABS} ${SRCS_ABS})
-    LIST(APPEND ATKV_LIBRARIES atkv_${MODULE} ${${MODULEUPPER}_DEPS})
+    SET(${MODULEUPPER}_LIBRARIES atkv_${MODULE} ${${MODULEUPPER}_DEPS})
+    LIST(APPEND ATKV_LIBRARIES ${${MODULEUPPER}_LIBRARIES})
   ENDIF()
 ENDMACRO(AT_MAKE_MODULE)
 
@@ -43,7 +47,6 @@ ENDMACRO(AT_MAKE_MODULES)
 option(BUILD_CORE    "" ON)
 option(BUILD_IMGPROC "" ON)
 option(BUILD_GUI     "" ON)
-option(BUILD_DOCS    "Build doxygen documentation" OFF)
 option(COVERALLS     "Generate coveralls data" OFF)
 option(COVERALLS_UPLOAD "Upload the generated coveralls json" ON)
 #================================================================= DEPENDENCIES
@@ -100,12 +103,12 @@ endif()
 #================================================================= SOURCES
 INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
 SET                   (MDLS core imgproc gui)
-SET                   (CORE_HDRS    type.h i18n-lib.h version.h macro.h optimization.h znzfile.h vec.h array.h grapharray.h list.h queue.h pqueue.h error.h scc.h)
-SET                   (CORE_SRCS    znzfile.c vec.c array.c grapharray.c list.c queue.c pqueue.c error.c scc.c)
-SET                   (IMGPROC_HDRS color.h img_io.h ift.h dicom.h nifti.h drawing.h)
-SET                   (IMGPROC_SRCS color.c img_io.c ift.c dicom.c nifti.c drawing.c)
-SET                   (GUI_HDRS type.h imageviewer.h imagewindow.h trackbar.h display.h)
-SET                   (GUI_SRCS imageviewer.c imagewindow.c trackbar.c display.c)
+SET                   (CORE_HDRS    type.h i18n-lib.h version.h macro.h optimization.h znzfile.h vec.h range.h array.h stat.h grapharray.h list.h queue.h pqueue.h error.h scc.h)
+SET                   (CORE_SRCS    znzfile.c vec.c range.c array.c stat.c grapharray.c list.c queue.c pqueue.c error.c scc.c)
+SET                   (IMGPROC_HDRS color.h img_io.h seed.h ift.h dicom.h nifti.h drawing.h)
+SET                   (IMGPROC_SRCS color.c img_io.c seed.c ift.c dicom.c nifti.c drawing.c)
+SET                   (GUI_HDRS type.h imageviewer.h imagewindow.h trackbar.h sliceviewer.h slicewindow.h display.h)
+SET                   (GUI_SRCS imageviewer.c imagewindow.c trackbar.c sliceviewer.c slicewindow.c display.c)
 SET                   (CORE_DEPS ${ZLIB_LIBRARIES})
 SET                   (IMGPROC_DEPS ${CORE_DEPS} ${PNG_LIBRARIES} ${JPEG_LIBRARIES} atkv_core)
 SET                   (GUI_DEPS ${GTK3_LIBRARIES} ${CORE_DEPS} atkv_core)
@@ -119,6 +122,15 @@ if (COVERALLS)
 endif(COVERALLS)
 AT_MAKE_MODULES       ("${MDLS}")
 
+SET(PKG_CONFIG_REQUIRES    gtk+-3.0)
+SET(PKG_CONFIG_LIBDIR      "\${prefix}/lib")
+SET(PKG_CONFIG_INCLUDEDIR  "\${prefix}/include")
+SET(PKG_CONFIG_LIBS        "-L\${libdir} -latkv_core -latkv_gui -latkv_imgproc -lpng -ljpeg -lz")
+SET(PKG_CONFIG_CFLAGS      "-I\${includedir}")
+CONFIGURE_FILE(
+  "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+)
 #================================================================= TESTING
 IF(BUILD_TESTING)
   FIND_PACKAGE          (CMocka QUIET)
@@ -154,8 +166,8 @@ IF(BUILD_TESTING)
   ENABLE_TESTING        ()
 
   # Defining tests----------------------------------------------
-  SET(AT_CORE_TESTS    array grapharray list queue pqueue vec)
-  SET(AT_IMGPROC_TESTS img_io dicom nifti ift drawing)
+  SET(AT_CORE_TESTS    array stat grapharray list queue pqueue vec)
+  SET(AT_IMGPROC_TESTS img_io dicom nifti ift drawing color)
   # ------------------------------------------------------------
 
   # Compiling tests
@@ -179,17 +191,22 @@ ENDIF()
 #=================================================================== DEMOS
 IF(BUILD_GUI)
   ADD_EXECUTABLE(at_imagewindow ${CMAKE_SOURCE_DIR}/demo/imagewindow.c)
-  ADD_EXECUTABLE(at_display ${CMAKE_SOURCE_DIR}/demo/display.c)
-  ADD_EXECUTABLE(at_coreorfc ${CMAKE_SOURCE_DIR}/demo/coreorfc.c)
-  TARGET_LINK_LIBRARIES(at_imagewindow atkv_gui ${GUI_DEPS} atkv_imgproc ${IMGPROC_DEPS})
-  TARGET_LINK_LIBRARIES(at_display     atkv_gui ${GUI_DEPS} atkv_imgproc ${IMGPROC_DEPS})
-  TARGET_LINK_LIBRARIES(at_coreorfc    atkv_gui ${GUI_DEPS} atkv_imgproc ${IMGPROC_DEPS})
+  ADD_EXECUTABLE(at_slicewindow ${CMAKE_SOURCE_DIR}/demo/slicewindow.c)
+  ADD_EXECUTABLE(at_display     ${CMAKE_SOURCE_DIR}/demo/display.c)
+  ADD_EXECUTABLE(at_coreorfc    ${CMAKE_SOURCE_DIR}/demo/coreorfc.c)
+  ADD_EXECUTABLE(at_trackbar    ${CMAKE_SOURCE_DIR}/demo/trackbar.c)
+  TARGET_LINK_LIBRARIES(at_imagewindow ${ATKV_LIBRARIES})
+  TARGET_LINK_LIBRARIES(at_slicewindow ${ATKV_LIBRARIES})
+  TARGET_LINK_LIBRARIES(at_display     ${ATKV_LIBRARIES})
+  TARGET_LINK_LIBRARIES(at_coreorfc    ${ATKV_LIBRARIES})
+  TARGET_LINK_LIBRARIES(at_trackbar    ${ATKV_LIBRARIES})
 ENDIF()
 #==================================================================== DOCS
 if(Doxygen_FOUND)
-  option(BUILD_DOCS      "Build doxygen documentation" ON)
-  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/doc/)
-  configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.in ${CMAKE_BINARY_DIR}/doc/Doxyfile @ONLY)
+  option(BUILD_DOCS      "Build doxygen documentation" OFF)
+  if(BUILD_DOCS)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/doc/)
+    configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.in ${CMAKE_BINARY_DIR}/doc/Doxyfile @ONLY)
     add_custom_target(doc ALL
       ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/doc/Doxyfile
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc
@@ -198,12 +215,15 @@ if(Doxygen_FOUND)
     add_custom_command(TARGET doc PRE_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc)
+  endif(BUILD_DOCS)
 endif(Doxygen_FOUND)
 
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/data/ DESTINATION share/at)
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include)
-INSTALL(TARGETS atkv_core      LIBRARY DESTINATION lib)
-INSTALL(TARGETS atkv_imgproc   LIBRARY DESTINATION lib)
+INSTALL(FILES    "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION lib/pkgconfig)
+INSTALL(TARGETS   atkv_core      LIBRARY DESTINATION lib)
+INSTALL(TARGETS   atkv_imgproc   LIBRARY DESTINATION lib)
+INSTALL(TARGETS   atkv_gui       LIBRARY DESTINATION lib)
 
 #CUDA_ADD_LIBRARY      (ift_gpu SHARED ${CMAKE_SOURCE_DIR}/src/ift.cu)
 #ADD_EXECUTABLE        (iftdemo ${CMAKE_SOURCE_DIR}/demos/main.c)

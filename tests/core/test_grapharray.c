@@ -16,7 +16,7 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include <at/core/scc.h>
+#include <at/core.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdalign.h>
@@ -24,12 +24,11 @@
 #include <cmocka.h>
 #include <math.h>
 #include <time.h>
-#include <at/core/type.h>
 void
-test_grapharray_values(AtGraphArray* graph1, AtGraphArray* graph2, uint64_t num_elements){
+test_grapharray_values(AtGraphArray* graph1, AtGraphArray* graph2, uint64_t nelem){
   uint64_t i;
   double delta = 1e-5;
-  for(i = 0; i < num_elements; i++){
+  for(i = 0; i < nelem; i++){
     assert_int_equal(graph1->active[i]   , graph2->active[i]);
     assert_int_equal(graph1->neighbors[i], graph2->neighbors[i]);
     assert_true(fabs(graph1->weights[i]  - graph2->weights[i]) < delta);
@@ -49,7 +48,7 @@ test_grapharray(void** state){
   uint8_t           data[4]       = {0,1,1,1};         // 304-4
 
   array      = at_arrayu8_new_with_data(2,data_shape,data,true);
-  grapharray = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_weighting_diff_abs);
+  grapharray = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_wdiffabs);
   assert_non_null(grapharray);
   assert_non_null(grapharray->active);
   assert_non_null(grapharray->neighbors);
@@ -61,7 +60,7 @@ test_grapharray(void** state){
   grapharray_t.weights   = weights;
   grapharray_t.neighbors = neighbors;
 
-  test_grapharray_values(grapharray, &grapharray_t, array->h.num_elements * AT_ADJACENCY_4);
+  test_grapharray_values(grapharray, &grapharray_t, array->h.nelem * AT_ADJACENCY_4);
 
   at_grapharray_destroy(&grapharray);
   at_arrayu8_destroy(&array);
@@ -74,7 +73,7 @@ test_grapharray_tarjan(void** state){
   // Create our structures
   uint64_t      shape[2]   = {3,3}, i;
   AtArrayU8   * array      = at_arrayu8_new(2, shape);
-  AtGraphArray* g = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_weighting_diff_abs);
+  AtGraphArray* g = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_wdiffabs);
 
   // Remove some edges
   uint64_t arcs_removed[]  = {1,0, 0,3, 4,1, 3,4, 2,5, 5,2, 7,8, 7,6, 6,3, 3,6,

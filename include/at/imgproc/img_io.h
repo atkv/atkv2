@@ -15,11 +15,12 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
+#if !defined(AT_IMGPROC_H_INSIDE)
+#error "Only <at/imgproc.h> can be included directly."
+#endif
 #ifndef AT_IMGIO_H
 #define AT_IMGIO_H
-#include <at/core/array.h>
-#include <at/core/error.h>
-#include <at/core/macro.h>
+#include <at/core.h>
 AT_BEGIN_DECLS
 /*=============================================================================
  MACROS (PUBLIC API)
