@@ -90,7 +90,23 @@ test_array(void** state){
   memset(data,0,16);
   at_arrayu8_fill(array,0);
   test_array_data(header.nelem, array->data, data);
+
+  at_arrayu8_add_scalar(array,4);
+  uint8_t i;
+  for(i = 0; i < array->h.nelem; i++) assert_int_equal(array->data[i],4);
+
+  at_arrayu8_fill(array,3);
+  for(i = 0; i < array->h.nelem; i++) assert_int_equal(array->data[i],3);
+
   at_arrayu8_destroy(&array);
+
+  array = at_arrayu8_zeros(2,data_shape);
+  for(i = 0; i < array->h.nelem; i++) assert_int_equal(array->data[i],0);
+  at_arrayu8_destroy(&array);
+
+  array = at_arrayu8_ones(2,data_shape);
+  for(i = 0; i < array->h.nelem; i++) assert_int_equal(array->data[i],1);
+
   at_array_header_dispose(&header);
 }
 
@@ -248,6 +264,13 @@ test_array_sub(void** state){
   assert_int_equal(at_arrayu16_get_1d(subar16,4),22);
   nd[1] = 1;
   assert_int_equal(at_arrayu16_get_nd(subar16,nd),21);
+  at_arrayu16_destroy(&subar16);
+
+
+  // With copy
+  at_arrayu16_sub(array, ranges,&subar16,true);
+  at_arrayu16_set_1d(subar16,4,15);
+  assert_int_equal(array->data[13],22);
   at_arrayu16_destroy(&subar16);
   at_arrayu16_destroy(&array);
 }
