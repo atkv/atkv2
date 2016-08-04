@@ -147,10 +147,56 @@ at_array##lower##_new_with_data(uint8_t dim, uint64_t* shape, type* data, bool c
 AT_DEFINE_ARRAY_OP3(AT_ARRAY_NEW_WITH_DATA)
 #undef AT_ARRAY_NEW_WITH_DATA
 
-void
-at_arrayu8_fill(AtArrayU8* array, uint8_t value){
-  memset(array->data,value,array->h.nelem * sizeof(uint8_t));
+#define AT_ARRAY_DESTROY(lower, UPPER)                                          \
+void                                                                                  \
+at_array##lower##_destroy(AtArray##UPPER** array_ptr){                                            \
+  if(array_ptr){                                                                      \
+    AtArray##UPPER* array = *array_ptr;                                                    \
+    if(array){                                                                        \
+      if(array->h.owns_data)                                                          \
+        free(array->data);                                                            \
+      at_array_header_dispose(&array->h);                                             \
+      free(array);                                                                    \
+    }                                                                                 \
+    *array_ptr = NULL;                                                                \
+  }                                                                                   \
 }
+AT_DEFINE_ARRAY_OP(AT_ARRAY_DESTROY)
+#undef AT_ARRAY_NEW_WITH_DATA
+
+#define AT_ARRAY_ZEROS(lower, UPPER)                                                  \
+AtArray##UPPER*                                                                       \
+at_array##lower##_zeros(uint8_t dim, uint64_t* shape){                               \
+  AtArray##UPPER* array = at_array##lower##_new(dim, shape);                          \
+  at_array##lower##_fill(array,0);                                                    \
+  return array;                                                                       \
+}
+AT_DEFINE_ARRAY_OP(AT_ARRAY_ZEROS)
+#undef AT_ARRAY_ZEROS
+
+
+#define AT_ARRAY_ONES(lower, UPPER)                                                   \
+AtArray##UPPER*                                                                       \
+at_array##lower##_ones(uint8_t dim, uint64_t* shape){                                \
+  AtArray##UPPER* array = at_array##lower##_new(dim, shape);                          \
+  at_array##lower##_fill(array,1);                                                    \
+  return array;                                                                       \
+}
+AT_DEFINE_ARRAY_OP(AT_ARRAY_ONES)
+#undef AT_ARRAY_ONES
+
+#define AT_ARRAY_FILL(lower, UPPER, type)                                             \
+void                                                                                  \
+at_array##lower##_fill(AtArray##UPPER* array, type value){                            \
+  uint64_t i;                                                                         \
+  if(value == 0) memset(array->data, 0, array->h.nelem * array->h.elemsize);          \
+  else                                                                                \
+    for(i = 0; i < array->h.nelem; i++)                                               \
+      array->data[i] = value;                                                         \
+}
+AT_DEFINE_ARRAY_OP3(AT_ARRAY_FILL)
+#undef AT_ARRAY_FILL
+
 
 void
 at_arrayu8_add_scalar(AtArrayU8* array, uint8_t value){
@@ -176,43 +222,6 @@ at_arrayu8_max(AtArrayU8* array){
   for(i = 0; i < array->h.nelem; i++)
     value = max(value, array->data[i]);
   return value;
-}
-
-void
-at_arrayu64_fill(AtArrayU64* array, uint64_t value){
-  uint64_t i;
-  if(value == 0) memset(array->data, 0, array->h.nelem * sizeof(uint64_t));
-  else
-    for(i = 0; i < array->h.nelem; i++)
-      array->data[i] = value;
-}
-
-AtArrayU8*
-at_arrayu8_zeros(uint8_t dim, uint64_t *shape){
-  AtArrayU8* array = at_arrayu8_new(dim, shape);
-  at_arrayu8_fill(array,0);
-  return array;
-}
-AtArrayU8*
-at_arrayu8_ones(uint8_t dim, uint64_t *shape){
-  AtArrayU8* array = at_arrayu8_new(dim, shape);
-  at_arrayu8_fill(array,1);
-  return array;
-}
-
-
-void
-at_arrayu8_destroy(AtArrayU8** array_ptr){
-  if(array_ptr){
-    AtArrayU8* array = *array_ptr;
-    if(array){
-      if(array->h.owns_data)
-        free(array->data);
-      at_array_header_dispose(&array->h);
-      free(array);
-    }
-    *array_ptr = NULL;
-  }
 }
 
 void
@@ -332,52 +341,9 @@ at_arrayu8_set_nd_many(AtArrayU8* ar, uint64_t *coords, uint8_t* value){
 }
 
 void
-at_arrayu16_destroy(AtArrayU16** arp){
-  if(arp){
-    AtArrayU16* ar = *arp;
-    if(ar){
-      if(ar->h.owns_data)
-        free(ar->data);
-      at_array_header_dispose(&ar->h);
-      free(ar);
-    }
-    *arp = NULL;
-  }
-}
-
-
-void
-at_arrayu64_destroy(AtArrayU64** array_ptr){
-  if(array_ptr){
-    AtArrayU64* array = *array_ptr;
-    if(array){
-      if(array->h.owns_data)
-        free(array->data);
-      at_array_header_dispose(&array->h);
-      free(array);
-    }
-    *array_ptr = NULL;
-  }
-}
-
-void
 at_array_header_dispose(AtArrayHeader* header){
   if(header->shape) free(header->shape);
   if(header->cstep) free(header->cstep);
-}
-
-void
-at_arrayu32_destroy(AtArrayU32** array_ptr){
-  if(array_ptr){
-    AtArrayU32* array = *array_ptr;
-    if(array){
-      if(array->h.owns_data)
-        free(array->data);
-      at_array_header_dispose(&array->h);
-      free(array);
-    }
-    *array_ptr = NULL;
-  }
 }
 void
 at_arrayheader_sub(AtArrayHeader* h, AtArrayHeader* parent_h, AtRange* ranges){

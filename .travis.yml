@@ -12,7 +12,7 @@ before_install:
 script:
   - mkdir build
   - cd build
-  - cmake -DBUILD_GUI=OFF -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON -DCOVERALLS_UPLOAD=ON ..
+  - cmake -DBUILD_GUI=OFF -DBUILD_CHART=OFF -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON -DCOVERALLS_UPLOAD=ON ..
   - make
 after_success:
   - ctest
