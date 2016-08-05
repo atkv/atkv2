@@ -65,6 +65,9 @@
 #ifndef AT_VEC_H
 #include <at/core/vec.h>
 #endif
+#ifndef AT_MAT4_H
+#include <at/core/mat4.h>
+#endif
 #ifndef AT_ZNZFILE_H
 #include <at/core/znzfile.h>
 #endif
