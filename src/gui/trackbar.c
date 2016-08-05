@@ -15,6 +15,8 @@ typedef struct AtTrackbarPrivate{
   AtTrackbarFunc     cb;
   AtTrackbarDataFunc cbd;
   void*              cbd_data;
+  double             vmin;
+  double             vmax;
 }AtTrackbarPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE(AtTrackbar, at_trackbar, GTK_TYPE_BOX)
@@ -24,8 +26,8 @@ at_trackbar_changed(GtkRange* range, GtkScrollType type, gdouble value, gpointer
   AtTrackbar* t = AT_TRACKBAR(user_data);
   AtTrackbarPrivate* priv = at_trackbar_get_instance_private(t);
   if(priv->variable) *(priv->variable) = value;
-  if(priv->cb)       priv->cb(t, value);
-  if(priv->cbd)      priv->cbd(t, value,priv->cbd_data);
+  if(priv->cb)       priv->cb(t, min(priv->vmax,value));
+  if(priv->cbd)      priv->cbd(t, min(priv->vmax,value),priv->cbd_data);
   return false;
 }
 
@@ -69,6 +71,7 @@ at_trackbar_new_named(const char* name){
 void
 at_trackbar_set_min(AtTrackbar* t, double minv){
   AtTrackbarPrivate* priv = at_trackbar_get_instance_private(t);
+  priv->vmin = minv;
   GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(priv->scale));
   gtk_adjustment_set_lower(adjustment,minv);
   gtk_range_set_adjustment(GTK_RANGE(priv->scale),adjustment);
@@ -77,6 +80,7 @@ at_trackbar_set_min(AtTrackbar* t, double minv){
 void
 at_trackbar_set_max(AtTrackbar* t, double maxv){
   AtTrackbarPrivate* priv = at_trackbar_get_instance_private(t);
+  priv->vmax = maxv;
   GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(priv->scale));
   gtk_adjustment_set_upper(adjustment,maxv);
   gtk_range_set_adjustment(GTK_RANGE(priv->scale),adjustment);
@@ -110,15 +114,13 @@ at_trackbar_set_variable(AtTrackbar* t, double* variable){
 double
 at_trackbar_get_min(AtTrackbar *t){
   AtTrackbarPrivate* priv = at_trackbar_get_instance_private(t);
-  GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(priv->scale));
-  return gtk_adjustment_get_lower(adjustment);
+  return priv->vmin;
 }
 
 double
 at_trackbar_get_max(AtTrackbar *t){
   AtTrackbarPrivate* priv = at_trackbar_get_instance_private(t);
-  GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(priv->scale));
-  return gtk_adjustment_get_upper(adjustment);
+  return priv->vmax;
 }
 
 double

@@ -28,10 +28,10 @@ AT_BEGIN_DECLS
  */
 typedef struct AtIFT{
   // Output
-  uint64_t* p;/*00+08*//*!< Predecessors */
-  uint64_t* r;/*08+08*//*!< Roots */
-  double  * c;/*16+08*//*!< Connectivities */
-  uint8_t * l;/*24+08*//*!< Labels */
+  uint64_t* p;/*!< Predecessors */  /*00+08*/
+  uint64_t* r;/*!< Roots */         /*08+08*/
+  double  * c;/*!< Connectivities *//*16+08*/
+  uint8_t * l;/*!< Labels */        /*24+08*/
               // Total: 32 bytes
 }AtIFT;
 
@@ -43,11 +43,14 @@ typedef double
 (*AtConnFuncu8) (AtIFT* ift, AtGraphArray* graph,
                        uint64_t s, uint64_t t, uint64_t i);
 
+/**
+ * @brief information for connectivity function
+ */
 typedef struct AtConnectivity{
-  AtConnInitu8    init;
-  AtConnInitSeeds seeds;
-  AtConnFuncu8    func;
-  AtOptimization  o;
+  AtConnInitu8    init; /*!< Initialize non-seeds */
+  AtConnInitSeeds seeds;/*!< Initialize seeds */
+  AtConnFuncu8    func; /*!< Connectivity value */
+  AtOptimization  o;    /*!< Optimization Class */
 }AtConnectivity;
 
 AtConnectivity at_conn_max;

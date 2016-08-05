@@ -27,26 +27,26 @@ AT_BEGIN_DECLS
  * @brief Dicom Base
  */
 typedef struct AtDicomBase{
-  const char* filename;            /*00+08*//*!< */
-  char      * modality;            /*08+08*//*!< */
-  char      * unit;                /*16+08*//*!< */
-  uint8_t   * photo_interpretation;/*24+08*//*!< */
-  float       intercept;           /*32+08*//*!< */
-  float       slope;               /*40+08*//*!< */
-  uint16_t    samples_per_pixel;   /*48+02*//*!< */
-  uint16_t    bits_allocated;      /*50+02*//*!< */
-  uint16_t    pixel_representation;/*52+02*//*!< */
-  uint8_t     pixel_data_tag_found;/*53+01*//*!< */
-  uint8_t     pd[2];               /*54+02*//*!< */
+  const char* filename;            /*!< Name of DICOM File*/                                                 /*00+08*/
+  char      * modality;            /*!< Modality (e.g.,MR for magnetic ressonance )*/                        /*08+08*/
+  char      * unit;                /*!< Unit type */                                                         /*16+08*/
+  uint8_t   * photo_interpretation;/*!< photo_interpretation */                                              /*24+08*/
+  float       intercept;           /*!< intercept */                                                         /*32+08*/
+  float       slope;               /*!< slope */                                                             /*40+08*/
+  uint16_t    samples_per_pixel;   /*!< samples_per_pixel */                                                 /*48+02*/
+  uint16_t    bits_allocated;      /*!< bits_allocated */                                                    /*50+02*/
+  uint16_t    pixel_representation;/*!< pixel_representation */                                              /*52+02*/
+  uint8_t     pixel_data_tag_found;/*!< pixel_data_tag_found */                                              /*53+01*/
+  uint8_t     pd[2];               /*!< just padding (the size becomes multiple of 8 bytes). Don't use it */ /*54+02*/
                                    // Total: 56 bytes
 }AtDicomBase;
 /**
  * @brief Dicom 16 bits
  */
 typedef struct AtDicomU16{
-  AtDicomBase       base; //00+56
-  AtArrayU16* luts; //56+08
-  AtArrayU16* image;//64+08
+  AtDicomBase base; /*!< Base of DICOM *//*00+56*/
+  AtArrayU16* luts; /*!< Lookup Table  *//*56+08*/
+  AtArrayU16* image;/*!< Proper Image  *//*64+08*/
                           //72 bytes
 }AtDicomU16;
 /**

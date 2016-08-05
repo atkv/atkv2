@@ -24,6 +24,7 @@ AtImageWindow*   window;
 
 AtMouseEventType type;
 uint8_t          pressed;
+uint8_t          draw[2];
 AtArrayU8*       smask;
 
 // Draw just 1 seed for background or object
@@ -58,6 +59,7 @@ on_mouse(AtMouseEvent* event, void* user_data){
     }
     break;
   }
+  draw[type==AT_MOUSE_LEFT_DOWN] = 1;
 }
 
 // Load an image and find object core for ORFC
@@ -65,12 +67,18 @@ int main(int argc, char** argv){
   AtSeeds     * seeds;
   AtSCC       * scc  ;
   AtArrayU8   * smaskrand;
+  AtError     * error = NULL;
   uint64_t      i;
   AtKey         k;
 
   // Load an image and duplicate it (to keep original)
-  AtArrayU8   * array    = at_arrayu8_read_jpg("liver.jpg",NULL);
-  AtArrayU8   * arrayg   = at_arrayu8_cvt_color(array,AT_RGB,AT_GRAY);
+  AtArrayU8   * array    = at_arrayu8_read_png("teste.png",&error);
+  if(error){
+    fprintf(stderr,error->message);
+    fprintf(stderr,"\n");
+    exit(EXIT_FAILURE);
+  }
+  AtArrayU8   * arrayg   = at_arrayu8_cvt_color(array,AT_RGBA,AT_GRAY);
   AtArrayU8   * arraycp  = at_arrayu8_new(array->h.dim, array->h.shape);
   AtArrayU8   * arraygcp = at_arrayu8_new(arrayg->h.dim, arrayg->h.shape);
 
@@ -100,8 +108,13 @@ int main(int argc, char** argv){
 
     // Getting user seeds
 #ifdef AT_SAVE
+    draw[0] = 0;draw[1] = 0;
     at_display_show_image(window, arraycp);
     at_display_wait_key();
+    if(!draw[0] || !draw[1]){
+      fprintf(stderr,"You need to mark the background and object seeds\n");
+      exit(EXIT_FAILURE);
+    }
     at_arrayu8_save(&smask,names,1,"mask.gz");
 #else
     smaskload = at_array_load(&nameso,&qtd,"mask.gz");

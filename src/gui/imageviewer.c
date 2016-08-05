@@ -180,7 +180,7 @@ at_imageviewer_button_press_event(GtkWidget* widget, GdkEvent* event, gpointer u
     at_imageviewer_get_array_pos(self,priv->ar_pos,eventbutton->x,eventbutton->y);
     priv->mouseevent.x    = priv->ar_pos[0];
     priv->mouseevent.y    = priv->ar_pos[1];
-    priv->mousecallback(&priv->mouseevent,priv->mousecallbackdata);
+    if(priv->mousecallback) priv->mousecallback(&priv->mouseevent,priv->mousecallbackdata);
   }
   return priv->space_pressed;
 }
@@ -195,7 +195,7 @@ at_imageviewer_button_release_event(GtkWidget* widget, GdkEvent* event, gpointer
     at_imageviewer_get_array_pos(self,priv->ar_pos,eventbutton->x,eventbutton->y);
     priv->mouseevent.x    = priv->ar_pos[0];
     priv->mouseevent.y    = priv->ar_pos[1];
-    priv->mousecallback(&priv->mouseevent,priv->mousecallbackdata);
+    if(priv->mousecallback) priv->mousecallback(&priv->mouseevent,priv->mousecallbackdata);
   }
   return priv->space_pressed;
 }
