@@ -81,7 +81,7 @@ int main(){
   AtIFT       * ift;
   AtGraphArray* g        = at_grapharrayu8_new(arrayg,AT_ADJACENCY_4,at_wdiffabs);
   seedsmask = at_arrayu8_new(2, array->h.shape);
-  at_arrayu8_fill(seedsmask,0);
+  at_arrayu8_fill(seedsmask,UINT8_MAX);
   if(error){
     fprintf(stderr, error->message);
     return EXIT_FAILURE;
@@ -109,7 +109,6 @@ int main(){
   at_arrayu8_destroy(&arrayg);
   at_arrayu8_destroy(&seedsmask);
   at_arrayu8_destroy(&labels);
-  free(ift->c);free(ift->l);free(ift->p);free(ift->r);
   free(ift);
   return EXIT_SUCCESS;
 }

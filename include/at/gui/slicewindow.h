@@ -25,10 +25,11 @@ AT_BEGIN_DECLS
 
 #define AT_TYPE_SLICEWINDOW at_slicewindow_get_type()
 G_DECLARE_DERIVABLE_TYPE(AtSliceWindow, at_slicewindow, AT, SLICEWINDOW, GtkWindow)
-
+///@cond IGNORE
 typedef struct _AtSliceWindowClass{
   GtkWindowClass parent_class;
 }AtSliceWindowClass;
+///@endcond
 
 AtSliceWindow*
 at_slicewindow_new();

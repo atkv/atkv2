@@ -29,11 +29,11 @@ AT_BEGIN_DECLS
 
 #define AT_TYPE_IMAGEVIEWER at_imageviewer_get_type()
 G_DECLARE_DERIVABLE_TYPE(AtImageViewer, at_imageviewer, AT, IMAGEVIEWER, GtkWidget)
-
-struct _AtImageViewerClass{
+///@cond IGNORE
+typedef struct _AtImageViewerClass{
   GtkWidgetClass parent_class;
-};
-
+}AtImageViewerClass;
+///@endcond
 /**
  * @brief at_imageviewer_new
  * @return
