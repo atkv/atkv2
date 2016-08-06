@@ -111,8 +111,8 @@ endif()
 #================================================================= SOURCES
 INCLUDE_DIRECTORIES   (${CMAKE_SOURCE_DIR}/include)
 SET                   (MDLS core imgproc gui chart)
-SET                   (CORE_HDRS    type.h i18n-lib.h version.h macro.h optimization.h znzfile.h vec.h mat4.h range.h array.h stat.h grapharray.h list.h queue.h pqueue.h error.h scc.h)
-SET                   (CORE_SRCS    znzfile.c vec.c mat4.c range.c array.c stat.c grapharray.c list.c queue.c pqueue.c error.c scc.c)
+SET                   (CORE_HDRS    type.h i18n-lib.h version.h macro.h optimization.h znzfile.h vec.h mat4.h range.h array.h stat.h grapharray.h slist.h list.h queue.h pqueue.h error.h scc.h)
+SET                   (CORE_SRCS    znzfile.c vec.c mat4.c range.c array.c stat.c grapharray.c slist.c list.c queue.c pqueue.c error.c scc.c)
 SET                   (CORE_DEPS    ${ZLIB_LIBRARIES})
 SET                   (IMGPROC_HDRS color.h img_io.h seed.h ift.h dicom.h nifti.h drawing.h)
 SET                   (IMGPROC_SRCS color.c img_io.c seed.c ift.c dicom.c nifti.c drawing.c)
@@ -178,7 +178,7 @@ IF(BUILD_TESTING)
   ENABLE_TESTING        ()
 
   # Defining tests----------------------------------------------
-  SET(AT_CORE_TESTS    array stat grapharray list queue pqueue vec mat4)
+  SET(AT_CORE_TESTS    array stat grapharray slist list queue pqueue vec mat4)
   SET(AT_IMGPROC_TESTS img_io dicom nifti ift drawing color)
   SET(AT_CHART_TESTS   line)
   # ------------------------------------------------------------
