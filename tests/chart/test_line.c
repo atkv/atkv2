@@ -32,9 +32,13 @@ test_line(void** state){
   AtChart  * chart = at_chart_new();
   at_chart_plot_d64 (chart, data, 100);
   assert_int_equal  (chart->nplots, 1);
+  assert_non_null   (chart->axis);
+  assert_null   (chart->title);
   assert_non_null   (chart->lineplots);
-  assert_int_equal  (chart->lineplots->nelem,100);
-  assert_non_null   (chart->lineplots->values);
+  assert_int_equal  (((AtLinePlot*)chart->lineplots->value)->nelem,100);
+  assert_non_null   (((AtLinePlot*)chart->lineplots->value)->values);
+  at_chart_plot_d64 (chart, data, 100);
+  assert_int_equal  (chart->nplots, 2);
   at_chart_write_pdf(chart, "line.pdf",640,480);
   at_chart_destroy  (&chart);
 }
