@@ -50,6 +50,9 @@
 #ifndef AT_GRAPHARRAY_H
 #include <at/core/grapharray.h>
 #endif
+#ifndef AT_SLIST_H
+#include <at/core/slist.h>
+#endif
 #ifndef AT_LIST_H
 #include <at/core/list.h>
 #endif
