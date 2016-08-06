@@ -1,5 +1,5 @@
 #include <at/chart.h>
-
+#include <math.h>
 /*=============================================================================
  PRIVATE API
  ============================================================================*/
@@ -23,6 +23,7 @@ at_chartviewer_draw(GtkWidget* widget, cairo_t* cr){
   double                axis_number_margin_top;
   double                axis_number_margin_bottom;
   double                vmax    = priv->chart->axis[1].vmax;
+  double                vmin    = priv->chart->axis[1].vmin;
   uint64_t              nelem   = priv->chart->lineplots->nelem;
   uint64_t              i;
   GtkAllocation         allocation;
@@ -71,32 +72,78 @@ at_chartviewer_draw(GtkWidget* widget, cairo_t* cr){
   rect_size[2] = allocation.width-rect_size[0]-5-axis_number_extents.width;
   rect_size[3] = allocation.height-rect_size[1]-5-axis_number_extents.height-axis_number_margin_top-axis_number_margin_bottom;
   cairo_rectangle(cr, rect_size[0],rect_size[1],rect_size[2],rect_size[3]);
+  //cairo_set_source_rgb(cr,1,1,1);
+  cairo_stroke(cr);
+  cairo_set_source_rgb(cr,0,0,0);
 
   double axis_number_cur;
 
   for(i = 0; i < 6; i++){
     // Vertical axis
-    axis_number_cur = priv->chart->axis[1].vmax/5*i;
-    sprintf(axis_number_str,"%.2f",axis_number_cur);
+    axis_number_cur = (priv->chart->axis[1].vmax-priv->chart->axis[1].vmin)/5*i;
+    sprintf(axis_number_str,"%.2f",axis_number_cur+priv->chart->axis[1].vmin);
     cairo_move_to(cr,axis_number_margin_left,rect_size[1] + rect_size[3] - i*rect_size[3]/5 + axis_number_extents.height/2.0);
     cairo_show_text(cr,axis_number_str);
 
     // Horizontal axis
-    axis_number_cur = priv->chart->axis[0].vmax/5*i;
-    sprintf(axis_number_str,"%.0f",axis_number_cur);
+    axis_number_cur = (priv->chart->axis[0].vmax-priv->chart->axis[0].vmin)/5*i;
+    sprintf(axis_number_str,"%.0f",axis_number_cur+priv->chart->axis[0].vmin);
     cairo_move_to(cr,rect_size[0]+i*rect_size[2]/5.0-axis_number_extents.width/2.0,rect_size[1]+rect_size[3]+axis_number_margin_top+axis_number_extents.height);
     cairo_show_text(cr,axis_number_str);
   }
 
   // Draw Data
-  cairo_move_to        (cr,rect_size[0],rect_size[1]);
+
   spacing = rect_size[2]/nelem;
+  double x,y;
+  double dashes[] = {10.0, 10.0};
+  double dots[] = {2.0, 5.0};
+  AtColor color = priv->chart->lineplots->linecolor;
+  cairo_set_source_rgba(cr,color.r,color.g,color.b,color.a);
+  x = rect_size[0];
+  y = rect_size[3] + rect_size[1] - (values[0]-vmin)/(vmax-vmin) * rect_size[3];
+  cairo_move_to        (cr,x,y);
+  cairo_set_line_width(cr,priv->chart->lineplots->linewidth);
   for(i = 0; i < nelem; i++){
-    cairo_line_to(cr,rect_size[0]+spacing*i,rect_size[3] - values[i]/vmax * rect_size[3] + rect_size[1]);
+    x = rect_size[0] + spacing*i;
+    y = rect_size[3] + rect_size[1] - (values[i]-vmin)/(vmax-vmin) * rect_size[3];
+    switch(priv->chart->lineplots->linestyle){
+      case AT_LINESTYLE_SOLID:
+        cairo_line_to(cr,x,y);
+        break;
+      case AT_LINESTYLE_DASHED:
+        cairo_set_dash(cr,dashes,2,0);
+        cairo_line_to(cr,x,y);
+        break;
+      case AT_LINESTYLE_DOTTED:
+        cairo_set_dash(cr,dots,2,0);
+        cairo_line_to(cr,x,y);
+        break;
+    }
   }
   cairo_stroke(cr);
-
-
+  cairo_move_to        (cr,rect_size[0],rect_size[1]);
+  for(i = 0; i < nelem; i++){
+    x = rect_size[0]+spacing*i;
+    y = rect_size[3] + rect_size[1] - (values[i]-vmin)/(vmax-vmin) * rect_size[3];
+    switch(priv->chart->lineplots->marker){
+      case AT_MARKER_POINT:
+        cairo_arc(cr,x,y,3,0,2*M_PI);
+        cairo_fill(cr);
+        break;
+      case AT_MARKER_SQUARE:
+        cairo_rectangle(cr,x-3,y-3,6,6);
+        cairo_fill(cr);
+      break;
+      case AT_MARKER_TRIANGLE_DOWN:
+        cairo_move_to(cr,  x-3.5,y+3.5);
+        cairo_line_to(cr,  x-3.5,y+3.5);
+        cairo_line_to(cr,  x+3.5,y+3.5);
+        cairo_line_to(cr,  x    ,y-3.5);
+        cairo_fill(cr);
+      break;
+    }
+  }
   return false;
 }
 
