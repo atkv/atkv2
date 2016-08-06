@@ -22,51 +22,67 @@
 #include <math.h>
 
 /*=============================================================================
+ PRIVATE API
+ ============================================================================*/
+static void
+at_chart_init(AtChart* chart){
+  memset(chart, 0, sizeof(AtChart));
+}
+
+/*=============================================================================
  PUBLIC API
  ============================================================================*/
 AtChart*
 at_chart_new(){
   AtChart* chart = malloc(sizeof(AtChart));
-  memset(chart, 0, sizeof(AtChart));
+  at_chart_init(chart);
   return chart;
 }
 
 AtLinePlot*
-at_chart_plot(AtChart* chart, uint8_t* values, uint64_t num){
-  chart->lineplots         = at_lineplot_new();
-  chart->lineplots->nelem  = num;
-  chart->lineplots->values = malloc(num<<3);
-  double* plotdata = chart->lineplots->values;
-  uint64_t i;
-  for(i = 0; i < num;i++)
-    plotdata[i] = values[i];
-  chart->nplots    = 1;
-  return chart->lineplots;
+at_chart_plot_u8(AtChart* chart, uint8_t* values, uint64_t num){
+  if(chart->axis == NULL) chart->axis = at_axis_new(2);
+  AtLinePlot* lineplot = at_lineplot_new();
+  chart->lineplots = at_slist_append(chart->lineplots,lineplot);
+  at_lineplot_fill_u8(lineplot,values, num);
+  at_axis_fill(&chart->axis[1],lineplot->values,num);
+  chart->axis[0].vmin = 0;
+  chart->axis[1].vmax = num;
+  chart->nplots++;
+  return lineplot;
 }
 
 AtLinePlot*
 at_chart_plot_d64(AtChart* chart, double* values, uint64_t num){
+  if(chart->axis == NULL) chart->axis = at_axis_new(2);
+  AtLinePlot* lineplot = at_lineplot_new();
+  chart->lineplots = at_slist_append(chart->lineplots,lineplot);
+  at_lineplot_fill_d64(lineplot,values,num);
+  at_axis_fill(&chart->axis[1],lineplot->values,num);
+  chart->axis[0].vmin = 0;
+  chart->axis[0].vmax = num;
+  chart->nplots++;
+  return lineplot;
+//  {
+//    chart->axis    = malloc(sizeof(AtAxis)*2);
+//    chart->axis[0].vmin = 0;
+//    chart->axis[0].vmax = num;
+//    chart->axis[1].vmin = INFINITY;
+//    chart->axis[1].vmax = -INFINITY;
+//  }
 
-  if(chart->axis == NULL){
-    chart->axis    = malloc(sizeof(AtAxis)*2);
-    chart->axis[0].vmin = 0;
-    chart->axis[0].vmax = num;
-    chart->axis[1].vmin = INFINITY;
-    chart->axis[1].vmax = -INFINITY;
-  }
-
-  chart->lineplots         = at_lineplot_new();
-  chart->lineplots->nelem  = num;
-  chart->lineplots->values = malloc(num<<3);
-  double* plotdata = chart->lineplots->values;
-  uint64_t i;
-  for(i = 0; i < num;i++){
-    plotdata[i] = values[i];
-    chart->axis[1].vmin = min(chart->axis[1].vmin,plotdata[i]);
-    chart->axis[1].vmax = max(chart->axis[1].vmax,plotdata[i]);
-  }
-  chart->nplots    = 1;
-  return chart->lineplots;
+//  chart->lineplots         = at_lineplot_new();
+//  chart->lineplots->nelem  = num;
+//  chart->lineplots->values = malloc(num<<3);
+//  double* plotdata = chart->lineplots->values;
+//  uint64_t i;
+//  for(i = 0; i < num;i++){
+//    plotdata[i] = values[i];
+//    chart->axis[1].vmin = min(chart->axis[1].vmin,plotdata[i]);
+//    chart->axis[1].vmax = max(chart->axis[1].vmax,plotdata[i]);
+//  }
+//  chart->nplots    = 1;
+//  return chart->lineplots;
 }
 
 void
@@ -84,8 +100,8 @@ at_chart_write_pdf(AtChart* chart, const char* filename, double width, double he
   cr      = cairo_create(surface);
   double                vmax    = chart->axis[1].vmax;
 
-  double* values = chart->lineplots->values;
-  uint64_t i, nelem =chart->lineplots->nelem;
+  double    * values = ((AtLinePlot*)chart->lineplots->value)->values;
+  uint64_t i, nelem  = ((AtLinePlot*)chart->lineplots->value)->nelem;
   double spacing = width/nelem;
 
   cairo_set_source_rgb(cr, 0, 0, 0);
@@ -158,7 +174,13 @@ at_chart_write_pdf(AtChart* chart, const char* filename, double width, double he
 void
 at_chart_destroy(AtChart** chart){
   if(*chart){
-    at_lineplot_destroy(&(*chart)->lineplots);
+    AtSList* list = (*chart)->lineplots;
+    while(list){
+      AtLinePlot* lineplot = (AtLinePlot*)list->value;
+      at_lineplot_destroy(&lineplot);
+      list = list->next;
+    }
+    at_slist_free(list);
     free(*chart);
     *chart = NULL;
   }

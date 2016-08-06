@@ -16,27 +16,24 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#ifndef AT_CHART_H
-#define AT_CHART_H
+#if !defined(AT_CHART_H_INSIDE)
+#error "Only <at/chart.h> can be included directly."
+#endif
 
-#define AT_CHART_H_INSIDE
-#ifndef AT_CORE_H
-#include <at/core.h>
-#endif
-#ifndef AT_CHART_LINE_H
-#include <at/chart/line.h>
-#endif
 #ifndef AT_CHART_AXIS_H
-#include <at/chart/axis.h>
-#endif
-#ifndef AT_CHART_CHART_H
-#include <at/chart/chart.h>
-#endif
-#ifndef AT_CHARTVIEWER_H
-#include <at/chart/chartviewer.h>
-#endif
-#ifndef AT_CHARTWINDOW_H
-#include <at/chart/chartwindow.h>
-#endif
-#undef AT_CHART_H_INSIDE
+#define AT_CHART_AXIS_H
+#include <at/chart.h>
+AT_BEGIN_DECLS
+typedef struct AtAxis{
+  double vmin;
+  double vmax;
+}AtAxis;
+
+AtAxis*
+at_axis_new(uint8_t num);
+
+void
+at_axis_fill(AtAxis* axis, double* values, uint64_t num);
+
+AT_END_DECLS
 #endif

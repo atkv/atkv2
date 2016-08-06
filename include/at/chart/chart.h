@@ -24,16 +24,13 @@
 #define AT_CHART_CHART_H
 
 #include <at/chart.h>
+AT_BEGIN_DECLS
+
 /*=============================================================================
  STRUCTURE
  ============================================================================*/
-typedef struct AtAxis{
-  double vmin;
-  double vmax;
-}AtAxis;
-
 typedef struct AtChart{
-  AtLinePlot* lineplots;
+  AtSList   * lineplots;
   AtAxis*     axis;
   const char* title;
   uint8_t     nplots;
@@ -57,7 +54,7 @@ at_chart_new();
  * @return
  */
 AtLinePlot*
-at_chart_plot(AtChart* chart, uint8_t* values, uint64_t num);
+at_chart_plot_u8(AtChart* chart, uint8_t* values, uint64_t num);
 
 AtLinePlot*
 at_chart_plot_d64(AtChart* chart, double* values, uint64_t num);
@@ -76,5 +73,5 @@ at_chart_write_pdf(AtChart* chart, const char* filename, double width, double he
  */
 void
 at_chart_destroy(AtChart** chart);
-
+AT_END_DECLS
 #endif

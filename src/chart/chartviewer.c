@@ -9,12 +9,65 @@ typedef struct _AtChartViewerPrivate{
 
 G_DEFINE_TYPE_WITH_PRIVATE(AtChartViewer, at_chartviewer, GTK_TYPE_WIDGET)
 
+static void
+at_chartviewer_draw_plot(cairo_t* cr, AtLinePlot* lineplot, double rect_size[], AtAxis* ay){
+  double spacing = rect_size[2]/lineplot->nelem;
+  double x,y;
+  double dashes[] = {10.0, 10.0};
+  double dots[] = {2.0, 5.0};
+  uint64_t i;
+  AtColor color = lineplot->linecolor;
+  cairo_set_source_rgba(cr,color.r,color.g,color.b,color.a);
+  x = rect_size[0];
+  y = rect_size[3] + rect_size[1] - (lineplot->values[0]-ay->vmin)/(ay->vmax-ay->vmin) * rect_size[3];
+  cairo_move_to        (cr,x,y);
+  cairo_set_line_width(cr,lineplot->linewidth);
+  for(i = 0; i < lineplot->nelem; i++){
+    x = rect_size[0] + spacing*i;
+    y = rect_size[3] + rect_size[1] - (lineplot->values[i]-ay->vmin)/(ay->vmax-ay->vmin) * rect_size[3];
+    switch(lineplot->linestyle){
+      case AT_LINESTYLE_SOLID:
+        cairo_line_to(cr,x,y);
+        break;
+      case AT_LINESTYLE_DASHED:
+        cairo_set_dash(cr,dashes,2,0);
+        cairo_line_to(cr,x,y);
+        break;
+      case AT_LINESTYLE_DOTTED:
+        cairo_set_dash(cr,dots,2,0);
+        cairo_line_to(cr,x,y);
+        break;
+    }
+  }
+  cairo_stroke(cr);
+  cairo_move_to        (cr,rect_size[0],rect_size[1]);
+  for(i = 0; i < lineplot->nelem; i++){
+    x = rect_size[0]+spacing*i;
+    y = rect_size[3] + rect_size[1] - (lineplot->values[i]-ay->vmin)/(ay->vmax-ay->vmin) * rect_size[3];
+    switch(lineplot->marker){
+      case AT_MARKER_POINT:
+        cairo_arc(cr,x,y,3,0,2*M_PI);
+        cairo_fill(cr);
+        break;
+      case AT_MARKER_SQUARE:
+        cairo_rectangle(cr,x-3,y-3,6,6);
+        cairo_fill(cr);
+      break;
+      case AT_MARKER_TRIANGLE_DOWN:
+        cairo_move_to(cr,  x-3.5,y+3.5);
+        cairo_line_to(cr,  x-3.5,y+3.5);
+        cairo_line_to(cr,  x+3.5,y+3.5);
+        cairo_line_to(cr,  x    ,y-3.5);
+        cairo_fill(cr);
+      break;
+    }
+  }
+}
+
 static gboolean
 at_chartviewer_draw(GtkWidget* widget, cairo_t* cr){
   AtChartViewer       * self    = AT_CHARTVIEWER(widget);
   AtChartViewerPrivate* priv    = at_chartviewer_get_instance_private(self);
-  double              * values  = priv->chart->lineplots->values;
-  double                spacing;
   double                title_margin_top;
   double                title_margin_bottom;
   double                title_font;
@@ -22,9 +75,6 @@ at_chartviewer_draw(GtkWidget* widget, cairo_t* cr){
   double                axis_number_margin_right;
   double                axis_number_margin_top;
   double                axis_number_margin_bottom;
-  double                vmax    = priv->chart->axis[1].vmax;
-  double                vmin    = priv->chart->axis[1].vmin;
-  uint64_t              nelem   = priv->chart->lineplots->nelem;
   uint64_t              i;
   GtkAllocation         allocation;
   gtk_widget_get_allocated_size(widget,&allocation,NULL);
@@ -93,57 +143,12 @@ at_chartviewer_draw(GtkWidget* widget, cairo_t* cr){
   }
 
   // Draw Data
+  AtSList* item = priv->chart->lineplots;
+  for(i = 0; i < priv->chart->nplots; i++){
+    at_chartviewer_draw_plot(cr,(AtLinePlot*)item->value,rect_size,&priv->chart->axis[1]);
+    item = item->next;
+  }
 
-  spacing = rect_size[2]/nelem;
-  double x,y;
-  double dashes[] = {10.0, 10.0};
-  double dots[] = {2.0, 5.0};
-  AtColor color = priv->chart->lineplots->linecolor;
-  cairo_set_source_rgba(cr,color.r,color.g,color.b,color.a);
-  x = rect_size[0];
-  y = rect_size[3] + rect_size[1] - (values[0]-vmin)/(vmax-vmin) * rect_size[3];
-  cairo_move_to        (cr,x,y);
-  cairo_set_line_width(cr,priv->chart->lineplots->linewidth);
-  for(i = 0; i < nelem; i++){
-    x = rect_size[0] + spacing*i;
-    y = rect_size[3] + rect_size[1] - (values[i]-vmin)/(vmax-vmin) * rect_size[3];
-    switch(priv->chart->lineplots->linestyle){
-      case AT_LINESTYLE_SOLID:
-        cairo_line_to(cr,x,y);
-        break;
-      case AT_LINESTYLE_DASHED:
-        cairo_set_dash(cr,dashes,2,0);
-        cairo_line_to(cr,x,y);
-        break;
-      case AT_LINESTYLE_DOTTED:
-        cairo_set_dash(cr,dots,2,0);
-        cairo_line_to(cr,x,y);
-        break;
-    }
-  }
-  cairo_stroke(cr);
-  cairo_move_to        (cr,rect_size[0],rect_size[1]);
-  for(i = 0; i < nelem; i++){
-    x = rect_size[0]+spacing*i;
-    y = rect_size[3] + rect_size[1] - (values[i]-vmin)/(vmax-vmin) * rect_size[3];
-    switch(priv->chart->lineplots->marker){
-      case AT_MARKER_POINT:
-        cairo_arc(cr,x,y,3,0,2*M_PI);
-        cairo_fill(cr);
-        break;
-      case AT_MARKER_SQUARE:
-        cairo_rectangle(cr,x-3,y-3,6,6);
-        cairo_fill(cr);
-      break;
-      case AT_MARKER_TRIANGLE_DOWN:
-        cairo_move_to(cr,  x-3.5,y+3.5);
-        cairo_line_to(cr,  x-3.5,y+3.5);
-        cairo_line_to(cr,  x+3.5,y+3.5);
-        cairo_line_to(cr,  x    ,y-3.5);
-        cairo_fill(cr);
-      break;
-    }
-  }
   return false;
 }
 

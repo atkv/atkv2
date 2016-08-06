@@ -70,9 +70,37 @@ typedef struct AtLinePlot{
   AtLineStyle  linestyle;
 }AtLinePlot;
 
+/**
+ * @brief at_lineplot_new
+ * @return
+ */
 AtLinePlot*
 at_lineplot_new();
 
+/**
+ * @brief at_lineplot_fill_u8
+ * @param lineplot
+ * @param values
+ * @param num
+ */
+void
+at_lineplot_fill_u8(AtLinePlot* lineplot, uint8_t *values, uint64_t num);
+/**
+ * @brief at_lineplot_fill_d64
+ * @param lineplot
+ * @param values
+ * @param num
+ */
+void
+at_lineplot_fill_d64(AtLinePlot* lineplot, double *values, uint64_t num);
+
+/**
+ * @brief at_lineplot_destroy
+ * @param selfp
+ */
 void
 at_lineplot_destroy(AtLinePlot** selfp);
+
+
+
 #endif
