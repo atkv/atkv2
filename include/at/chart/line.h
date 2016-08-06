@@ -24,10 +24,50 @@
 #define AT_CHART_LINE_H
 
 #include <stdint.h>
+#include <at/chart.h>
+
+typedef enum{
+  AT_MARKER_POINT,
+  AT_MARKER_CIRCLE,
+  AT_MARKER_TRIANGLE_DOWN,
+  AT_MARKER_TRIANGLE_UP,
+  AT_MARKER_TRIANGLE_LEFT,
+  AT_MARKER_TRIANGLE_RIGHT,
+  AT_MARKER_OCTAGON,
+  AT_MARKER_SQUARE,
+  AT_MARKER_PENTAGON,
+  AT_MARKER_STAR,
+  AT_MARKER_HEXAGON1,
+  AT_MARKER_HEXAGON2,
+  AT_MARKER_PLUS,
+  AT_MARKER_X,
+  AT_MARKER_DIAMOND,
+  AT_MARKER_VLINE,
+  AT_MARKER_HLINE,
+  AT_MARKER_NONE
+}AtMarkerType;
+
+typedef enum{
+  AT_LINESTYLE_SOLID,
+  AT_LINESTYLE_DASHED,
+  AT_LINESTYLE_DASHDOT,
+  AT_LINESTYLE_DOTTED,
+  AT_LINESTYLE_NONE
+}AtLineStyle;
+
+typedef AtVec4D64 AtColor;
 
 typedef struct AtLinePlot{
-  double*  values;
-  uint64_t nelem;
+  double*      values;
+  uint64_t     nelem;
+  double       linewidth;
+  double       markersize;
+  double       markeredgewidth;
+  AtColor      markeredgecolor;
+  AtColor      markerfacecolor;
+  AtColor      linecolor;
+  AtMarkerType marker;
+  AtLineStyle  linestyle;
 }AtLinePlot;
 
 AtLinePlot*
