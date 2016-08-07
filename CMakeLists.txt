@@ -120,8 +120,8 @@ SET                   (IMGPROC_DEPS ${CORE_DEPS} ${PNG_LIBRARIES} ${JPEG_LIBRARI
 SET                   (GUI_HDRS     type.h imageviewer.h imagewindow.h trackbar.h sliceviewer.h slicewindow.h display.h)
 SET                   (GUI_SRCS     imageviewer.c imagewindow.c trackbar.c sliceviewer.c slicewindow.c display.c)
 SET                   (GUI_DEPS     ${GTK3_LIBRARIES} ${CORE_DEPS} atkv_core)
-SET                   (CHART_HDRS   line.h axis.h chart.h chartviewer.h chartwindow.h)
-SET                   (CHART_SRCS   line.c axis.c chart.c chartviewer.c chartwindow.c)
+SET                   (CHART_HDRS   line.h axis.h subchart.h chart.h render.h io.h chartviewer.h chartwindow.h)
+SET                   (CHART_SRCS   line.c axis.c subchart.c chart.c render.c io.c chartviewer.c chartwindow.c)
 SET                   (CHART_DEPS   ${GUI_DEPS})
 
 CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/include/at/core/version.h.in" "${CMAKE_SOURCE_DIR}/include/at/core/version.h")

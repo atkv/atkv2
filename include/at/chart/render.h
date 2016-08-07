@@ -20,38 +20,23 @@
 #error "Only <at/chart.h> can be included directly."
 #endif
 
-#ifndef AT_CHARTVIEWER_H
-#define AT_CHARTVIEWER_H
+#ifndef AT_CHART_RENDER_H
+#define AT_CHART_RENDER_H
 
-#include <at/core.h>
-#include <gtk/gtk.h>
-
+#include <stdint.h>
+#include <at/chart.h>
+#include <cairo.h>
 AT_BEGIN_DECLS
 
-/*=============================================================================
- STRUCTURE
- ============================================================================*/
-
-#define AT_TYPE_CHARTVIEWER at_chartviewer_get_type()
-G_DECLARE_DERIVABLE_TYPE(AtChartViewer, at_chartviewer, AT, CHARTVIEWER, GtkWidget)
-
-typedef struct _AtChartViewerClass{
-  GtkWidgetClass parent_class;
-}AtChartViewerClass;
-
-/*=============================================================================
- PUBLIC API
- ============================================================================*/
-
-AtChartViewer*
-at_chartviewer_new();
-
+/**
+ * @brief at_chart_render
+ * @param cr
+ * @param chart
+ * @param rect
+ */
 void
-at_chartviewer_set(AtChartViewer* self, AtChart* chart);
+at_chart_render(cairo_t* cr, AtChart* chart, AtVec4D64 rect);
 
-void
-at_chartviewer_write(AtChartViewer* self, const char* name);
 
 AT_END_DECLS
-
 #endif

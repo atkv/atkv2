@@ -20,38 +20,49 @@
 #error "Only <at/chart.h> can be included directly."
 #endif
 
-#ifndef AT_CHARTVIEWER_H
-#define AT_CHARTVIEWER_H
-
-#include <at/core.h>
-#include <gtk/gtk.h>
-
+#ifndef AT_CHART_IO_H
+#define AT_CHART_IO_H
+#include <at/chart.h>
+#include <cairo.h>
+#include <cairo-pdf.h>
+#include <cairo-svg.h>
 AT_BEGIN_DECLS
-
-/*=============================================================================
- STRUCTURE
- ============================================================================*/
-
-#define AT_TYPE_CHARTVIEWER at_chartviewer_get_type()
-G_DECLARE_DERIVABLE_TYPE(AtChartViewer, at_chartviewer, AT, CHARTVIEWER, GtkWidget)
-
-typedef struct _AtChartViewerClass{
-  GtkWidgetClass parent_class;
-}AtChartViewerClass;
-
-/*=============================================================================
- PUBLIC API
- ============================================================================*/
-
-AtChartViewer*
-at_chartviewer_new();
-
+/**
+ * @brief at_chart_write_pdf
+ * @param chart
+ * @param filename
+ * @param width
+ * @param height
+ */
 void
-at_chartviewer_set(AtChartViewer* self, AtChart* chart);
-
+at_chart_write_pdf(AtChart *chart, const char *filename, double width, double height);
+/**
+ * @brief at_chart_write_png
+ * @param chart
+ * @param filename
+ * @param width
+ * @param height
+ */
 void
-at_chartviewer_write(AtChartViewer* self, const char* name);
+at_chart_write_png(AtChart *chart, const char *filename, double width, double height);
+/**
+ * @brief at_chart_write_svg
+ * @param chart
+ * @param filename
+ * @param width
+ * @param height
+ */
+void
+at_chart_write_svg(AtChart *chart, const char *filename, double width, double height);
+/**
+ * @brief at_chart_write
+ * @param chart
+ * @param filename
+ * @param width
+ * @param height
+ */
+void
+at_chart_write(AtChart* chart, const char* filename, double width, double height);
 
 AT_END_DECLS
-
 #endif

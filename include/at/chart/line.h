@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 #include <at/chart.h>
-
+AT_BEGIN_DECLS
 typedef enum{
   AT_MARKER_POINT,
   AT_MARKER_CIRCLE,
@@ -101,6 +101,6 @@ at_lineplot_fill_d64(AtLinePlot* lineplot, double *values, uint64_t num);
 void
 at_lineplot_destroy(AtLinePlot** selfp);
 
-
+AT_END_DECLS
 
 #endif

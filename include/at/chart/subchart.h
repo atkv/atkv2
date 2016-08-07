@@ -20,8 +20,8 @@
 #error "Only <at/chart.h> can be included directly."
 #endif
 
-#ifndef AT_CHART_CHART_H
-#define AT_CHART_CHART_H
+#ifndef AT_CHART_SUBCHART_H
+#define AT_CHART_SUBCHART_H
 
 #include <at/chart.h>
 AT_BEGIN_DECLS
@@ -29,52 +29,33 @@ AT_BEGIN_DECLS
 /*=============================================================================
  STRUCTURE
  ============================================================================*/
-typedef struct AtChart{
-  const char * title;
-  AtSList    * subcharts;
-  uint8_t      gridsize[2];
-  uint8_t      nsubs;
-}AtChart;
+typedef struct AtSubchart{
+  AtAxis    * axis;
+  AtSList   * plotlist;
+  const char* title;
+  uint8_t     nplots;
+}AtSubchart;
 
-/*=============================================================================
- PUBLIC API
- ============================================================================*/
-/**
- * @brief at_chart_new
- * @return
- */
-AtChart*
-at_chart_new();
+#define AT_DECLARE_SUBCHART_PLOT(lower, UPPER, type) \
+AtLinePlot* at_subchart_plot_##lower(AtSubchart* sc, type* values, uint64_t num);
 
-///**
-// * @brief at_chart_plot
-// * @param chart
-// * @param values
-// * @param num
-// * @return
-// */
-//AtLinePlot*
-//at_chart_plot_u8(AtChart* chart, uint8_t* values, uint64_t num);
+AT_DECLARE_SUBCHART_PLOT(u8 , U8 , uint8_t)
+AT_DECLARE_SUBCHART_PLOT(u16, U16, uint16_t)
+AT_DECLARE_SUBCHART_PLOT(u32, U32, uint32_t)
+AT_DECLARE_SUBCHART_PLOT(u64, U64, uint64_t)
+AT_DECLARE_SUBCHART_PLOT(i8 , I8 , int8_t)
+AT_DECLARE_SUBCHART_PLOT(i16, I16, int16_t)
+AT_DECLARE_SUBCHART_PLOT(i32, I32, int32_t)
+AT_DECLARE_SUBCHART_PLOT(i64, I64, int64_t)
+AT_DECLARE_SUBCHART_PLOT(f32, F32, float)
+AT_DECLARE_SUBCHART_PLOT(d64, D64, double)
+
 
 AtSubchart*
-at_chart_add(AtChart* chart);
+at_subchart_new();
 
-AtLinePlot*
-at_chart_plot_d64(AtChart* chart, double* values, uint64_t num);
-
-///**
-// * @brief at_chart_write_pdf
-// * @param chart
-// * @param filename
-// */
-//void
-//at_chart_write_pdf(AtChart* chart, const char* filename, double width, double height);
-
-/**
- * @brief at_chart_destroy
- * @param chart
- */
 void
-at_chart_destroy(AtChart** chart);
+at_subchart_destroy(AtSubchart** scp);
+
 AT_END_DECLS
 #endif
