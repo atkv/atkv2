@@ -62,7 +62,7 @@ btn_save_clicked(GtkToolButton* toolbutton, gpointer user_data){
   gint            res   = gtk_dialog_run(GTK_DIALOG(dialog));
   if(res == GTK_RESPONSE_ACCEPT){
     filename = gtk_file_chooser_get_filename(chooser);
-    at_chartviewer_write_pdf(priv->viewer,filename);
+    at_chartviewer_write(priv->viewer,filename);
   }
   gtk_widget_destroy(dialog);
 }

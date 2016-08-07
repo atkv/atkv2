@@ -24,7 +24,7 @@
 #define AT_CHARTWINDOW_H
 #include <at/chart.h>
 #include <gtk/gtk.h>
-
+AT_BEGIN_DECLS
 /*=============================================================================
  STRUCTURE
  ============================================================================*/
@@ -61,5 +61,5 @@ at_chartwindow_set(AtChartWindow* window, AtChart* chart);
  */
 AtChartWindow*
 at_chart_show(const char* name, AtChart* chart);
-
+AT_END_DECLS
 #endif

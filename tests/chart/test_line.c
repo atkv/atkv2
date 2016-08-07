@@ -30,16 +30,20 @@ test_line(void** state){
   for(i = 0; i < 100; i++)
     data[i] = sin(M_PI/25*i) + 1;
   AtChart  * chart = at_chart_new();
+  AtSubchart* sc   = (AtSubchart*)chart->subcharts->value;
+  assert_non_null(sc);
   at_chart_plot_d64 (chart, data, 100);
-  assert_int_equal  (chart->nplots, 1);
-  assert_non_null   (chart->axis);
-  assert_null   (chart->title);
-  assert_non_null   (chart->lineplots);
-  assert_int_equal  (((AtLinePlot*)chart->lineplots->value)->nelem,100);
-  assert_non_null   (((AtLinePlot*)chart->lineplots->value)->values);
+  assert_int_equal  (sc->nplots, 1);
+  assert_non_null   (sc->axis);
+  assert_null       (chart->title);
+  assert_null       (sc->title);
+  assert_non_null   (sc->plotlist);
+  AtLinePlot* lineplot = (AtLinePlot*)sc->plotlist->value;
+  assert_non_null(lineplot);
+  assert_int_equal  (lineplot->nelem,100);
+  assert_non_null   (lineplot->values);
   at_chart_plot_d64 (chart, data, 100);
-  assert_int_equal  (chart->nplots, 2);
-  at_chart_write_pdf(chart, "line.pdf",640,480);
+  assert_int_equal  (sc->nplots, 2);
   at_chart_destroy  (&chart);
 }
 

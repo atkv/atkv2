@@ -10,8 +10,17 @@ int main(int argc, char** argv){
     data2[i] = cos(i/10.0);
   }
   AtChart   * chart  = at_chart_new();
-  AtLinePlot* plot   = at_chart_plot_d64(chart,data,100);
-  AtLinePlot* plot2  = at_chart_plot_d64(chart,data2,100);
+  chart->title       = "Chart Title";
+  chart->gridsize[0] = 2;
+  AtSubchart* sc2    = at_chart_add(chart);
+  AtSubchart* sc3    = at_chart_add(chart);
+  AtSubchart* sc     = (AtSubchart*)chart->subcharts->value;
+  AtLinePlot* plot   = at_subchart_plot_d64(sc,data,100);
+  AtLinePlot* plot2  = at_subchart_plot_d64(sc2,data2,100);
+  AtLinePlot* plot3  = at_subchart_plot_d64(sc,data2,100);
+  AtLinePlot* plot4  = at_subchart_plot_d64(sc3,data2,100);
+  sc->title          = "A subchart";
+  sc3->title          = "Another subchart";
   plot->marker       = AT_MARKER_SQUARE;
   plot->linestyle    = AT_LINESTYLE_SOLID;
   plot->linecolor    = red;

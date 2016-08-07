@@ -29,8 +29,17 @@
 #ifndef AT_CHART_AXIS_H
 #include <at/chart/axis.h>
 #endif
+#ifndef AT_CHART_SUBCHART_H
+#include <at/chart/subchart.h>
+#endif
 #ifndef AT_CHART_CHART_H
 #include <at/chart/chart.h>
+#endif
+#ifndef AT_CHART_RENDER_H
+#include <at/chart/render.h>
+#endif
+#ifndef AT_CHART_IO_H
+#include <at/chart/io.h>
 #endif
 #ifndef AT_CHARTVIEWER_H
 #include <at/chart/chartviewer.h>
