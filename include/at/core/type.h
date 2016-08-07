@@ -26,6 +26,15 @@ typedef enum{
   AT_SCC_KOSARAJU,
   AT_SCC_DIJKSTRA,
 }AtSCCAlgorithm;
+
+typedef enum{
+  AT_TOP,
+  AT_BOTTOM,
+  AT_LEFT,
+  AT_RIGHT,
+  AT_CENTER,
+}AtAlignment;
+
 typedef int8_t (*AtCompareFunc)    (void* data1, void* data2);
 typedef int8_t (*AtCompareDataFunc)(void* data1, void* data2, void* user_data);
 typedef void   (*AtDataFunc)       (void* data1, void* user_data);

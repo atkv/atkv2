@@ -19,16 +19,23 @@ int main(int argc, char** argv){
   AtLinePlot* plot2  = at_subchart_plot_d64(sc2,data2,100);
   AtLinePlot* plot3  = at_subchart_plot_d64(sc,data2,100);
   AtLinePlot* plot4  = at_subchart_plot_d64(sc3,data2,100);
+  sc->legend         = true;
+  sc->legendin       = true;
+  sc->legendspos     = AT_BOTTOM;
   sc->title          = "A subchart";
-  sc3->title          = "Another subchart";
+  sc3->title         = "Another subchart";
   plot->marker       = AT_MARKER_SQUARE;
   plot->linestyle    = AT_LINESTYLE_SOLID;
   plot->linecolor    = red;
   plot->linewidth    = 2;
+  plot->name         = "Plot1";
   plot2->marker      = AT_MARKER_NONE;
   plot2->linestyle   = AT_LINESTYLE_DASHED;
   plot2->linecolor   = blue;
   plot2->linewidth   = 1;
+  plot2->name         = "Plot2alsdf";
+  plot3->name         = "Plot3xx";
+  plot4->name         = "Plot4++++++";
   at_chart_show("plot",chart);
   return 0;
 }

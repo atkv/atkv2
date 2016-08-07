@@ -22,6 +22,7 @@
 
 static double    at_chart_render_title(cairo_t* cr, const char* title, AtVec4D64 rect);
 static void      at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect);
+static AtVec4D64 at_chart_render_legend(cairo_t* cr, AtSubchart* sc , AtVec4D64 rect);
 static double    at_chart_render_subtitle(cairo_t* cr, const char* title, AtVec4D64 rect);
 static AtVec4D64 at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect);
 static void      at_chart_render_plot(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis *ay);
@@ -104,17 +105,22 @@ at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect){
   recttitle.y = rect.y; recttitle.height = rect.height;
   titleheight = at_chart_render_subtitle(cr,subchart->title,recttitle);
 
-  // Draw Axis
+  // Remove title space from rectangle
   rect.y      += titleheight;
   rect.height -= titleheight;
-  AtVec4D64 rectaxis = at_chart_render_axis(cr,subchart->axis,rect);
+
+  // Draw Legend
+  rect = at_chart_render_legend(cr,subchart,rect);
+
+  // Draw Axis
+  rect = at_chart_render_axis(cr,subchart->axis,rect);
 
   // Draw Data
   AtSList* item = subchart->plotlist;
   uint8_t i;
   for(i = 0; i < subchart->nplots; i++){
-    at_chart_render_plot(cr,(AtLinePlot*)item->value,rectaxis,&subchart->axis[1]);
-    at_chart_render_marker(cr,(AtLinePlot*)item->value,rectaxis,&subchart->axis[1]);
+    at_chart_render_plot(cr,(AtLinePlot*)item->value,rect,&subchart->axis[1]);
+    at_chart_render_marker(cr,(AtLinePlot*)item->value,rect,&subchart->axis[1]);
     item = item->next;
   }
 }
@@ -224,4 +230,126 @@ at_chart_render_marker(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis* ay
       break;
     }
   }
+}
+
+static AtVec4D64
+at_chart_render_legend(cairo_t* cr, AtSubchart* sc , AtVec4D64 rect){
+  AtVec4D64 rectlegend;
+  if(sc->legend){
+    AtLinePlot* plot;
+    AtSList   * item = sc->plotlist;
+    cairo_text_extents_t extents;
+    uint8_t     i;
+    cairo_set_font_size(cr,min(5+rect.width/100.0*2,15));
+    double legmax = -INFINITY;
+    for(i = 0; i < sc->nplots; i++){
+      plot = (AtLinePlot*)item->value;
+      cairo_text_extents(cr,plot->name,&extents);
+      legmax = max(legmax,extents.width);
+      item = item->next;
+    }
+    legmax += 25;
+
+    switch(sc->legendspos){
+      case AT_LEFT:
+        rectlegend.x = rect.x;
+        rectlegend.y = rect.y;
+        rectlegend.width = legmax;
+        rectlegend.height= (extents.height * 2) * sc->nplots;
+        rect.x += legmax;
+        rect.width -= legmax;
+      break;
+      case AT_RIGHT:
+        rectlegend.x = rect.x + rect.width - legmax;
+        rectlegend.y = rect.y;
+        rectlegend.width = legmax;
+        rectlegend.height= (extents.height * 2) * sc->nplots;
+        rect.width -= legmax;
+      break;
+      case AT_TOP:
+        rectlegend.width = (extents.width + 25) * sc->nplots;
+        rectlegend.x = rect.x + (rect.width-rectlegend.width)/2;
+        rectlegend.y = rect.y;
+        rectlegend.height= extents.height * 2;
+        rect.y += extents.height * 3;
+        rect.height -= extents.height * 3;
+      break;
+      case AT_BOTTOM:
+        rectlegend.width = (extents.width + 25) * sc->nplots;
+        rectlegend.x = rect.x + (rect.width-rectlegend.width)/2;
+        rectlegend.y = rect.y + rect.height - extents.height * 3;
+        rectlegend.height= extents.height * 2;
+        rect.height -= extents.height * 3 + 5;
+      break;
+    }
+
+    // Draw rectangle
+    cairo_rectangle(cr,rectlegend.x,rectlegend.y,rectlegend.width,rectlegend.height);
+    cairo_stroke(cr);
+
+    // Draw plots codes
+    double x = rectlegend.x + 2;
+    double y = rectlegend.y;
+
+    item = sc->plotlist;
+    switch(sc->legendspos){
+      case AT_TOP:
+      case AT_BOTTOM:
+        y += extents.height;
+        break;
+    }
+    for(i = 0; i < sc->nplots; i++){
+      plot = (AtLinePlot*)item->value;
+      cairo_text_extents(cr,plot->name,&extents);
+      cairo_set_source_rgb(cr,plot->linecolor.r,plot->linecolor.g,plot->linecolor.b);
+      switch(sc->legendspos){
+        case AT_LEFT:
+        case AT_RIGHT:
+          y += extents.height;
+          break;
+      }
+
+      // line
+      cairo_move_to(cr,x,y);
+      cairo_line_to(cr,x+15,y);
+      cairo_stroke(cr);
+      // marker
+      switch(plot->marker){
+        case AT_MARKER_POINT:
+          cairo_arc(cr,x+8,y,3,0,2*M_PI);
+          cairo_fill(cr);
+          break;
+        case AT_MARKER_SQUARE:
+          cairo_rectangle(cr,x+5,y-3,6,6);
+          cairo_fill(cr);
+        break;
+        case AT_MARKER_TRIANGLE_DOWN:
+          cairo_move_to(cr,  x+5.5,y+3.5);
+          cairo_line_to(cr,  x+5.5,y+3.5);
+          cairo_line_to(cr,  x+11.5,y+3.5);
+          cairo_line_to(cr,  x+8  ,y-3.5);
+          cairo_fill(cr);
+        break;
+      }
+
+      // name
+      cairo_move_to(cr,x+20,y+extents.height/2);
+      cairo_show_text(cr,plot->name);
+      switch(sc->legendspos){
+        case AT_TOP:
+        case AT_BOTTOM:
+          x += extents.width + 25;
+          break;
+        case AT_LEFT:
+        case AT_RIGHT:
+          y += extents.height * (0.5);
+          break;
+      }
+
+
+      item = item->next;
+    }
+
+  }
+  return rect;
 }

@@ -67,17 +67,6 @@ typedef enum{
 }AtMouseEventType;
 
 /**
- * @brief Enumerator for basic alignment
- */
-typedef enum{
-  AT_TOP,
-  AT_BOTTOM,
-  AT_LEFT,
-  AT_RIGHT,
-  AT_CENTER
-}AtAlignment;
-
-/**
  * @brief Mouse Event Structure
  */
 typedef struct AtMouseEvent{

@@ -59,6 +59,7 @@ typedef AtVec4D64 AtColor;
 
 typedef struct AtLinePlot{
   double*      values;
+  const char*  name;
   uint64_t     nelem;
   double       linewidth;
   double       markersize;
