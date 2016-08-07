@@ -34,6 +34,9 @@ typedef struct AtSubchart{
   AtSList   * plotlist;
   const char* title;
   uint8_t     nplots;
+  uint8_t     legend;
+  uint8_t     legendin;
+  AtAlignment  legendspos;
 }AtSubchart;
 
 #define AT_DECLARE_SUBCHART_PLOT(lower, UPPER, type) \
