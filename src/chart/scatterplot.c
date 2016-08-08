@@ -15,40 +15,26 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
+#include <at/chart.h>
 
-#ifndef AT_CHART_H
-#define AT_CHART_H
+void
+at_scatterplot_init(AtScatterPlot* plot){
+  at_lineplot_init(&plot->l);
+  plot->x = NULL;
+  plot->l.type = AT_PLOT_SCATTER;
+}
 
-#define AT_CHART_H_INSIDE
-#ifndef AT_CORE_H
-#include <at/core.h>
-#endif
-#ifndef AT_CHART_LINE_H
-#include <at/chart/line.h>
-#endif
-#ifndef AT_CHART_SCATTERPLOT_H
-#include <at/chart/scatterplot.h>
-#endif
-#ifndef AT_CHART_AXIS_H
-#include <at/chart/axis.h>
-#endif
-#ifndef AT_CHART_SUBCHART_H
-#include <at/chart/subchart.h>
-#endif
-#ifndef AT_CHART_CHART_H
-#include <at/chart/chart.h>
-#endif
-#ifndef AT_CHART_RENDER_H
-#include <at/chart/render.h>
-#endif
-#ifndef AT_CHART_IO_H
-#include <at/chart/io.h>
-#endif
-#ifndef AT_CHARTVIEWER_H
-#include <at/chart/chartviewer.h>
-#endif
-#ifndef AT_CHARTWINDOW_H
-#include <at/chart/chartwindow.h>
-#endif
-#undef AT_CHART_H_INSIDE
-#endif
+AtScatterPlot*
+at_scatterplot_new(){
+  AtScatterPlot* plot = malloc(sizeof(AtScatterPlot));
+  at_scatterplot_init(plot);
+}
+
+void
+at_scatterplot_fill_d64(AtScatterPlot* sp, double* x, double* y, uint64_t num){
+  at_lineplot_fill_d64(&sp->l,y,num);
+  if(!sp->x) sp->x = malloc(num<<3);
+  uint64_t i;
+  for(i = 0; i < num;i++)
+    sp->x[i] = x[i];
+}

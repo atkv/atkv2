@@ -11,11 +11,25 @@ at_subchart_plot_d64(AtSubchart* sc, double* values, uint64_t num){
   AtLinePlot* lineplot = at_lineplot_new();
   sc->plotlist = at_slist_append(sc->plotlist,lineplot);
   at_lineplot_fill_d64(lineplot,values,num);
-  at_axis_fill(&sc->axis[1],lineplot->values,num);
-  sc->axis[0].vmin = 0;
-  sc->axis[0].vmax = num;
+  double   ax[2]      = {0,num};
+  double*  valuesp[2] = {ax,lineplot->y};
+  uint64_t naxis[2]  = {2,num};
+  at_axis_fill(sc->axis,2,valuesp,naxis);
   sc->nplots++;
   return lineplot;
+}
+
+AtScatterPlot*
+at_subchart_scatter_d64(AtSubchart *sc, double *x, double *y, uint64_t num){
+  if(sc->axis == NULL) sc->axis = at_axis_new(2);
+  AtScatterPlot* scatterplot = at_scatterplot_new();
+  sc->plotlist = at_slist_append(sc->plotlist,scatterplot);
+  at_scatterplot_fill_d64(scatterplot, x, y, num);
+  double*  valuesp[2] = {scatterplot->x,scatterplot->l.y};
+  uint64_t naxis[2]   = {num,num};
+  at_axis_fill(sc->axis,2,valuesp,naxis);
+  sc->nplots++;
+  return scatterplot;
 }
 
 AtSubchart*

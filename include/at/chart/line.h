@@ -57,8 +57,13 @@ typedef enum{
 
 typedef AtVec4D64 AtColor;
 
+typedef enum{
+  AT_PLOT_LINE,
+  AT_PLOT_SCATTER
+}AtPlotType;
+
 typedef struct AtLinePlot{
-  double*      values;
+  double*      y;
   const char*  name;
   uint64_t     nelem;
   double       linewidth;
@@ -69,6 +74,7 @@ typedef struct AtLinePlot{
   AtColor      linecolor;
   AtMarkerType marker;
   AtLineStyle  linestyle;
+  AtPlotType   type;
 }AtLinePlot;
 
 /**
@@ -77,6 +83,9 @@ typedef struct AtLinePlot{
  */
 AtLinePlot*
 at_lineplot_new();
+
+void
+at_lineplot_init(AtLinePlot* lp);
 
 /**
  * @brief at_lineplot_fill_u8

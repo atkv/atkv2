@@ -41,7 +41,7 @@ test_line(void** state){
   AtLinePlot* lineplot = (AtLinePlot*)sc->plotlist->value;
   assert_non_null(lineplot);
   assert_int_equal  (lineplot->nelem,100);
-  assert_non_null   (lineplot->values);
+  assert_non_null   (lineplot->y);
   at_chart_plot_d64 (chart, data, 100);
   assert_int_equal  (sc->nplots, 2);
   at_chart_destroy  (&chart);
