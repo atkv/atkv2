@@ -50,6 +50,9 @@
 #ifndef AT_GRAPHARRAY_H
 #include <at/core/grapharray.h>
 #endif
+#ifndef AT_SLIST_H
+#include <at/core/slist.h>
+#endif
 #ifndef AT_LIST_H
 #include <at/core/list.h>
 #endif
@@ -64,6 +67,9 @@
 #endif
 #ifndef AT_VEC_H
 #include <at/core/vec.h>
+#endif
+#ifndef AT_MAT4_H
+#include <at/core/mat4.h>
 #endif
 #ifndef AT_ZNZFILE_H
 #include <at/core/znzfile.h>

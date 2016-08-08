@@ -39,9 +39,11 @@ typedef enum{
 
 #define AT_TYPE_SLICEVIEWER at_sliceviewer_get_type()
 G_DECLARE_DERIVABLE_TYPE(AtSliceViewer,at_sliceviewer,AT,SLICEVIEWER,GtkBin)
+///@cond IGNORE
 typedef struct _AtSliceViewerClass{
   GtkBinClass parent_class;
 }AtSliceViewerClass;
+///@endcond
 
 /*=============================================================================
  PUBLIC API

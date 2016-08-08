@@ -115,6 +115,7 @@ at_display_imagewindow(const char *name){
     imagewindow = at_imagewindow_new();
     g_signal_connect(GTK_WIDGET(imagewindow),"key-press-event"  , G_CALLBACK(at_display_key_press_event), NULL);
     g_signal_connect(GTK_WIDGET(imagewindow),"key-release-event", G_CALLBACK(at_display_key_release_event), NULL);
+    g_signal_connect(GTK_WIDGET(imagewindow),"destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_hash_table_insert(hash,(gpointer)name,imagewindow);
   }else{
     imagewindow = g_hash_table_lookup(hash,name);

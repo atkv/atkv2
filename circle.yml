@@ -12,7 +12,7 @@ test:
     - mkdir build
     - cd build
     - pwd
-    - cd build && ../cmake-3.6.0-Linux-x86_64/bin/cmake .. -DBUILD_DOCS=OFF -DBUILD_TESTING=ON -DBUILD_GUI=OFF -DCOVERALLS=ON -DCMAKE_BUILD_TYPE=Debug
+    - cd build && ../cmake-3.6.0-Linux-x86_64/bin/cmake .. -DBUILD_DOCS=OFF -DBUILD_CHART=OFF -DBUILD_TESTING=ON -DBUILD_GUI=OFF -DCOVERALLS=ON -DCMAKE_BUILD_TYPE=Debug
     - cd build && make
     - cd build && make coveralls
 

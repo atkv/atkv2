@@ -27,10 +27,11 @@ AT_BEGIN_DECLS
  ============================================================================*/
 #define AT_TYPE_IMAGEWINDOW at_imagewindow_get_type()
 G_DECLARE_DERIVABLE_TYPE(AtImageWindow, at_imagewindow, AT, IMAGEWINDOW, GtkWindow)
-
-struct _AtImageWindowClass{
+///@cond IGNORE
+typedef struct _AtImageWindowClass{
   GtkWindowClass parent_class;
-};
+}AtImageWindowClass;
+///@endcond
 /*=============================================================================
  PUBLIC API
  ============================================================================*/

@@ -110,4 +110,6 @@ AT_DECLARE_VEC4(i64,I64,int64_t)
 AT_DECLARE_VEC4(f32,F32,float)
 AT_DECLARE_VEC4(d64,D64,double)
 
+AtVec3D64
+at_vec3d64_normalize(AtVec3D64 vec);
 #endif

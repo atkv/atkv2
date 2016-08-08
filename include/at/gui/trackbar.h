@@ -28,9 +28,11 @@ G_BEGIN_DECLS
  ============================================================================*/
 #define AT_TYPE_TRACKBAR at_trackbar_get_type()
 G_DECLARE_DERIVABLE_TYPE(AtTrackbar, at_trackbar, AT, TRACKBAR, GtkBox)
+/// @cond IGNORE
 typedef struct _AtTrackbarClass{
   GtkBoxClass parent_class;
 }AtTrackbarClass;
+/// @endcond
 
 /*=============================================================================
  PUBLIC API

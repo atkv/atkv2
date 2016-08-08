@@ -50,6 +50,7 @@ Você pode compilar a documentação utilizando a flag `-DBUILD_DOCS=ON` no proc
 - **CORE** (contém praticamente o AtArray e outras estruturas básicas)
 - **IMGPROC** (contém o IFT, o carregamento de imagens JPG, PNG, DICOM e NIFTI)
 - **GUI** (contém código para interface gráfica)
+- **CHART** (para desenhar gráficos - linha, dispersão, coluna e pizza)
 
 ## Dependências
 
@@ -58,7 +59,7 @@ Para compilar tudo, só basta estes dois pacotes:
 - [CMake](https://cmake.org/) 3.1+ (para compilar o código)
 - [GTK+](http://www.gtk.org/) 3.18+ (para módulo **GUI**)
 
-Se não desejar compilar o módulo **GUI** (usando `-DBUILD_GUI=OFF`), então não é necessário o GTK+, basta ter:
+Se não desejar compilar o módulo **GUI** (usando `-DBUILD_GUI=OFF`) ou **CHART** (usando `-DBUILD_CHART=OFF`), então não é necessário o GTK+, basta ter:
 
 - [libpng](http://www.libpng.org/pub/png/libpng.html) 1.6+ (para PNG, no módulo **IMGPROC**)
 - [libjpeg](http://libjpeg.sourceforge.net/) 8.0+ (para JPEG, no módulo **IMGPROC**)

@@ -20,11 +20,41 @@
 #endif
 #ifndef AT_TYPE_H
 #define AT_TYPE_H
-
+#include <stdint.h>
 typedef enum{
   AT_SCC_TARJAN,
   AT_SCC_KOSARAJU,
   AT_SCC_DIJKSTRA,
 }AtSCCAlgorithm;
+
+typedef enum{
+  AT_TOP,
+  AT_BOTTOM,
+  AT_LEFT,
+  AT_RIGHT,
+  AT_CENTER,
+}AtAlignment;
+
+typedef int8_t (*AtCompareFunc)    (void* data1, void* data2);
+typedef int8_t (*AtCompareDataFunc)(void* data1, void* data2, void* user_data);
+typedef void   (*AtDataFunc)       (void* data1, void* user_data);
+
+#define INT8_TO_POINTER(i)   ((void*)(int64_t)(i))
+#define INT16_TO_POINTER(i)  ((void*)(int64_t)(i))
+#define INT32_TO_POINTER(i)  ((void*)(int64_t)(i))
+#define INT64_TO_POINTER(i)  ((void*)(int64_t)(i))
+#define UINT8_TO_POINTER(i)  ((void*)(uint64_t)(i))
+#define UINT16_TO_POINTER(i) ((void*)(uint64_t)(i))
+#define UINT32_TO_POINTER(i) ((void*)(uint64_t)(i))
+#define UINT64_TO_POINTER(i) ((void*)(uint64_t)(i))
+
+#define POINTER_TO_INT8(i)   ((int8_t)  (int64_t)(i))
+#define POINTER_TO_INT16(i)  ((int16_t) (int64_t)(i))
+#define POINTER_TO_INT32(i)  ((int32_t) (int64_t)(i))
+#define POINTER_TO_INT64(i)  ((int64_t) (int64_t)(i))
+#define POINTER_TO_UINT8(i)  ((uint8_t) (uint64_t)(i))
+#define POINTER_TO_UINT16(i) ((uint16_t)(uint64_t)(i))
+#define POINTER_TO_UINT32(i) ((uint32_t)(uint64_t)(i))
+#define POINTER_TO_UINT64(i) ((uint64_t)(uint64_t)(i))
 
 #endif
