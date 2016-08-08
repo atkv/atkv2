@@ -69,6 +69,16 @@ AtLinePlot*
 at_chart_plot_d64(AtChart* chart, double* values, uint64_t num);
 
 /**
+ * @brief at_chart_bar_d64
+ * @param chart
+ * @param values
+ * @param num
+ * @return
+ */
+AtBarPlot*
+at_chart_bar_d64(AtChart* chart, double* values, uint64_t num);
+
+/**
  * @brief Creates an scatter plot in the first subchart
  * @param chart
  * @param x

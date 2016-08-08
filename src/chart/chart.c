@@ -59,6 +59,11 @@ at_chart_plot_d64(AtChart* chart, double* values, uint64_t num){
   return at_subchart_plot_d64((AtSubchart*)chart->subcharts->value,values,num);
 }
 
+AtBarPlot*
+at_chart_bar_d64(AtChart* chart, double* values, uint64_t num){
+  return at_subchart_bar_d64((AtSubchart*)chart->subcharts->value,values,num);
+}
+
 AtScatterPlot*
 at_chart_scatter_d64(AtChart* chart, double* x, double* y, uint64_t num){
   return at_subchart_scatter_d64((AtSubchart*)chart->subcharts->value,x,y,num);

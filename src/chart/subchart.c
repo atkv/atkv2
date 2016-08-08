@@ -18,6 +18,19 @@ at_subchart_plot_d64(AtSubchart* sc, double* values, uint64_t num){
   sc->nplots++;
   return lineplot;
 }
+AtBarPlot*
+at_subchart_bar_d64(AtSubchart* sc, double* values, uint64_t num){
+  if(sc->axis == NULL) sc->axis = at_axis_new(2);
+  AtBarPlot* barplot = at_barplot_new();
+  sc->plotlist = at_slist_append(sc->plotlist,barplot);
+  at_lineplot_fill_d64(&barplot->l,values,num);
+  double   ax[2]      = {0,num};
+  double*  valuesp[2] = {ax,barplot->l.y};
+  uint64_t naxis[2]  = {2,num};
+  at_axis_fill(sc->axis,2,valuesp,naxis);
+  sc->nplots++;
+  return barplot;
+}
 
 AtScatterPlot*
 at_subchart_scatter_d64(AtSubchart *sc, double *x, double *y, uint64_t num){
