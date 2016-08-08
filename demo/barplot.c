@@ -16,28 +16,27 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 #include <at/chart.h>
+#include <at/gui.h>
+#include <math.h>
 
-int main(){
-  double x[100],y[100];
-  uint64_t i;
-  for(i = 0; i < 100; i++){
-    x[i] = (rand()%10000)/100.0 - 50;
-    y[i] = (rand()%10000)/100.0 - 50;
-  }
-  AtChart      * chart = at_chart_new();
-  AtScatterPlot* plot  = at_chart_scatter_d64(chart,x,y,100);
-  AtSubchart   * sc2   = at_chart_add(chart);
-  AtColor        red   = {1,0,0,1};
-  AtColor        blue  = {0,0,1,1};
-  AtScatterPlot* plot2 = at_subchart_scatter_d64(sc2,x,y,100);
-  plot->l.linecolor  = red;
-  plot->l.linestyle  = AT_LINESTYLE_NONE;
-  plot2->l.linecolor = blue;
-  plot2->l.marker    = AT_MARKER_SQUARE;
-  plot2->l.name      = "Chart";
-  sc2->legend        = true;
-  sc2->legendspos    = AT_BOTTOM;
-  chart->title       = "Chart";
-  at_chart_show("Chart",chart);
+#define NUM 9
+
+int
+main(int argc, char** argv){
+  AtChart      * chart;
+  double         data[NUM];
+  uint64_t       i;
+
+  // Fill data
+  for(i = 0; i < NUM; i++) data[i] = i*i+1;
+
+  // Creating our chart
+  chart = at_chart_new();
+  at_chart_bar_d64(chart,data,NUM);
+  chart->title = "Parábola";
+  AtSubchart* sc = (AtSubchart*)chart->subcharts->value;
+  sc->axis[1].vmin = 0;
+  at_chart_show("chart", chart);
+
   return 0;
 }

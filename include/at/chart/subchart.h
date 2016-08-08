@@ -41,6 +41,8 @@ typedef struct AtSubchart{
 
 #define AT_DECLARE_SUBCHART_PLOT(lower, UPPER, type) \
 AtLinePlot* at_subchart_plot_##lower(AtSubchart* sc, type* values, uint64_t num);
+#define AT_DECLARE_SUBCHART_BAR(lower, UPPER, type) \
+AtBarPlot* at_subchart_bar_##lower(AtSubchart* sc, type* values, uint64_t num);
 #define AT_DECLARE_SUBCHART_SCATTER(lower, UPPER, type) \
 AtScatterPlot* at_subchart_scatter_##lower(AtSubchart* sc, type* x, type* y, uint64_t num);
 #define AT_DECLARE_FUNCTION(OP) \
@@ -56,6 +58,7 @@ OP(f32, F32, float)             \
 OP(d64, D64, double)
 
 AT_DECLARE_FUNCTION(AT_DECLARE_SUBCHART_PLOT)
+AT_DECLARE_FUNCTION(AT_DECLARE_SUBCHART_BAR)
 AT_DECLARE_FUNCTION(AT_DECLARE_SUBCHART_SCATTER)
 
 AtSubchart*

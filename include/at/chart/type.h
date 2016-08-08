@@ -20,12 +20,11 @@
 #error "Only <at/chart.h> can be included directly."
 #endif
 
-#ifndef AT_CHART_LINE_H
-#define AT_CHART_LINE_H
+#ifndef AT_CHART_TYPE_H
+#define AT_CHART_TYPE_H
 
-#include <stdint.h>
-#include <at/chart.h>
-AT_BEGIN_DECLS
+#include <at/core.h>
+
 typedef enum{
   AT_MARKER_POINT,
   AT_MARKER_CIRCLE,
@@ -59,58 +58,7 @@ typedef AtVec4D64 AtColor;
 
 typedef enum{
   AT_PLOT_LINE,
-  AT_PLOT_SCATTER
+  AT_PLOT_SCATTER,
+  AT_PLOT_BAR,
 }AtPlotType;
-
-typedef struct AtLinePlot{
-  double*      y;
-  const char*  name;
-  uint64_t     nelem;
-  double       linewidth;
-  double       markersize;
-  double       markeredgewidth;
-  AtColor      markeredgecolor;
-  AtColor      markerfacecolor;
-  AtColor      linecolor;
-  AtMarkerType marker;
-  AtLineStyle  linestyle;
-  AtPlotType   type;
-}AtLinePlot;
-
-/**
- * @brief at_lineplot_new
- * @return
- */
-AtLinePlot*
-at_lineplot_new();
-
-void
-at_lineplot_init(AtLinePlot* lp);
-
-/**
- * @brief at_lineplot_fill_u8
- * @param lineplot
- * @param values
- * @param num
- */
-void
-at_lineplot_fill_u8(AtLinePlot* lineplot, uint8_t *values, uint64_t num);
-/**
- * @brief at_lineplot_fill_d64
- * @param lineplot
- * @param values
- * @param num
- */
-void
-at_lineplot_fill_d64(AtLinePlot* lineplot, double *values, uint64_t num);
-
-/**
- * @brief at_lineplot_destroy
- * @param selfp
- */
-void
-at_lineplot_destroy(AtLinePlot** selfp);
-
-AT_END_DECLS
-
 #endif

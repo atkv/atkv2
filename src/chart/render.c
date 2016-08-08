@@ -24,10 +24,11 @@ static double    at_chart_render_title(cairo_t* cr, const char* title, AtVec4D64
 static void      at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect);
 static AtVec4D64 at_chart_render_legend(cairo_t* cr, AtSubchart* sc , AtVec4D64 rect);
 static double    at_chart_render_subtitle(cairo_t* cr, const char* title, AtVec4D64 rect);
-static AtVec4D64 at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect);
+static AtVec4D64 at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect, uint8_t bar);
 static void      at_chart_render_plot(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis *ay);
 static void      at_chart_render_marker(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis *axis);
 static void      at_chart_render_scatter(cairo_t* cr, AtScatterPlot* plot, AtVec4D64 rect, AtAxis* axis);
+static void      at_chart_render_bar(cairo_t* cr, AtBarPlot* plot, AtVec4D64 rect, AtAxis* axis);
 
 double
 at_chart_render_title(cairo_t *cr, const char *title, AtVec4D64 rect){
@@ -113,8 +114,9 @@ at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect){
   // Draw Legend
   rect = at_chart_render_legend(cr,subchart,rect);
 
-  // Draw Axis
-  rect = at_chart_render_axis(cr,subchart->axis,rect);
+  // Draw Axis (different for bar plot)
+  rect = at_chart_render_axis(cr,subchart->axis,rect,
+         ((AtLinePlot*)subchart->plotlist->value)->type == AT_PLOT_BAR);
 
   // Draw Data
   AtSList* item = subchart->plotlist;
@@ -131,6 +133,8 @@ at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect){
       at_chart_render_scatter(cr,(AtScatterPlot*)lineplot,rect,subchart->axis);
       at_chart_render_marker(cr,(AtLinePlot*)item->value,rect,subchart->axis);
       break;
+    case AT_PLOT_BAR:
+      at_chart_render_bar(cr,(AtBarPlot*)lineplot,rect,&subchart->axis[1]);
     }
 
     item = item->next;
@@ -138,7 +142,7 @@ at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect){
 }
 
 static AtVec4D64
-at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect){
+at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect,uint8_t bar){
   // Get offsets
   cairo_text_extents_t offset;
   double font = min(rect.width/100.0*5,12);
@@ -164,6 +168,18 @@ at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect){
   // Draw axis numbers
   uint8_t i;
   double axis_number_cur;
+
+  double space, baroffset = 0;
+  uint64_t num;
+
+  if(bar) {
+    num       = axis[0].vmax-axis[1].vmin;
+    space     = rectaxis.width/num;
+    baroffset = space/2;
+  }else{
+    num       = 6;
+    space     = rectaxis.width/5.0;
+  }
   for(i = 0; i < 6; i++){
     // Vertical axis
     axis_number_cur = (axis[1].vmax-axis[1].vmin)/5*i;
@@ -171,12 +187,14 @@ at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect){
     cairo_text_extents(cr,str,&offset);
     cairo_move_to(cr,rect.x+marginh,rect.y + rectaxis.height - i*rectaxis.height/5 + offset.height/2.0);
     cairo_show_text(cr,str);
-
+  }
+  for(i = 0; i < num; i++){
     // Horizontal axis
-    axis_number_cur = (axis[0].vmax-axis[0].vmin)/5*i;
+    if(bar) axis_number_cur = i;
+    else    axis_number_cur = (axis[0].vmax-axis[0].vmin)/5*i;
     sprintf(str,"%.0f",axis_number_cur+axis[0].vmin);
     cairo_text_extents(cr,str,&offset);
-    cairo_move_to(cr,rectaxis.x + i*rectaxis.width/5.0-offset.width/2.0,rectaxis.y + rectaxis.height + offset.height + marginv);
+    cairo_move_to(cr,rectaxis.x + i*space-offset.width/2.0 + baroffset,rectaxis.y + rectaxis.height + offset.height + marginv);
     cairo_show_text(cr,str);
   }
   return rectaxis;
@@ -214,6 +232,24 @@ at_chart_render_plot(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis* ay){
   }
   cairo_stroke(cr);
 }
+static void
+at_chart_render_bar(cairo_t* cr, AtBarPlot* plot, AtVec4D64 rect, AtAxis* ay){
+  double spacing = rect.width/plot->l.nelem;
+  double x,y;
+  uint64_t i;
+  AtColor color = plot->l.linecolor;
+  cairo_set_source_rgba(cr,color.r,color.g,color.b,color.a);
+  x = rect.x;
+  y = rect.y + rect.height - (plot->l.y[0]-ay->vmin)/(ay->vmax-ay->vmin) * rect.height;
+  cairo_set_source_rgb(cr,plot->fillcolor.r,plot->fillcolor.g,plot->fillcolor.b);
+  for(i = 0; i < plot->l.nelem; i++){
+    x = rect.x + spacing*i;
+    y = rect.y + rect.height - (plot->l.y[i]-ay->vmin)/(ay->vmax-ay->vmin) * rect.height;
+    cairo_rectangle(cr,x+5,y,spacing-10,rect.y+rect.height-y);
+    cairo_fill(cr);
+  }
+}
+
 
 static void
 at_chart_render_scatter(cairo_t* cr, AtScatterPlot* plot, AtVec4D64 rect, AtAxis* axis){
@@ -406,3 +442,4 @@ at_chart_render_legend(cairo_t* cr, AtSubchart* sc , AtVec4D64 rect){
   }
   return rect;
 }
+

@@ -23,8 +23,14 @@
 #ifndef AT_CORE_H
 #include <at/core.h>
 #endif
-#ifndef AT_CHART_LINE_H
-#include <at/chart/line.h>
+#ifndef AT_CHART_TYPE_H
+#include <at/chart/type.h>
+#endif
+#ifndef AT_CHART_LINEPLOT_H
+#include <at/chart/lineplot.h>
+#endif
+#ifndef AT_CHART_BARPLOT_H
+#include <at/chart/barplot.h>
 #endif
 #ifndef AT_CHART_SCATTERPLOT_H
 #include <at/chart/scatterplot.h>
