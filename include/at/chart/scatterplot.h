@@ -16,39 +16,32 @@
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#ifndef AT_CHART_H
-#define AT_CHART_H
+#if !defined(AT_CHART_H_INSIDE)
+#error "Only <at/chart.h> can be included directly."
+#endif
 
-#define AT_CHART_H_INSIDE
-#ifndef AT_CORE_H
-#include <at/core.h>
-#endif
-#ifndef AT_CHART_LINE_H
-#include <at/chart/line.h>
-#endif
 #ifndef AT_CHART_SCATTERPLOT_H
-#include <at/chart/scatterplot.h>
-#endif
-#ifndef AT_CHART_AXIS_H
-#include <at/chart/axis.h>
-#endif
-#ifndef AT_CHART_SUBCHART_H
-#include <at/chart/subchart.h>
-#endif
-#ifndef AT_CHART_CHART_H
-#include <at/chart/chart.h>
-#endif
-#ifndef AT_CHART_RENDER_H
-#include <at/chart/render.h>
-#endif
-#ifndef AT_CHART_IO_H
-#include <at/chart/io.h>
-#endif
-#ifndef AT_CHARTVIEWER_H
-#include <at/chart/chartviewer.h>
-#endif
-#ifndef AT_CHARTWINDOW_H
-#include <at/chart/chartwindow.h>
-#endif
-#undef AT_CHART_H_INSIDE
+#define AT_CHART_SCATTERPLOT_H
+#include <at/chart.h>
+AT_BEGIN_DECLS
+typedef struct AtScatterPlot{
+  AtLinePlot l;
+  double* x;
+}AtScatterPlot;
+/**
+ * @brief at_scatterplot_new
+ * @return
+ */
+AtScatterPlot*
+at_scatterplot_new();
+/**
+ * @brief at_scatterplot_fill_d64
+ * @param sp
+ * @param x
+ * @param y
+ * @param num
+ */
+void
+at_scatterplot_fill_d64(AtScatterPlot* sp, double* x, double* y, uint64_t num);
+AT_END_DECLS
 #endif

@@ -58,9 +58,26 @@ at_chart_new();
 
 AtSubchart*
 at_chart_add(AtChart* chart);
-
+/**
+ * @brief Creates a line plot in the first subchart
+ * @param chart
+ * @param values
+ * @param num
+ * @return
+ */
 AtLinePlot*
 at_chart_plot_d64(AtChart* chart, double* values, uint64_t num);
+
+/**
+ * @brief Creates an scatter plot in the first subchart
+ * @param chart
+ * @param x
+ * @param y
+ * @param num
+ * @return
+ */
+AtScatterPlot*
+at_chart_scatter_d64(AtChart* chart, double* x, double* y, uint64_t num);
 
 ///**
 // * @brief at_chart_write_pdf

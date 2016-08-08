@@ -33,7 +33,7 @@ AtAxis*
 at_axis_new(uint8_t num);
 
 void
-at_axis_fill(AtAxis* axis, double* values, uint64_t num);
+at_axis_fill(AtAxis* axis, uint8_t naxis, double **valuesp, uint64_t *nump);
 
 AT_END_DECLS
 #endif

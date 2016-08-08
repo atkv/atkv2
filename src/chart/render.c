@@ -26,7 +26,8 @@ static AtVec4D64 at_chart_render_legend(cairo_t* cr, AtSubchart* sc , AtVec4D64 
 static double    at_chart_render_subtitle(cairo_t* cr, const char* title, AtVec4D64 rect);
 static AtVec4D64 at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect);
 static void      at_chart_render_plot(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis *ay);
-static void      at_chart_render_marker(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis *ay);
+static void      at_chart_render_marker(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis *axis);
+static void      at_chart_render_scatter(cairo_t* cr, AtScatterPlot* plot, AtVec4D64 rect, AtAxis* axis);
 
 double
 at_chart_render_title(cairo_t *cr, const char *title, AtVec4D64 rect){
@@ -118,9 +119,20 @@ at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect){
   // Draw Data
   AtSList* item = subchart->plotlist;
   uint8_t i;
+  AtLinePlot* lineplot;
   for(i = 0; i < subchart->nplots; i++){
-    at_chart_render_plot(cr,(AtLinePlot*)item->value,rect,&subchart->axis[1]);
-    at_chart_render_marker(cr,(AtLinePlot*)item->value,rect,&subchart->axis[1]);
+    lineplot = (AtLinePlot*)item->value;
+    switch(lineplot->type){
+    case AT_PLOT_LINE:
+      at_chart_render_plot(cr,lineplot,rect,&subchart->axis[1]);
+      at_chart_render_marker(cr,(AtLinePlot*)item->value,rect,subchart->axis);
+      break;
+    case AT_PLOT_SCATTER:
+      at_chart_render_scatter(cr,(AtScatterPlot*)lineplot,rect,subchart->axis);
+      at_chart_render_marker(cr,(AtLinePlot*)item->value,rect,subchart->axis);
+      break;
+    }
+
     item = item->next;
   }
 }
@@ -180,12 +192,12 @@ at_chart_render_plot(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis* ay){
   AtColor color = plot->linecolor;
   cairo_set_source_rgba(cr,color.r,color.g,color.b,color.a);
   x = rect.x;
-  y = rect.y + rect.height - (plot->values[0]-ay->vmin)/(ay->vmax-ay->vmin) * rect.height;
+  y = rect.y + rect.height - (plot->y[0]-ay->vmin)/(ay->vmax-ay->vmin) * rect.height;
   cairo_move_to        (cr,x,y);
   cairo_set_line_width(cr,plot->linewidth);
   for(i = 0; i < plot->nelem; i++){
     x = rect.x + spacing*i;
-    y = rect.y + rect.height - (plot->values[i]-ay->vmin)/(ay->vmax-ay->vmin) * rect.height;
+    y = rect.y + rect.height - (plot->y[i]-ay->vmin)/(ay->vmax-ay->vmin) * rect.height;
     switch(plot->linestyle){
       case AT_LINESTYLE_SOLID:
         cairo_line_to(cr,x,y);
@@ -204,14 +216,54 @@ at_chart_render_plot(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis* ay){
 }
 
 static void
-at_chart_render_marker(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis* ay){
+at_chart_render_scatter(cairo_t* cr, AtScatterPlot* plot, AtVec4D64 rect, AtAxis* axis){
+  AtAxis* ax = axis;
+  AtAxis* ay = axis + 1;
+  double x,y;
+  double dashes[] = {10.0, 10.0};
+  double dots[] = {2.0, 5.0};
+  uint64_t i;
+  AtColor color = plot->l.linecolor;
+  cairo_set_source_rgba(cr,color.r,color.g,color.b,color.a);
+  x = rect.x + rect.width  - (plot->x[0]  - ax->vmin)/(ax->vmax - ax->vmin) * rect.width;
+  y = rect.y + rect.height - (plot->l.y[0]- ay->vmin)/(ay->vmax - ay->vmin) * rect.height;
+  cairo_move_to        (cr,x,y);
+  cairo_set_line_width(cr,plot->l.linewidth);
+  for(i = 0; i < plot->l.nelem; i++){
+    x = rect.x + (plot->x[i]  - ax->vmin)/(ax->vmax - ax->vmin) * rect.width;
+    y = rect.y + rect.height - (plot->l.y[i]- ay->vmin)/(ay->vmax - ay->vmin) * rect.height;
+    switch(plot->l.linestyle){
+      case AT_LINESTYLE_SOLID:
+        cairo_line_to(cr,x,y);
+        break;
+      case AT_LINESTYLE_DASHED:
+        cairo_set_dash(cr,dashes,2,0);
+        cairo_line_to(cr,x,y);
+        break;
+      case AT_LINESTYLE_DOTTED:
+        cairo_set_dash(cr,dots,2,0);
+        cairo_line_to(cr,x,y);
+        break;
+    }
+  }
+  cairo_stroke(cr);
+}
+
+static void
+at_chart_render_marker(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis* axis){
+  AtAxis* ax = axis, *ay = axis+1;
+
   double spacing = rect.width/plot->nelem;
   cairo_move_to        (cr,rect.x, rect.y);
   uint64_t i;
   double x, y;
+  AtScatterPlot* sp = (AtScatterPlot*)plot;
   for(i = 0; i < plot->nelem; i++){
-    x = rect.x + spacing * i;
-    y = rect.height + rect.y - (plot->values[i]-ay->vmin)/(ay->vmax-ay->vmin) * rect.height;
+    if(plot->type == AT_PLOT_LINE)
+      x = rect.x + spacing * i;
+    else
+      x = rect.x + (sp->x[i]-ax->vmin)/(ax->vmax-ax->vmin) * rect.width;
+    y = rect.height + rect.y - (plot->y[i]-ay->vmin)/(ay->vmax-ay->vmin) * rect.height;
     switch(plot->marker){
       case AT_MARKER_POINT:
         cairo_arc(cr,x,y,3,0,2*M_PI);
@@ -284,6 +336,7 @@ at_chart_render_legend(cairo_t* cr, AtSubchart* sc , AtVec4D64 rect){
     }
 
     // Draw rectangle
+    cairo_set_source_rgb(cr,0,0,0);
     cairo_rectangle(cr,rectlegend.x,rectlegend.y,rectlegend.width,rectlegend.height);
     cairo_stroke(cr);
 

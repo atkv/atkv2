@@ -41,18 +41,22 @@ typedef struct AtSubchart{
 
 #define AT_DECLARE_SUBCHART_PLOT(lower, UPPER, type) \
 AtLinePlot* at_subchart_plot_##lower(AtSubchart* sc, type* values, uint64_t num);
+#define AT_DECLARE_SUBCHART_SCATTER(lower, UPPER, type) \
+AtScatterPlot* at_subchart_scatter_##lower(AtSubchart* sc, type* x, type* y, uint64_t num);
+#define AT_DECLARE_FUNCTION(OP) \
+OP(u8 , U8 , uint8_t)           \
+OP(u16, U16, uint16_t)          \
+OP(u32, U32, uint32_t)          \
+OP(u64, U64, uint64_t)          \
+OP(i8 , I8 , int8_t)            \
+OP(i16, I16, int16_t)           \
+OP(i32, I32, int32_t)           \
+OP(i64, I64, int64_t)           \
+OP(f32, F32, float)             \
+OP(d64, D64, double)
 
-AT_DECLARE_SUBCHART_PLOT(u8 , U8 , uint8_t)
-AT_DECLARE_SUBCHART_PLOT(u16, U16, uint16_t)
-AT_DECLARE_SUBCHART_PLOT(u32, U32, uint32_t)
-AT_DECLARE_SUBCHART_PLOT(u64, U64, uint64_t)
-AT_DECLARE_SUBCHART_PLOT(i8 , I8 , int8_t)
-AT_DECLARE_SUBCHART_PLOT(i16, I16, int16_t)
-AT_DECLARE_SUBCHART_PLOT(i32, I32, int32_t)
-AT_DECLARE_SUBCHART_PLOT(i64, I64, int64_t)
-AT_DECLARE_SUBCHART_PLOT(f32, F32, float)
-AT_DECLARE_SUBCHART_PLOT(d64, D64, double)
-
+AT_DECLARE_FUNCTION(AT_DECLARE_SUBCHART_PLOT)
+AT_DECLARE_FUNCTION(AT_DECLARE_SUBCHART_SCATTER)
 
 AtSubchart*
 at_subchart_new();

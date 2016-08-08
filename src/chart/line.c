@@ -1,6 +1,6 @@
 #include <at/chart.h>
 
-static void
+void
 at_lineplot_init(AtLinePlot* lp){
   AtColor edgecolor   = {0,0,0,1};
   lp->linestyle       = AT_LINESTYLE_SOLID;
@@ -12,7 +12,8 @@ at_lineplot_init(AtLinePlot* lp){
   lp->markerfacecolor = edgecolor;
   lp->markersize      = 1;
   lp->nelem           = 0;
-  lp->values          = NULL;
+  lp->y               = NULL;
+  lp->type            = AT_PLOT_LINE;
 }
 
 AtLinePlot*
@@ -24,12 +25,12 @@ at_lineplot_new(){
 
 #define AT_DEFINE_LINEPLOT_FILL(lower,UPPER,type)                                \
 void                                                                      \
-at_lineplot_fill_##lower(AtLinePlot* lineplot, type* values, uint64_t num){ \
+at_lineplot_fill_##lower(AtLinePlot* lineplot, type* y, uint64_t num){ \
   lineplot->nelem  = num;                                                 \
-  lineplot->values = malloc(num<<3);                                      \
+  lineplot->y = malloc(num<<3);                                      \
   uint64_t i;                                                             \
   for(i = 0; i < num;i++)                                                 \
-    lineplot->values[i] = values[i];                                      \
+    lineplot->y[i] = y[i];                                      \
 }
 AT_DEFINE_LINEPLOT_FILL(u8 ,U8 ,uint8_t)
 AT_DEFINE_LINEPLOT_FILL(u16,U16,uint16_t)
@@ -45,7 +46,7 @@ AT_DEFINE_LINEPLOT_FILL(d64,D64,double)
 void
 at_lineplot_destroy(AtLinePlot** selfp){
   if(*selfp){
-    if((*selfp)->values) free((*selfp)->values);
+    if((*selfp)->y) free((*selfp)->y);
     free(*selfp);
     *selfp = NULL;
   }
