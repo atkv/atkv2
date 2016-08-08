@@ -79,6 +79,16 @@ AtBarPlot*
 at_chart_bar_d64(AtChart* chart, double* values, uint64_t num);
 
 /**
+ * @brief at_chart_pie_d64
+ * @param chart
+ * @param values
+ * @param num
+ * @return
+ */
+AtPiePlot*
+at_chart_pie_d64(AtChart* chart, char **categories, double* values, uint64_t num);
+
+/**
  * @brief Creates an scatter plot in the first subchart
  * @param chart
  * @param x
@@ -88,14 +98,6 @@ at_chart_bar_d64(AtChart* chart, double* values, uint64_t num);
  */
 AtScatterPlot*
 at_chart_scatter_d64(AtChart* chart, double* x, double* y, uint64_t num);
-
-///**
-// * @brief at_chart_write_pdf
-// * @param chart
-// * @param filename
-// */
-//void
-//at_chart_write_pdf(AtChart* chart, const char* filename, double width, double height);
 
 /**
  * @brief at_chart_destroy

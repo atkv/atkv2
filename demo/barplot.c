@@ -33,7 +33,7 @@ main(int argc, char** argv){
   // Creating our chart
   chart = at_chart_new();
   at_chart_bar_d64(chart,data,NUM);
-  chart->title = "Parábola";
+  chart->title = "Bar Plot";
   AtSubchart* sc = (AtSubchart*)chart->subcharts->value;
   sc->axis[1].vmin = 0;
   at_chart_show("chart", chart);

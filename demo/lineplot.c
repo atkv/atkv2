@@ -31,7 +31,7 @@ main(int argc, char** argv){
   // Creating our chart
   chart = at_chart_new();
   at_chart_plot_d64(chart,data,100);
-  chart->title = "Parábola";
+  chart->title = "Line Plot";
   at_chart_show("chart", chart);
 
   return 0;

@@ -24,11 +24,13 @@ static double    at_chart_render_title(cairo_t* cr, const char* title, AtVec4D64
 static void      at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect);
 static AtVec4D64 at_chart_render_legend(cairo_t* cr, AtSubchart* sc , AtVec4D64 rect);
 static double    at_chart_render_subtitle(cairo_t* cr, const char* title, AtVec4D64 rect);
-static AtVec4D64 at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect, uint8_t bar);
+static AtVec4D64 at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect, AtPlotType type);
 static void      at_chart_render_plot(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis *ay);
 static void      at_chart_render_marker(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis *axis);
 static void      at_chart_render_scatter(cairo_t* cr, AtScatterPlot* plot, AtVec4D64 rect, AtAxis* axis);
 static void      at_chart_render_bar(cairo_t* cr, AtBarPlot* plot, AtVec4D64 rect, AtAxis* axis);
+static void      at_chart_render_pie(cairo_t* cr, AtPiePlot* plot, AtVec4D64 rect);
+static AtVec4D64 at_chart_render_legend_pie(cairo_t* cr, AtPiePlot* pp, AtVec4D64 rect, AtAlignment legendpos);
 
 double
 at_chart_render_title(cairo_t *cr, const char *title, AtVec4D64 rect){
@@ -112,11 +114,13 @@ at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect){
   rect.height -= titleheight;
 
   // Draw Legend
-  rect = at_chart_render_legend(cr,subchart,rect);
+  if(((AtLinePlot*)subchart->plotlist->value)->type != AT_PLOT_PIE)
+    rect = at_chart_render_legend(cr,subchart,rect);
+  else if(subchart->legend)
+    rect = at_chart_render_legend_pie(cr,(AtPiePlot*)subchart->plotlist->value,rect,subchart->legendspos);
 
   // Draw Axis (different for bar plot)
-  rect = at_chart_render_axis(cr,subchart->axis,rect,
-         ((AtLinePlot*)subchart->plotlist->value)->type == AT_PLOT_BAR);
+  rect = at_chart_render_axis(cr,subchart->axis,rect, ((AtLinePlot*)subchart->plotlist->value)->type);
 
   // Draw Data
   AtSList* item = subchart->plotlist;
@@ -135,6 +139,10 @@ at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect){
       break;
     case AT_PLOT_BAR:
       at_chart_render_bar(cr,(AtBarPlot*)lineplot,rect,&subchart->axis[1]);
+      break;
+    case AT_PLOT_PIE:
+      at_chart_render_pie(cr,(AtPiePlot*)lineplot,rect);
+      break;
     }
 
     item = item->next;
@@ -142,7 +150,7 @@ at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect){
 }
 
 static AtVec4D64
-at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect,uint8_t bar){
+at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect,AtPlotType type){
   // Get offsets
   cairo_text_extents_t offset;
   double font = min(rect.width/100.0*5,12);
@@ -165,37 +173,39 @@ at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect,uint8_t bar){
   cairo_rectangle(cr, rectaxis.x, rectaxis.y, rectaxis.width, rectaxis.height);
   cairo_stroke(cr);
 
-  // Draw axis numbers
-  uint8_t i;
-  double axis_number_cur;
+  if(type != AT_PLOT_PIE){
+    // Draw axis numbers
+    uint8_t i;
+    double axis_number_cur;
 
-  double space, baroffset = 0;
-  uint64_t num;
+    double space, baroffset = 0;
+    uint64_t num;
 
-  if(bar) {
-    num       = axis[0].vmax-axis[1].vmin;
-    space     = rectaxis.width/num;
-    baroffset = space/2;
-  }else{
-    num       = 6;
-    space     = rectaxis.width/5.0;
-  }
-  for(i = 0; i < 6; i++){
-    // Vertical axis
-    axis_number_cur = (axis[1].vmax-axis[1].vmin)/5*i;
-    sprintf(str,"%.2f",axis_number_cur+axis[1].vmin);
-    cairo_text_extents(cr,str,&offset);
-    cairo_move_to(cr,rect.x+marginh,rect.y + rectaxis.height - i*rectaxis.height/5 + offset.height/2.0);
-    cairo_show_text(cr,str);
-  }
-  for(i = 0; i < num; i++){
-    // Horizontal axis
-    if(bar) axis_number_cur = i;
-    else    axis_number_cur = (axis[0].vmax-axis[0].vmin)/5*i;
-    sprintf(str,"%.0f",axis_number_cur+axis[0].vmin);
-    cairo_text_extents(cr,str,&offset);
-    cairo_move_to(cr,rectaxis.x + i*space-offset.width/2.0 + baroffset,rectaxis.y + rectaxis.height + offset.height + marginv);
-    cairo_show_text(cr,str);
+    if(type==AT_PLOT_BAR) {
+      num       = axis[0].vmax-axis[1].vmin;
+      space     = rectaxis.width/num;
+      baroffset = space/2;
+    }else{
+      num       = 6;
+      space     = rectaxis.width/5.0;
+    }
+    for(i = 0; i < 6; i++){
+      // Vertical axis
+      axis_number_cur = (axis[1].vmax-axis[1].vmin)/5*i;
+      sprintf(str,"%.2f",axis_number_cur+axis[1].vmin);
+      cairo_text_extents(cr,str,&offset);
+      cairo_move_to(cr,rect.x+marginh,rect.y + rectaxis.height - i*rectaxis.height/5 + offset.height/2.0);
+      cairo_show_text(cr,str);
+    }
+    for(i = 0; i < num; i++){
+      // Horizontal axis
+      if(type == AT_PLOT_BAR) axis_number_cur = i;
+      else    axis_number_cur = (axis[0].vmax-axis[0].vmin)/5*i;
+      sprintf(str,"%.0f",axis_number_cur+axis[0].vmin);
+      cairo_text_extents(cr,str,&offset);
+      cairo_move_to(cr,rectaxis.x + i*space-offset.width/2.0 + baroffset,rectaxis.y + rectaxis.height + offset.height + marginv);
+      cairo_show_text(cr,str);
+    }
   }
   return rectaxis;
 }
@@ -250,6 +260,21 @@ at_chart_render_bar(cairo_t* cr, AtBarPlot* plot, AtVec4D64 rect, AtAxis* ay){
   }
 }
 
+static void
+at_chart_render_pie(cairo_t* cr, AtPiePlot* plot, AtVec4D64 rect){
+  double sum=0;
+  uint64_t i;
+  for(i = 0; i < plot->l.nelem; i++) sum += plot->l.y[i];
+  double angle = -M_PI/2;
+  srand(time(NULL));
+  for(i = 0; i < plot->l.nelem; i++){
+    cairo_move_to(cr,rect.width/2 + rect.x, rect.y + rect.height/2);
+    cairo_set_source_rgb(cr,plot->colors[i].r,plot->colors[i].g,plot->colors[i].b);
+    cairo_arc(cr,rect.width/2 + rect.x, rect.y + rect.height/2,min(rect.width,rect.height)/2,angle,angle+plot->l.y[i]/sum*M_PI*2);
+    angle += plot->l.y[i]/sum*M_PI*2;
+    cairo_fill(cr);
+  }
+}
 
 static void
 at_chart_render_scatter(cairo_t* cr, AtScatterPlot* plot, AtVec4D64 rect, AtAxis* axis){
@@ -318,6 +343,100 @@ at_chart_render_marker(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis* ax
       break;
     }
   }
+}
+
+static AtVec4D64
+at_chart_render_legend_pie(cairo_t* cr, AtPiePlot* pp, AtVec4D64 rect, AtAlignment legendpos){
+  AtVec4D64            rectlegend;
+  cairo_text_extents_t extents;
+  double               legwidth;
+  uint64_t             i;
+  for(i = 0; i < pp->l.nelem; i++){
+    cairo_text_extents(cr,pp->categories[i],&extents);
+    legwidth = max(legwidth,extents.width);
+  }
+  legwidth += 25;
+
+  switch(legendpos){
+    case AT_LEFT:
+      rectlegend.x = rect.x;
+      rectlegend.y = rect.y;
+      rectlegend.width = legwidth;
+      rectlegend.height= (extents.height * 2) * pp->l.nelem;
+      rect.x += legwidth;
+      rect.width -= legwidth;
+    break;
+    case AT_RIGHT:
+      rectlegend.x = rect.x + rect.width - legwidth;
+      rectlegend.y = rect.y;
+      rectlegend.width = legwidth;
+      rectlegend.height= (extents.height * 2) * pp->l.nelem;
+      rect.width -= legwidth;
+    break;
+    case AT_TOP:
+      rectlegend.width = (extents.width + 25) * pp->l.nelem;
+      rectlegend.x = rect.x + (rect.width-rectlegend.width)/2;
+      rectlegend.y = rect.y;
+      rectlegend.height= extents.height * 2;
+      rect.y += extents.height * 3;
+      rect.height -= extents.height * 3;
+    break;
+    case AT_BOTTOM:
+      rectlegend.width = (extents.width + 25) * pp->l.nelem;
+      rectlegend.x = rect.x + (rect.width-rectlegend.width)/2;
+      rectlegend.y = rect.y + rect.height - extents.height * 3;
+      rectlegend.height= extents.height * 2;
+      rect.height -= extents.height * 3 + 5;
+    break;
+  }
+
+  // Draw rectangle
+  cairo_set_source_rgb(cr,0,0,0);
+  cairo_rectangle(cr,rectlegend.x,rectlegend.y,rectlegend.width,rectlegend.height);
+  cairo_stroke(cr);
+
+  // Draw plots codes
+  double x = rectlegend.x + 2;
+  double y = rectlegend.y;
+
+  switch(legendpos){
+    case AT_TOP:
+    case AT_BOTTOM:
+      y += extents.height;
+      break;
+  }
+  for(i = 0; i < pp->l.nelem; i++){
+    cairo_text_extents(cr,pp->categories[i],&extents);
+    cairo_set_source_rgb(cr,pp->colors[i].r,pp->colors[i].g,pp->colors[i].b);
+    switch(legendpos){
+      case AT_LEFT:
+      case AT_RIGHT:
+        y += extents.height;
+        break;
+    }
+
+    // color code
+    cairo_move_to(cr,x,y);
+    cairo_rectangle(cr,x,y-7.5,15,15);
+    cairo_fill(cr);
+
+    // name
+    cairo_move_to(cr,x+20,y+extents.height/2);
+    cairo_show_text(cr,pp->categories[i]);
+    switch(legendpos){
+      case AT_TOP:
+      case AT_BOTTOM:
+        x += extents.width + 25;
+        break;
+      case AT_LEFT:
+      case AT_RIGHT:
+        y += extents.height * (0.5);
+        break;
+    }
+  }
+
+  return rect;
+
 }
 
 static AtVec4D64
