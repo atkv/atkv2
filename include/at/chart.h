@@ -29,6 +29,9 @@
 #ifndef AT_CHART_LINEPLOT_H
 #include <at/chart/lineplot.h>
 #endif
+#ifndef AT_CHART_PIEPLOT_H
+#include <at/chart/pieplot.h>
+#endif
 #ifndef AT_CHART_BARPLOT_H
 #include <at/chart/barplot.h>
 #endif

@@ -31,6 +31,16 @@ at_subchart_bar_d64(AtSubchart* sc, double* values, uint64_t num){
   sc->nplots++;
   return barplot;
 }
+AtPiePlot*
+at_subchart_pie_d64(AtSubchart* sc, char** categories, double* values, uint64_t num){
+  if(sc->axis == NULL) sc->axis = at_axis_new(2);
+  AtPiePlot* pieplot = at_pieplot_new();
+  sc->plotlist = at_slist_append(sc->plotlist,pieplot);
+  at_pieplot_fill_d64(pieplot,categories,values,num);
+  pieplot->categories = categories;
+  sc->nplots++;
+  return pieplot;
+}
 
 AtScatterPlot*
 at_subchart_scatter_d64(AtSubchart *sc, double *x, double *y, uint64_t num){

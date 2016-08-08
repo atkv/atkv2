@@ -28,14 +28,14 @@ int main(int argc, char** argv){
   plot->linestyle    = AT_LINESTYLE_SOLID;
   plot->linecolor    = red;
   plot->linewidth    = 2;
-  plot->name         = "Plot1";
+  plot->name         = "Red plot";
   plot2->marker      = AT_MARKER_NONE;
   plot2->linestyle   = AT_LINESTYLE_DASHED;
   plot2->linecolor   = blue;
   plot2->linewidth   = 1;
-  plot2->name         = "Plot2alsdf";
-  plot3->name         = "Plot3xx";
-  plot4->name         = "Plot4++++++";
+  plot2->name         = "Blue Plot";
+  plot3->name         = "Black Plot";
+  plot4->name         = "Another Plot";
   at_chart_show("plot",chart);
   return 0;
 }

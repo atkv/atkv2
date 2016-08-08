@@ -60,5 +60,6 @@ typedef enum{
   AT_PLOT_LINE,
   AT_PLOT_SCATTER,
   AT_PLOT_BAR,
+  AT_PLOT_PIE,
 }AtPlotType;
 #endif
