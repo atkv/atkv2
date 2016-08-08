@@ -27,7 +27,7 @@
 static void
 at_chart_init(AtChart* chart){
   AtSubchart* subchart = at_subchart_new();
-  chart->subcharts     = at_slist_append(chart->subcharts,subchart);
+  chart->subcharts     = at_slist_append(NULL,subchart);
   chart->nsubs         = 1;
   chart->gridsize[0]   = 1;
   chart->gridsize[1]   = 1;

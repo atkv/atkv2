@@ -22,6 +22,7 @@
  PRIVATE API
  ============================================================================*/
 static GHashTable* windows;
+static GtkApplication* app;
 
 typedef struct _AtChartWindowPrivate{
   AtChartViewer* viewer;
@@ -39,11 +40,18 @@ typedef struct _AtChartWindowPrivate{
 
 G_DEFINE_TYPE_WITH_PRIVATE(AtChartWindow, at_chartwindow, GTK_TYPE_WINDOW)
 
+static void
+at_chartwindow_activate(GtkApplication* app, gpointer user_data){
+
+}
 
 __attribute__ ((constructor))
 static void
 init(){
   windows = g_hash_table_new(g_str_hash, g_str_equal);
+  app     = gtk_application_new("io.github.atkv.chart",G_APPLICATION_FLAGS_NONE);
+  g_signal_connect(app, "activate", G_CALLBACK(at_chartwindow_activate), NULL);
+  g_application_run(G_APPLICATION(app), 0, NULL);
 }
 
 static void
@@ -104,7 +112,7 @@ at_chartwindow_class_init(AtChartWindowClass *klass){
  ============================================================================*/
 AtChartWindow*
 at_chartwindow_new(){
-  return g_object_new(AT_TYPE_CHARTWINDOW, "type", GTK_WINDOW_TOPLEVEL, NULL);
+  return g_object_new(AT_TYPE_CHARTWINDOW, NULL);
 }
 
 void
