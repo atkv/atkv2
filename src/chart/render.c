@@ -24,7 +24,7 @@ static double    at_chart_render_title(cairo_t* cr, const char* title, AtVec4D64
 static void      at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect);
 static AtVec4D64 at_chart_render_legend(cairo_t* cr, AtSubchart* sc , AtVec4D64 rect);
 static double    at_chart_render_subtitle(cairo_t* cr, const char* title, AtVec4D64 rect);
-static AtVec4D64 at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect, AtPlotType type);
+static AtVec4D64 at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect, AtSeriesType type);
 static void      at_chart_render_plot(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis *ay);
 static void      at_chart_render_marker(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis *axis);
 static void      at_chart_render_scatter(cairo_t* cr, AtScatterPlot* plot, AtVec4D64 rect, AtAxis* axis);
@@ -150,7 +150,7 @@ at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect){
 }
 
 static AtVec4D64
-at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect,AtPlotType type){
+at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect,AtSeriesType type){
   // Get offsets
   cairo_text_extents_t offset;
   double font = min(rect.width/100.0*5,12);

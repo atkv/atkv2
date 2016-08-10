@@ -38,7 +38,7 @@ typedef struct AtLinePlot{
   AtColor      linecolor;
   AtMarkerType marker;
   AtLineStyle  linestyle;
-  AtPlotType   type;
+  AtSeriesType type;
 }AtLinePlot;
 
 /**

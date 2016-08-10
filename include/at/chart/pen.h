@@ -20,18 +20,15 @@
 #error "Only <at/chart.h> can be included directly."
 #endif
 
-#ifndef AT_SERIESSCATTER_H
-#define AT_SERIESSCATTER_H
+#ifndef AT_CHART_PEN_H
+#define AT_CHART_PEN_H
+
 #include <at/chart.h>
 AT_BEGIN_DECLS
 
-typedef struct AtSeriesScatter{
-  AtSeriesBase base;
-  double*  x;
-  double*  y;
-  AtPen    linecfg;
-  AtMarker markercfg;
-}AtSeriesScatter;
+typedef struct AtPen{
+
+}AtPen;
 
 AT_END_DECLS
 #endif

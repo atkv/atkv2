@@ -26,6 +26,24 @@
 #ifndef AT_CHART_TYPE_H
 #include <at/chart/type.h>
 #endif
+#ifndef AT_CHART_PEN_H
+#include <at/chart/pen.h>
+#endif
+#ifndef AT_CHART_MARKER_H
+#include <at/chart/marker.h>
+#endif
+#ifndef AT_SERIESBASE_H
+#include <at/chart/seriesbase.h>
+#endif
+#ifndef AT_SERIESSCATTER_H
+#include <at/chart/seriesscatter.h>
+#endif
+#ifndef AT_SERIESPIE_H
+#include <at/chart/seriespie.h>
+#endif
+#ifndef AT_SERIESBAR_H
+#include <at/chart/seriesbar.h>
+#endif
 #ifndef AT_CHART_LINEPLOT_H
 #include <at/chart/lineplot.h>
 #endif

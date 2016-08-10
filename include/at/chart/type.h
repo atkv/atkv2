@@ -61,5 +61,13 @@ typedef enum{
   AT_PLOT_SCATTER,
   AT_PLOT_BAR,
   AT_PLOT_PIE,
-}AtPlotType;
+}AtSeriesType;
+
+typedef enum{
+  AT_LABEL_CENTER,
+  AT_LABEL_INSIDE_END,
+  AT_LABEL_INSIDE_BASE,
+  AT_LABEL_OUTSIDE_END
+}AtLabelPosition;
+
 #endif
