@@ -28,9 +28,19 @@ AT_BEGIN_DECLS
 typedef struct AtSeriesPie{
   AtSeriesBase base;
   double*      values;
+  uint32_t     num;
   AtPen        linecfg;
   AtMarker     markercfg;
 }AtSeriesPie;
+
+AtSeriesPie*
+at_series_pie_new();
+
+void
+at_series_pie_fill(AtSeriesPie* pie, double* values, uint32_t num);
+
+void
+at_series_pie_destroy(AtSeriesPie** seriesp);
 
 AT_END_DECLS
 #endif

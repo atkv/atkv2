@@ -25,13 +25,26 @@
 #include <at/chart.h>
 AT_BEGIN_DECLS
 
+
+
 typedef struct AtSeriesBar{
-  AtSeriesBase base;
-  double*      values;
-  AtPen        linecfg;
-  AtMarker     markercfg;
-  double       nsets;
-}AtSeriesPie;
+  AtSeriesBase         base;
+  double               nsets;
+  AtSList              sets;
+  AtPen                linecfg;
+  AtMarker             markercfg;
+  AtSeriesPresentation presentation;
+  AtOrientation        orientation;
+}AtSeriesBar;
+
+AtSeriesBar*
+at_series_bar_new();
+
+void
+at_series_bar_append(AtSeriesBar* series, AtBarSet* barset);
+
+void
+at_series_bar_destroy(AtSeriesBar** seriesp);
 
 AT_END_DECLS
 #endif

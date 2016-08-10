@@ -70,4 +70,34 @@ typedef enum{
   AT_LABEL_OUTSIDE_END
 }AtLabelPosition;
 
+typedef enum{
+  AT_AXIS_TOP,
+  AT_AXIS_BOTTOM,
+  AT_AXIS_LEFT,
+  AT_AXIS_RIGHT
+}AtAxisAlignment;
+
+typedef enum{
+  AT_CAP_FLAT,
+  AT_CAP_SQUARE,
+  AT_CAP_ROUND
+}AtPenCapStyle;
+
+typedef enum{
+  AT_JOIN_MITER,
+  AT_JOIN_BEVEL,
+  AT_JOIN_ROUND,
+}AtPenJoinStyle;
+
+typedef enum{
+  AT_CHART_NORMAL,
+  AT_CHART_PERCENTUAL,
+  AT_CHART_STACKED
+}AtSeriesPresentation;
+
+typedef enum{
+  AT_HORIZONTAL,
+  AT_VERTICAL,
+}AtOrientation;
+
 #endif

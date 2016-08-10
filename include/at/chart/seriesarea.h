@@ -28,6 +28,7 @@ AT_BEGIN_DECLS
 
 typedef struct AtSeriesArea{
 
+  AtOrientation orientation;
 }AtSeriesArea;
 
 AT_END_DECLS

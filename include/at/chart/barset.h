@@ -20,50 +20,22 @@
 #error "Only <at/chart.h> can be included directly."
 #endif
 
-#ifndef AT_AXISBASE_H
-#define AT_AXISBASE_H
-
+#ifndef AT_CHART_BARSET_H
+#define AT_CHART_BARSET_H
 #include <at/chart.h>
-
 AT_BEGIN_DECLS
-/*=============================================================================
- STRUCTURE
- ============================================================================*/
 
-typedef struct AtPen{
-  double*        dashpattern;
-  double         dashoffset;
-  AtColor        color;
-  AtPenCapStyle  capstyle;
-  AtPenJoinStyle joinstyle;
+typedef struct AtBarSet{
+  char    * label;
+  double  * value;
+  uint32_t  num;
+}AtBarSet;
 
-}AtPen;
+AtBarSet*
+at_barset_new(double* value, uint32_t num, char* label);
 
-typedef struct AtLabelConfig{
-
-}AtLabelConfig;
-
-typedef struct AtShadesConfig{
-
-}AtShadesConfig;
-
-typedef struct AtOrientation{
-
-}AtOrientation;
-
-
-typedef struct AtAxisBase{
-  AtAxisAlignment alignment;
-  AtColor         color;
-  AtPen           gridline;
-  AtPen           minorgridline;
-  AtLabelConfig   labels;
-  AtShadesConfig  shades;
-  AtOrientation   orientation;
-  char*           title;
-  bool            reverse;
-  bool            visible;
-}AtAxisBase;
+void
+at_barset_destroy(AtBarSet** barsetp);
 
 AT_END_DECLS
 #endif

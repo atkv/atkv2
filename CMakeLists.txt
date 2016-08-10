@@ -120,8 +120,8 @@ SET                   (IMGPROC_DEPS ${CORE_DEPS} ${PNG_LIBRARIES} ${JPEG_LIBRARI
 SET                   (GUI_HDRS     type.h imageviewer.h imagewindow.h trackbar.h sliceviewer.h slicewindow.h display.h)
 SET                   (GUI_SRCS     imageviewer.c imagewindow.c trackbar.c sliceviewer.c slicewindow.c display.c)
 SET                   (GUI_DEPS     ${GTK3_LIBRARIES} ${CORE_DEPS} atkv_core)
-SET                   (CHART_HDRS   type.h pen.h marker.h labelcfg.h axisbase.h axisbarcategory.h axiscategory.h axisdatetime.h axisvalue.h seriesarea.h seriesbar.h seriesbase.h seriespie.h seriesscatter.h lineplot.h pieplot.h barplot.h scatterplot.h axis.h subchart.h chart.h render.h io.h chartviewer.h chartwindow.h)
-SET                   (CHART_SRCS   type.c lineplot.c pieplot.c barplot.c scatterplot.c axis.c subchart.c chart.c render.c io.c chartviewer.c chartwindow.c)
+SET                   (CHART_HDRS   type.h pen.h marker.h labelcfg.h barset.h axisbase.h axisbarcategory.h axiscategory.h axisdatetime.h axisvalue.h seriesarea.h seriesbar.h seriesbase.h seriespie.h seriesscatter.h lineplot.h pieplot.h barplot.h scatterplot.h axis.h subchart.h chart.h render.h io.h chartviewer.h chartwindow.h)
+SET                   (CHART_SRCS   type.c barset.c seriesbar.c lineplot.c pieplot.c barplot.c scatterplot.c axis.c subchart.c chart.c render.c io.c chartviewer.c chartwindow.c)
 SET                   (CHART_DEPS   ${GUI_DEPS})
 
 CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/include/at/core/version.h.in" "${CMAKE_SOURCE_DIR}/include/at/core/version.h")

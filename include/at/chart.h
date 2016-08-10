@@ -26,6 +26,9 @@
 #ifndef AT_CHART_TYPE_H
 #include <at/chart/type.h>
 #endif
+#ifndef AT_CHART_BARSET_H
+#include <at/chart/barset.h>
+#endif
 #ifndef AT_CHART_PEN_H
 #include <at/chart/pen.h>
 #endif
