@@ -20,9 +20,9 @@
 #endif
 #ifndef AT_QUEUE_H
 #define AT_QUEUE_H
-#include <at/core/macro.h>
+
+#include <at/core.h>
 AT_BEGIN_DECLS
-#include <at/core/list.h>
 
 /*=============================================================================
  STRUCTURE
@@ -36,6 +36,14 @@ typedef struct AtQueueu64{
   AtListU64* last;/*!< Last */
 }AtQueueu64;
 
+/**
+  * @brief AtQueue structure
+  */
+typedef struct _AtQueue{
+  uint32_t   length; /**< Number of elements */
+  AtList  * begin;  /**< Initial element */
+  AtList  * end;    /**< Final element */
+}AtQueue;
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
@@ -92,5 +100,194 @@ at_queueu64_remove_link(AtQueueu64* q, AtListU64* l);
  */
 void
 at_queueu64_destroy_array(AtQueueu64** qp);
+
+/**
+ * @brief Alocar uma fila
+ * @return
+ */
+AtQueue* at_queue_new();
+/**
+ * @brief Liberar a fila
+ * @return
+ */
+void at_queue_free(AtQueue* queue);
+/**
+ * @brief Adicionar no início
+ * @return
+ */
+void at_queue_prepend(AtQueue* queue, void* value);
+/**
+ * @brief Adicionar no final
+ * @return
+ */
+void at_queue_append(AtQueue* queue, void* value);
+/**
+ * @brief Adicionar antes de um item
+ * @return
+ */
+void at_queue_prepend_at(AtQueue* queue, AtList* item, void* value);
+/**
+ * @brief Adicionar após um item
+ * @return
+ */
+void at_queue_append_at(AtQueue* queue, AtList* item, void* value);
+/**
+ * @brief Adicionar antes de item especificado pela sua posição
+ * @return
+ */
+void at_queue_prepend_at_index(AtQueue* queue, uint32_t index, void* value);
+/**
+ * @brief Adicionar após um item especificado pela sua posição
+ * @return
+ */
+void at_queue_append_at_index(AtQueue* queue, uint32_t index, void* value);
+/**
+ * @brief Adicionar um item AtList no início da fila
+ * @return
+ */
+void at_queue_prepend_item(AtQueue* queue, AtList* new_item);
+/**
+ * @brief Adicionar um item AtList no fim da fila
+ * @return
+ */
+void at_queue_append_item(AtQueue* queue, AtList* new_item);
+/**
+ * @brief Adicionar um item AtList antes de um item
+ * @return
+ */
+void at_queue_prepend_item_at(AtQueue* queue, AtList* item, AtList* new_item);
+/**
+ * @brief Adicionar um item AtList depois de um item
+ * @return
+ */
+void at_queue_append_item_at(AtQueue* queue, AtList* item, AtList* new_item);
+/**
+ * @brief Adicionar um item AtList antes de um item especificado pela sua posição
+ * @return
+ */
+void at_queue_prepend_item_at_index(AtQueue* queue, uint32_t index, AtList* new_item);
+/**
+ * @brief Adicionar um item AtList depois de um item especificado pela sua posição
+ * @return
+ */
+void at_queue_append_item_at_index(AtQueue* queue, uint32_t index, AtList* new_item);
+/**
+ * @brief Get first item
+ * @return
+ */
+AtList* at_queue_begin(AtQueue* queue);
+/**
+ * @brief Get last item
+ * @return
+ */
+AtList* at_queue_end(AtQueue* queue);
+/**
+ * @brief True if length is zero
+ * @return
+ */
+uint8_t at_queue_is_empty(AtQueue* queue);
+/**
+ * @brief Inverte a fila
+ * @return
+ */
+void at_queue_reverse(AtQueue* queue);
+/**
+ * @brief ordena a fila
+ * @return
+ */
+void at_queue_sort(AtQueue* queue, AtCompareDataFunc compare_function, void* data);
+/**
+ * @brief copia a fila
+ * @return
+ */
+AtQueue* at_queue_copy(AtQueue* queue);
+/**
+ * @brief vectorize a function within a queue
+ * @return
+ */
+void at_queue_foreach(AtQueue* queue, AtDataFunc func, void* data);
+/**
+ * @brief posição de um item especificado pelo seu valor
+ * @return
+ */
+int32_t at_queue_index_of(AtQueue* queue, void* value);
+/**
+ * @brief obter um item a partir de sua posição
+ * @return
+ */
+AtList* at_queue_at(AtQueue* queue, uint32_t index);
+/**
+ * @brief obter o valor do item a partir de sua posição
+ * @return
+ */
+void* at_queue_value_at(AtQueue* queue, uint32_t index);
+/**
+ * @brief obter o valor do item inicial
+ * @return
+ */
+void* at_queue_begin_value(AtQueue* queue);
+/**
+ * @brief obter o valor do item final
+ * @return
+ */
+void* at_queue_end_value(AtQueue* queue);
+/**
+ * @brief Remover um item em uma fila
+ * @return
+ */
+void at_queue_remove(AtQueue* queue, void* value);
+/**
+ * @brief Remover um item em uma fila baseado em sua posição
+ * @return
+ */
+void* at_queue_remove_at(AtQueue* queue, uint32_t index);
+/**
+ * @brief at_queue_remove_begin
+ * @param queue
+ * @return
+ */
+void* at_queue_remove_begin(AtQueue* queue);
+/**
+ * @brief at_queue_remove_end
+ * @param queue
+ * @return
+ */
+void* at_queue_remove_end(AtQueue* queue);
+/**
+ * @brief Obter o número de elementos da fila
+ * @return
+ */
+uint32_t at_queue_length(AtQueue* queue);
+/**
+ * @brief at_queue_append_sorted
+ * @param queue
+ * @param compare_function
+ * @param value
+ */
+void at_queue_append_sorted(AtQueue* queue, AtCompareFunc compare_function, void* value);
+/**
+ * @brief at_queue_append_sorted_with_data
+ * @param queue
+ * @param compare_function
+ * @param value
+ */
+void at_queue_append_sorted_with_data(AtQueue* queue, AtCompareDataFunc compare_function, void* value, void* user_data);
+/**
+ * @brief at_queue_prepend_sorted
+ * @param queue
+ * @param compare_function
+ * @param value
+ */
+void at_queue_prepend_sorted(AtQueue* queue, AtCompareFunc compare_function, void* value);
+/**
+ * @brief at_queue_prepend_sorted_with_data
+ * @param queue
+ * @param compare_function
+ * @param value
+ * @param user_data
+ */
+void at_queue_prepend_sorted_with_data(AtQueue* queue, AtCompareDataFunc compare_function, void* value, void* user_data);
+
 AT_END_DECLS
+
 #endif
