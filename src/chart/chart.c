@@ -88,3 +88,9 @@ at_chart_destroy(AtChart** chart){
     *chart = NULL;
   }
 }
+
+
+void
+at_chart_add_series(AtChart* chart, AtSeriesBase* series){
+  at_slist_append(chart->series);
+}

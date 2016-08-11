@@ -7,6 +7,7 @@ at_series_scatter_new(){
 
 void
 at_series_scatter_fill_1D(AtSeriesScatter *ss, double *y, uint32_t num){
+  uint32_t i;
   ss->y   = y;
   ss->num = num;
   for(i = 0; i < num; i++)
