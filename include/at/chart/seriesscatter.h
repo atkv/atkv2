@@ -29,16 +29,20 @@ typedef struct AtSeriesScatter{
   AtSeriesBase base;
   double*      x;
   double*      y;
+  uint32_t     num;
   AtPen        linecfg;
   AtMarker     markercfg;
 }AtSeriesScatter;
 
 AtSeriesScatter*
 at_series_scatter_new();
+
 void
 at_series_scatter_fill_2D(AtSeriesScatter* ss, double* x, double* y, uint32_t num);
+
 void
 at_series_scatter_fill_1D(AtSeriesScatter* ss, double* y, uint32_t num);
+
 void
 at_series_scatter_destroy(AtSeriesScatter** seriesp);
 
