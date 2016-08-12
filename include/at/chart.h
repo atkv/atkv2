@@ -47,6 +47,21 @@
 #ifndef AT_SERIESBAR_H
 #include <at/chart/seriesbar.h>
 #endif
+#ifndef AT_AXISBASE_H
+#include <at/chart/axisbase.h>
+#endif
+#ifndef AT_AXISVALUE_H
+#include <at/chart/axisvalue.h>
+#endif
+#ifndef AT_AXISCATEGORY_H
+#include <at/chart/axiscategory.h>
+#endif
+#ifndef AT_AXISDATETIME_H
+#include <at/chart/axisdatetime.h>
+#endif
+#ifndef AT_AXISBARCATEGORY_H
+#include <at/chart/axisbarcategory.h>
+#endif
 #ifndef AT_CHART_LINEPLOT_H
 #include <at/chart/lineplot.h>
 #endif

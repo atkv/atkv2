@@ -29,16 +29,6 @@ AT_BEGIN_DECLS
 /*=============================================================================
  STRUCTURE
  ============================================================================*/
-
-typedef struct AtPen{
-  double*        dashpattern;
-  double         dashoffset;
-  AtColor        color;
-  AtPenCapStyle  capstyle;
-  AtPenJoinStyle joinstyle;
-
-}AtPen;
-
 typedef struct AtLabelConfig{
 
 }AtLabelConfig;
@@ -46,10 +36,6 @@ typedef struct AtLabelConfig{
 typedef struct AtShadesConfig{
 
 }AtShadesConfig;
-
-typedef struct AtOrientation{
-
-}AtOrientation;
 
 
 typedef struct AtAxisBase{

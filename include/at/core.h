@@ -38,6 +38,12 @@
 #ifndef AT_ERROR_H
 #include <at/core/error.h>
 #endif
+#ifndef AT_TIMEZONE_H
+#include <at/core/timezone.h>
+#endif
+#ifndef AT_DATETIME_H
+#include <at/core/datetime.h>
+#endif
 #ifndef AT_RANGE_H
 #include <at/core/range.h>
 #endif

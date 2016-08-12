@@ -27,7 +27,11 @@
 AT_BEGIN_DECLS
 
 typedef struct AtPen{
-
+  double*        dashpattern;
+  double         dashoffset;
+  AtColor        color;
+  AtPenCapStyle  capstyle;
+  AtPenJoinStyle joinstyle;
 }AtPen;
 
 AT_END_DECLS

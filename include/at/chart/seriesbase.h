@@ -25,6 +25,7 @@
 #include <at/chart.h>
 AT_BEGIN_DECLS
 
+#define AT_SERIESBASE(x) ((AtSeriesBase*)x)
 typedef struct AtSeriesBase{
   char*        name;
   double       opacity;

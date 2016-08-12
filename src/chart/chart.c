@@ -32,6 +32,7 @@ at_chart_init(AtChart* chart){
   chart->gridsize[0]   = 1;
   chart->gridsize[1]   = 1;
   chart->title         = NULL;
+  chart->series        = at_queue_new();
 }
 
 /*=============================================================================
@@ -92,5 +93,15 @@ at_chart_destroy(AtChart** chart){
 
 void
 at_chart_add_series(AtChart* chart, AtSeriesBase* series){
-  at_slist_append(chart->series);
+  at_queue_append(chart->series,series);
+}
+
+void
+at_chart_set_axis(AtChart* chart, AtAxisBase* axis){
+
+}
+
+void
+at_chart_default_axis(AtChart *chart){
+
 }

@@ -15,37 +15,17 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-
-#if !defined(AT_CHART_H_INSIDE)
-#error "Only <at/chart.h> can be included directly."
+#if !defined(AT_CORE_H_INSIDE)
+#error "Only <at/core.h> can be included directly."
 #endif
-
-#ifndef AT_SERIESSCATTER_H
-#define AT_SERIESSCATTER_H
-#include <at/chart.h>
+#ifndef AT_TIMEZONE_H
+#define AT_TIMEZONE_H
+#include <at/core.h>
 AT_BEGIN_DECLS
 
-#define AT_SERIESSCATTER(x) ((AtSeriesScatter*)x)
-typedef struct AtSeriesScatter{
-  AtSeriesBase base;
-  double*      x;
-  double*      y;
-  uint32_t     num;
-  AtPen        linecfg;
-  AtMarker     markercfg;
-}AtSeriesScatter;
-
-AtSeriesScatter*
-at_series_scatter_new();
-
-void
-at_series_scatter_fill_2D(AtSeriesScatter* ss, double* x, double* y, uint32_t num);
-
-void
-at_series_scatter_fill_1D(AtSeriesScatter* ss, double* y, uint32_t num);
-
-void
-at_series_scatter_destroy(AtSeriesScatter** seriesp);
+typedef struct AtTimeZone{
+  char* name;
+}AtTimeZone;
 
 AT_END_DECLS
 #endif

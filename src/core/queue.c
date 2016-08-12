@@ -22,6 +22,12 @@
 /*=============================================================================
  PRIVATE API
  ============================================================================*/
+static void
+at_queue_init(AtQueue* queue){
+  queue->length = 0;
+  queue->begin  = NULL;
+  queue->end    = NULL;
+}
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
@@ -90,13 +96,10 @@ at_queueu64_destroy_array(AtQueueu64** qp){
   *qp = NULL;
 }
 
-
 // Allocate memory for the queue
 AtQueue* at_queue_new(){
   AtQueue* queue  = malloc(sizeof(AtQueue));
-  queue->length = 0;
-  queue->begin  = NULL;
-  queue->end    = NULL;
+  at_queue_init(queue);
   return queue;
 }
 // Free the queue

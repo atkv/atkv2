@@ -31,10 +31,10 @@ AT_BEGIN_DECLS
  ============================================================================*/
 typedef struct AtChart{
   const char * title;
-  AtQueue    * subcharts;
+  AtSList    * subcharts;
   uint8_t      gridsize[2];
   uint8_t      nsubs;
-  AtSList    * series;
+  AtQueue    * series;
 }AtChart;
 
 /*=============================================================================
@@ -113,7 +113,18 @@ at_chart_destroy(AtChart** chart);
  */
 void
 at_chart_add_series(AtChart* chart, AtSeriesBase* series);
+/**
+ * @brief at_chart_default_axis
+ * @param chart
+ */
+void
+at_chart_default_axis(AtChart* chart);
 
+AtAxisBase*
+at_chart_get_axis_x();
+
+AtAxisBase*
+at_chart_get_axis_y();
 
 AT_END_DECLS
 #endif
