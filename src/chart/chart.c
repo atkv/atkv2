@@ -105,3 +105,15 @@ void
 at_chart_default_axis(AtChart *chart){
 
 }
+
+AtAxisBase*
+at_chart_get_axis_x(AtChart* chart){
+  if(chart) return &chart->axis[0];
+  return NULL;
+}
+
+AtAxisBase*
+at_chart_get_axis_y(AtChart* chart){
+  if(chart) return &chart->axis[1];
+  return NULL;
+}

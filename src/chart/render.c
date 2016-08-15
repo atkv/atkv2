@@ -114,7 +114,7 @@ at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect){
   rect.height -= titleheight;
 
   // Draw Legend
-  if(((AtLinePlot*)subchart->plotlist->value)->type != AT_PLOT_PIE)
+  if(((AtLinePlot*)subchart->plotlist->value)->type != AT_SERIES_PIE)
     rect = at_chart_render_legend(cr,subchart,rect);
   else if(subchart->legend)
     rect = at_chart_render_legend_pie(cr,(AtPiePlot*)subchart->plotlist->value,rect,subchart->legendspos);
@@ -129,18 +129,18 @@ at_chart_render_subchart(cairo_t* cr, AtSubchart* subchart, AtVec4D64 rect){
   for(i = 0; i < subchart->nplots; i++){
     lineplot = (AtLinePlot*)item->value;
     switch(lineplot->type){
-    case AT_PLOT_LINE:
+    case AT_SERIES_LINE:
       at_chart_render_plot(cr,lineplot,rect,&subchart->axis[1]);
       at_chart_render_marker(cr,(AtLinePlot*)item->value,rect,subchart->axis);
       break;
-    case AT_PLOT_SCATTER:
+    case AT_SERIES_SCATTER:
       at_chart_render_scatter(cr,(AtScatterPlot*)lineplot,rect,subchart->axis);
       at_chart_render_marker(cr,(AtLinePlot*)item->value,rect,subchart->axis);
       break;
-    case AT_PLOT_BAR:
+    case AT_SERIES_BAR:
       at_chart_render_bar(cr,(AtBarPlot*)lineplot,rect,&subchart->axis[1]);
       break;
-    case AT_PLOT_PIE:
+    case AT_SERIES_PIE:
       at_chart_render_pie(cr,(AtPiePlot*)lineplot,rect);
       break;
     }
@@ -173,7 +173,7 @@ at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect,AtSeriesType type
   cairo_rectangle(cr, rectaxis.x, rectaxis.y, rectaxis.width, rectaxis.height);
   cairo_stroke(cr);
 
-  if(type != AT_PLOT_PIE){
+  if(type != AT_SERIES_PIE){
     // Draw axis numbers
     uint8_t i;
     double axis_number_cur;
@@ -181,7 +181,7 @@ at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect,AtSeriesType type
     double space, baroffset = 0;
     uint64_t num;
 
-    if(type==AT_PLOT_BAR) {
+    if(type==AT_SERIES_BAR) {
       num       = axis[0].vmax-axis[1].vmin;
       space     = rectaxis.width/num;
       baroffset = space/2;
@@ -199,7 +199,7 @@ at_chart_render_axis(cairo_t* cr, AtAxis* axis, AtVec4D64 rect,AtSeriesType type
     }
     for(i = 0; i < num; i++){
       // Horizontal axis
-      if(type == AT_PLOT_BAR) axis_number_cur = i;
+      if(type == AT_SERIES_BAR) axis_number_cur = i;
       else    axis_number_cur = (axis[0].vmax-axis[0].vmin)/5*i;
       sprintf(str,"%.0f",axis_number_cur+axis[0].vmin);
       cairo_text_extents(cr,str,&offset);
@@ -320,7 +320,7 @@ at_chart_render_marker(cairo_t* cr, AtLinePlot* plot, AtVec4D64 rect, AtAxis* ax
   double x, y;
   AtScatterPlot* sp = (AtScatterPlot*)plot;
   for(i = 0; i < plot->nelem; i++){
-    if(plot->type == AT_PLOT_LINE)
+    if(plot->type == AT_SERIES_LINE)
       x = rect.x + spacing * i;
     else
       x = rect.x + (sp->x[i]-ax->vmin)/(ax->vmax-ax->vmin) * rect.width;

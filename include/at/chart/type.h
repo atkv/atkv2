@@ -57,10 +57,11 @@ typedef enum{
 typedef AtVec4D64 AtColor;
 
 typedef enum{
-  AT_PLOT_LINE,
-  AT_PLOT_SCATTER,
-  AT_PLOT_BAR,
-  AT_PLOT_PIE,
+  AT_SERIES_LINE,
+  AT_SERIES_SCATTER,
+  AT_SERIES_BAR,
+  AT_SERIES_PIE,
+  AT_SERIES_AREA,
 }AtSeriesType;
 
 typedef enum{

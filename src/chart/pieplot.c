@@ -21,7 +21,7 @@
 static void
 at_pieplot_init(AtPiePlot* pp){
   at_lineplot_init(&pp->l);
-  pp->l.type      = AT_PLOT_PIE;
+  pp->l.type      = AT_SERIES_PIE;
   pp->colors      = NULL;
 }
 

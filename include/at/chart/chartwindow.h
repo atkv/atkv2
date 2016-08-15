@@ -60,6 +60,6 @@ at_chartwindow_set(AtChartWindow* window, AtChart* chart);
  * @param chart
  */
 AtChartWindow*
-at_chart_show(const char* name, AtChart* chart);
+at_chart_show(AtChart* chart, const char* name);
 AT_END_DECLS
 #endif

@@ -21,7 +21,7 @@
 static void
 at_barplot_init(AtBarPlot* bp){
   at_lineplot_init(&bp->l);
-  bp->l.type      = AT_PLOT_BAR;
+  bp->l.type      = AT_SERIES_BAR;
   bp->fillcolor.r = 0.6;
   bp->fillcolor.g = 0;
   bp->fillcolor.b = 0;

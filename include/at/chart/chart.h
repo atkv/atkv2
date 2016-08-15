@@ -30,6 +30,7 @@ AT_BEGIN_DECLS
  STRUCTURE
  ============================================================================*/
 typedef struct AtChart{
+  AtAxisBase * axis;
   const char * title;
   AtSList    * subcharts;
   uint8_t      gridsize[2];
@@ -121,10 +122,10 @@ void
 at_chart_default_axis(AtChart* chart);
 
 AtAxisBase*
-at_chart_get_axis_x();
+at_chart_get_axis_x(AtChart *chart);
 
 AtAxisBase*
-at_chart_get_axis_y();
+at_chart_get_axis_y(AtChart* chart);
 
 AT_END_DECLS
 #endif

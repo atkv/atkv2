@@ -1,5 +1,15 @@
 #include <at/chart.h>
 
+void
+at_series_scatter_init(AtSeriesScatter* ss){
+  at_series_base_init(ss->base);
+  at_linecfg_init(ss->linecfg);
+  at_markercfg_init(ss->markercfg);
+  ss->num = 0;
+  ss->x   = NULL;
+  ss->y   = NULL;
+}
+
 AtSeriesScatter*
 at_series_scatter_new(){
   return malloc(sizeof(AtSeriesScatter));

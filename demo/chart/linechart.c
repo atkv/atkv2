@@ -10,8 +10,8 @@ int main(int argc, char* argv[]){
   AtChart* chart = at_chart_new();
   at_chart_add_series(chart, AT_SERIESBASE(series));
   at_chart_default_axis(chart);
-  AtAxisBase* axis_x = at_chart_get_axis_x();
-  AtAxisBase* axis_y = at_chart_get_axis_y();
+  AtAxisBase* axis_x = at_chart_get_axis_x(chart);
+  AtAxisBase* axis_y = at_chart_get_axis_y(chart);
   axis_x->title = "Title X";
   axis_y->title = "Title Y";
   at_chart_show(chart,"Line Chart");

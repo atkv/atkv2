@@ -13,7 +13,7 @@ at_lineplot_init(AtLinePlot* lp){
   lp->markersize      = 1;
   lp->nelem           = 0;
   lp->y               = NULL;
-  lp->type            = AT_PLOT_LINE;
+  lp->type            = AT_SERIES_LINE;
 }
 
 AtLinePlot*

@@ -21,7 +21,7 @@ void
 at_scatterplot_init(AtScatterPlot* plot){
   at_lineplot_init(&plot->l);
   plot->x = NULL;
-  plot->l.type = AT_PLOT_SCATTER;
+  plot->l.type = AT_SERIES_SCATTER;
 }
 
 AtScatterPlot*

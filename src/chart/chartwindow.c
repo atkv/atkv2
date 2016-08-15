@@ -122,7 +122,7 @@ at_chartwindow_set(AtChartWindow* window, AtChart* chart){
 }
 
 AtChartWindow*
-at_chart_show(const char* name, AtChart* chart){
+at_chart_show(AtChart* chart, const char* name){
   AtChartWindow* self = NULL;
   if(g_hash_table_contains(windows,name)){
     self = g_hash_table_lookup(windows,name);
