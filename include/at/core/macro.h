@@ -22,6 +22,27 @@
 #ifndef AT_MACRO_H
 #define AT_MACRO_H
 #include <stdint.h>
+#include <stdlib.h>
+//------------------------------------------------------------------------
+// PRIVATE API
+//------------------------------------------------------------------------
+#ifdef __GNUC__
+#define _AT_AUTOPTR_FUNC_NAME(TypeName) at_autoptr_cleanup_##TypeName
+#define _AT_AUTOPTR_TYPENAME(TypeName)  TypeName##_autoptr
+#define _AT_AUTO_FUNC_NAME(TypeName)    at_auto_cleanup_##TypeName
+#define _AT_CLEANUP(func)               __attribute__((cleanup(func)))
+#define _AT_DEFINE_AUTOPTR_CHAINUP(ModuleObjName, ParentName) \
+  typedef ModuleObjName *_AT_AUTOPTR_TYPENAME(ModuleObjName);                                          \
+  static inline void _AT_AUTOPTR_FUNC_NAME(ModuleObjName) (ModuleObjName **_ptr) {                     \
+    _AT_AUTOPTR_FUNC_NAME(ParentName) ((ParentName **) _ptr); }
+#else
+#define _AT_DEFINE_AUTOPTR_CHAINUP(ModuleObjName, ParentName)
+#endif
+static inline void
+at_autoptr_cleanup_generic_free (void *p){free (*((void**)p));}
+//------------------------------------------------------------------------
+// PUBLIC API
+//------------------------------------------------------------------------
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \
        __typeof__ (b) _b = (b); \
@@ -49,4 +70,23 @@ typedef int32_t  i32;
 typedef int64_t  i64;
 typedef float    f32;
 typedef double   d64;
+
+#ifdef __GNUC__
+#define AT_DEFINE_AUTOPTR_CLEANUP_FUNC(TypeName, func)                                                    \
+  typedef TypeName * _AT_AUTOPTR_TYPENAME(TypeName);                                                      \
+  static inline void _AT_AUTOPTR_FUNC_NAME(TypeName) (TypeName **_ptr) { if (*_ptr) (func) (*_ptr); }
+#define AT_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TypeName, func) \
+  static inline void _AT_AUTO_FUNC_NAME(TypeName) (TypeName *_ptr) { (func) (_ptr); }
+#define AT_DEFINE_AUTO_CLEANUP_FREE_FUNC(TypeName, func, none) \
+  static inline void _AT_AUTO_FUNC_NAME(TypeName) (TypeName *_ptr) { if (*_ptr != none) (func) (*_ptr); }
+#define at_autoptr(TypeName) _AT_CLEANUP(_AT_AUTOPTR_FUNC_NAME(TypeName)) _AT_AUTOPTR_TYPENAME(TypeName)
+#define at_auto(TypeName)    _AT_CLEANUP(_AT_AUTO_FUNC_NAME(TypeName)) TypeName
+#define at_autofree          _AT_CLEANUP(at_autoptr_cleanup_generic_free)
+#else
+#define AT_DEFINE_AUTOPTR_CLEANUP_FUNC(TypeName, func)
+#define AT_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TypeName, func)
+#define AT_DEFINE_AUTO_CLEANUP_FREE_FUNC(TypeName, func, none)
+#endif
+
+
 #endif

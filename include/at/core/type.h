@@ -38,6 +38,7 @@ typedef enum{
 typedef int8_t (*AtCompareFunc)    (void* data1, void* data2);
 typedef int8_t (*AtCompareDataFunc)(void* data1, void* data2, void* user_data);
 typedef void   (*AtDataFunc)       (void* data1, void* user_data);
+typedef void   (*AtDestroyNotify)  (void* data);
 
 #define INT8_TO_POINTER(i)   ((void*)(int64_t)(i))
 #define INT16_TO_POINTER(i)  ((void*)(int64_t)(i))
