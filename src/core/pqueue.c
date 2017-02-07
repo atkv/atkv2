@@ -1,6 +1,6 @@
 /**
  ** This file is part of the atkv project.
- ** Copyright 2016 Anderson Tavares <nocturne.pe@gmail.com>.
+ ** Copyright 2016-2017 Anderson Tavares <nocturne.pe@gmail.com>.
  **
  ** This program is free software: you can redistribute it and/or modify
  ** it under the terms of the GNU General Public License as published by
@@ -107,7 +107,7 @@ void
 at_pqueueu64_destroy(AtPQueueU64** qp){
   if(*qp){
     AtPQueueU64* q = *qp;
-    if(q->pr) at_queueu64_destroy_array(&q->pr);
+    if(q->pr) at_queueu64_destroy_array(&q->pr, q->np);
     if(q->v)  at_listu64_destroy_array(&q->v);
     if(q->vp) free(q->vp);
     free(*qp);

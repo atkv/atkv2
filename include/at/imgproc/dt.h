@@ -15,28 +15,17 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-
-#if !defined(AT_CHART_H_INSIDE)
-#error "Only <at/chart.h> can be included directly."
+#if !defined(AT_IMGPROC_H_INSIDE)
+#error "Only <at/imgproc.h> can be included directly."
 #endif
-
-#ifndef AT_CHART_RENDER_H
-#define AT_CHART_RENDER_H
-
-#include <stdint.h>
-#include <at/chart.h>
-#include <cairo.h>
+#ifndef AT_DT_H
+#define AT_DT_H
+#include <at/core.h>
+#include <at/imgproc.h>
 AT_BEGIN_DECLS
 
-/**
- * @brief at_chart_render
- * @param cr
- * @param chart
- * @param rect
- */
 void
-at_chart_render(cairo_t* cr, AtChart* chart, AtVec4D64 rect);
-
+at_arrayu8_distance_transform(AtArrayU8* array, uint8_t on, AtArrayU16* out);
 
 AT_END_DECLS
 #endif

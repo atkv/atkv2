@@ -1,6 +1,6 @@
 /**
  ** This file is part of the atkv project.
- ** Copyright 2016 Anderson Tavares <nocturne.pe@gmail.com>.
+ ** Copyright 2016-2017 Anderson Tavares <nocturne.pe@gmail.com>.
  **
  ** This program is free software: you can redistribute it and/or modify
  ** it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
  ============================================================================*/
 
 AtSeeds*
-at_seeds_from_list(uint64_t num_seeds, uint64_t* slist, uint8_t* labels){
+at_seeds_new_from_list(uint64_t num_seeds, uint64_t* slist, uint8_t* labels){
   AtSeeds* seeds = malloc(sizeof(AtSeeds));
   seeds->s = slist;
   seeds->l = labels;
@@ -142,15 +142,7 @@ at_seeds_split(AtSeeds* seeds, AtSeeds** sbackp, AtSeeds** sobjp, uint64_t lblba
 //  (*sobj)->h.owns_data  = true;
 }
 
-AtSeeds*
-at_seeds_new(uint64_t n, uint64_t* seeds, uint8_t* labels){
-  AtSeeds* s = malloc(sizeof(AtSeeds));
-  s->s = seeds;
-  s->l = labels;
-  s->n = n;
-  s->m = NULL;
-  return s;
-}
+
 
 void
 at_seeds_destroy(AtSeeds** seeds){

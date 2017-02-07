@@ -131,7 +131,7 @@ at_btn_about_clicked(GtkWidget* widget, GdkEvent* event, gpointer user_data){
                         "website-label",AT_WEBSITE,
                         "logo",priv->logo,
                         "title",_("About atkv"),
-                        "copyright","All rights reserved (C) 2016",
+                        "copyright","All rights reserved (C) 2016-2017",
                         "comments","Library for Graph/Computer Vision Problems",
                         "authors",authors,
                         "license-type",GTK_LICENSE_GPL_3_0,

@@ -1,6 +1,6 @@
 /**
  ** This file is part of the atkv project.
- ** Copyright 2016 Anderson Tavares <nocturne.pe@gmail.com>.
+ ** Copyright 2016-2017 Anderson Tavares <nocturne.pe@gmail.com>.
  **
  ** This program is free software: you can redistribute it and/or modify
  ** it under the terms of the GNU General Public License as published by
@@ -49,6 +49,17 @@ at_conn_euc_func(AtIFT* ift, AtGraphArray* graph,uint64_t s, uint64_t t, uint64_
 #define at_ift_add_seeds_conn_sum at_ift_add_seeds_conn_max
 #define at_ift_add_seeds_conn_euc at_ift_add_seeds_conn_max
 
+static void
+at_ift_initu8(AtArrayU8* array, AtIFT* ift){
+  // Initializing arrays
+  uint64_t i;
+  for(i = 0; i < array->h.nelem;i++){
+    ift->p[i] = i;
+    ift->r[i] = i;
+  }
+  memset(ift->l, 0, array->h.nelem);
+}
+
 /**
  * @brief Create and allocate whole IFT structure, as well as its members
  * @param array
@@ -72,13 +83,6 @@ at_ift_new_initu8(AtArrayU8* array){
   ift->c = (double*)  (ift->r + array->h.nelem);
   ift->l = (uint8_t*) (ift->c + array->h.nelem);
 
-  // Initializing arrays
-  for(i = 0; i < array->h.nelem;i++){
-    ift->p[i] = i;
-    ift->r[i] = i;
-  }
-  memset(ift->l, 0, array->h.nelem);
-
   // Returning
   return ift;
 }
@@ -87,14 +91,7 @@ static AtIFT*
 at_ift_new(){
   return malloc(sizeof(AtIFT));
 }
-static void
-at_ift_initu8(AtIFT* ift, AtArrayU8 array, AtAdjacency adjacency,
-                    AtConnFuncu8 connectivity){
-  ift->p = malloc(array.h.nelem * sizeof(uint64_t));
-  ift->r = malloc(array.h.nelem * sizeof(uint64_t));
-  ift->c = malloc(array.h.nelem * sizeof(double));
-  ift->l = malloc(array.h.nelem * sizeof(uint8_t));
-}
+
 
 __attribute__((constructor))
 static void
@@ -253,8 +250,9 @@ at_ift_apply_arrayu8(AtArrayU8     *ar,
                      AtGraphArray  *g,
                      AtConnectivity c,
                      AtSeeds       *seeds,
-                     AtPolicy       po){
-  AtIFT            * ift;         // 00+08: ift structure (the result)
+                     AtPolicy       po,
+                     AtIFT         *ift){
+  //AtIFT            * ift;         // 00+08: ift structure (the result)
   AtPQueueU64      * q;           // 08+08: priority queue structure
   uint8_t          * r;           // 16+08: node status (processed or not?)
   double             newc;        // 24+08: new neighbor connectivity (if better)
@@ -269,12 +267,14 @@ at_ift_apply_arrayu8(AtArrayU8     *ar,
                                   // Total: 88 bytes
                            
   // Create the auxiliary structures
-  r     = calloc(ar->h.nelem,sizeof(uint8_t));
-  ift   = at_ift_new_initu8(ar); // allocate maps (label, root, predec., and connectivity)
-  off   = g->h->nelem * g->adjacency;
-  vmax  = -INFINITY;
-  for(i = 0; i < off; i++)       // get maximum value (for allocating queue)
-    vmax = max(vmax,g->weights[i]);
+  r       = calloc(ar->h.nelem,sizeof(uint8_t));
+  if(!ift)
+    ift = at_ift_new_initu8(ar); // allocate maps (label, root, predec., and connectivity)
+  at_ift_initu8(ar, ift);
+  off     = g->h->nelem * g->adjacency;
+  vmax    = -INFINITY;
+  for(i   = 0; i < off; i++)       // get maximum value (for allocating queue)
+    vmax  = max(vmax,g->weights[i]);
 
   // Initialize IFT structure values and add seeds
   c.init (ift,ar);   // trivial connectivity values (excluding seeds)
@@ -335,7 +335,8 @@ at_orfc_core_arrayu8(AtArrayU8     * array,
   at_seeds_split(seeds, &sback, &sobj, lblback);
 
   // apply ift with background seeds
-  AtIFT* ift = at_ift_apply_arrayu8(array,g,conn,sback,po);
+  AtIFT* ift = NULL;
+  ift = at_ift_apply_arrayu8(array,g,conn,sback,po, ift);
 
   // regenerate graph
   at_grapharrayu8_renew_edges(g);
@@ -470,7 +471,8 @@ at_orfc_arrayu8(AtArrayU8     * array,
   at_seeds_split(seeds, &sback, &sobj, lblback);
 
   // find energy by applying ift with background seeds
-  AtIFT* ift = at_ift_apply_arrayu8(array,g,conn,sback,po);
+  AtIFT* ift = NULL;
+  ift = at_ift_apply_arrayu8(array,g,conn,sback,po, ift);
   memset(ift->l,0,array->h.nelem);
 
   // regenerate graph

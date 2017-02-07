@@ -1,6 +1,6 @@
 /**
  ** This file is part of the atkv project.
- ** Copyright 2016 Anderson Tavares <nocturne.pe@gmail.com>.
+ ** Copyright 2016-2017 Anderson Tavares <nocturne.pe@gmail.com>.
  **
  ** This program is free software: you can redistribute it and/or modify
  ** it under the terms of the GNU General Public License as published by
@@ -43,6 +43,12 @@
 #endif
 #ifndef AT_NIFTI_H
 #include <at/imgproc/nifti.h>
+#endif
+#ifndef AT_DT_H
+#include <at/imgproc/dt.h>
+#endif
+#ifndef AT_ROBOTUSER_H
+#include <at/imgproc/robotuser.h>
 #endif
 #undef AT_IMGPROC_H_INSIDE
 #endif

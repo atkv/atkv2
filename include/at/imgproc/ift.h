@@ -1,6 +1,6 @@
 /**
  ** This file is part of the atkv project.
- ** Copyright 2016 Anderson Tavares <nocturne.pe@gmail.com>.
+ ** Copyright 2016-2017 Anderson Tavares <nocturne.pe@gmail.com>.
  **
  ** This program is free software: you can redistribute it and/or modify
  ** it under the terms of the GNU General Public License as published by
@@ -81,7 +81,8 @@ at_ift_apply_arrayu8(AtArrayU8*           array,
                      AtGraphArray*        g,
                      AtConnectivity       connectivity,
                      AtSeeds*             seeds,
-                     AtPolicy             po);
+                     AtPolicy             po,
+                     AtIFT               *ift);
 
 AtSCC*
 at_orfc_core_arrayu8(AtArrayU8     * array,

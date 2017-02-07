@@ -15,25 +15,39 @@
  ** You should have received a copy of the GNU General Public License
  ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#if !defined(AT_CORE_H_INSIDE)
-#error "Only <at/core.h> can be included directly."
+#if !defined(AT_IMGPROC_H_INSIDE)
+#error "Only <at/imgproc.h> can be included directly."
 #endif
-#ifndef AT_OPTIMIZATION_H
-#define AT_OPTIMIZATION_H
+#ifndef AT_ROBOTUSER_H
+#define AT_ROBOTUSER_H
 #include <at/core.h>
+#include <at/imgproc.h>
 AT_BEGIN_DECLS
-/*=============================================================================
- PUBLIC API
- ============================================================================*/
 
-typedef enum{
-  AT_MAXIMIZATION=0,
-  AT_MINIMIZATION=1
-}AtOptimization;
+typedef struct AtRobotUserU8 {
+  AtArrayU16  ** dt;
+  AtArrayU8    * array;
+  AtArrayU8    * mask;
+  AtArrayU8    * diff;
+  AtSeeds      * seeds;
+  AtIFT        * ift;
+  AtGraphArray * g;
+  uint64_t       step;
+  uint64_t       curseed;
+  AtPolicy       policy;
+  AtConnectivity conn;
+  uint8_t        nclasses;
+  uint8_t        finished;
+}AtRobotUserU8;
 
-typedef enum{
-  AT_FIFO=0,
-  AT_LIFO=1
-}AtPolicy;
+AtRobotUserU8*
+at_robotuseru8_new_from_array(AtArrayU8* array, AtArrayU8 *mask, uint64_t maxseeds, AtAdjacency adjacency, AtWeighting weighting, AtPolicy policy, AtConnectivity conn);
+
+void
+at_robotuseru8_next(AtRobotUserU8* robotuser);
+
+void
+at_robotuseru8_destroy(AtRobotUserU8** robotuserp);
+
 AT_END_DECLS
 #endif
