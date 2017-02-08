@@ -47,5 +47,8 @@
 #ifndef AT_DT_H
 #include <at/imgproc/dt.h>
 #endif
+#ifndef AT_ROBOTUSER_H
+#include <at/imgproc/robotuser.h>
+#endif
 #undef AT_IMGPROC_H_INSIDE
 #endif

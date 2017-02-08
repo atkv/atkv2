@@ -99,7 +99,7 @@ at_queueu64_remove_link(AtQueueu64* q, AtListU64* l);
  * @param queue
  */
 void
-at_queueu64_destroy_array(AtQueueu64** qp);
+at_queueu64_destroy_array(AtQueueu64** qp, uint64_t length);
 
 /**
  * @brief Alocar uma fila

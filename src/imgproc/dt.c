@@ -41,7 +41,7 @@ static void at_arrayu16_dt_2D(AtArrayU16* array){
   uint64_t nelem   = array->h.nelem;
   uint64_t maxsize = max(width, height);
   uint64_t x, y, offset;
-  uint8_t *data    = malloc((maxsize << 4) + (maxsize << 2) + 1);
+  uint8_t *data    = malloc((maxsize << 4) + ((maxsize + 1) << 2));
   uint64_t *v      = (uint64_t*) data;
   float    *f      = (float*)&v[maxsize];
   float    *d      = &f[maxsize];
@@ -67,103 +67,15 @@ static void at_arrayu16_dt_2D(AtArrayU16* array){
   free(data);
 }
 
-///* dt of 1d function using squared distance */
-//static float *dt(float *f, int n) {
-//  float *d = new float[n];
-//  int *v = new int[n];
-//  float *z = new float[n+1];
-//  int k = 0;
-//  v[0] = 0;
-//  z[0] = -INF;
-//  z[1] = +INF;
-//  for (int q = 1; q <= n-1; q++) {
-//    float s  = ((f[q]+square(q))-(f[v[k]]+square(v[k])))/(2*q-2*v[k]);
-//    while (s <= z[k]) {
-//      k--;
-//      s  = ((f[q]+square(q))-(f[v[k]]+square(v[k])))/(2*q-2*v[k]);
-//    }
-//    k++;
-//    v[k] = q;
-//    z[k] = s;
-//    z[k+1] = +INF;
-//  }
-
-//  k = 0;
-//  for (int q = 0; q <= n-1; q++) {
-//    while (z[k+1] < q)
-//      k++;
-//    d[q] = square(q-v[k]) + f[v[k]];
-//  }
-
-//  delete [] v;
-//  delete [] z;
-//  return d;
-//}
-
-///* dt of 2d function using squared distance */
-//static void dt(image<float> *im) {
-//  int width = im->width();
-//  int height = im->height();
-//  float *f = new float[std::max(width,height)];
-
-//  // transform along columns
-//  for (int x = 0; x < width; x++) {
-//    for (int y = 0; y < height; y++) {
-//      f[y] = imRef(im, x, y);
-//    }
-//    float *d = dt(f, height);
-//    for (int y = 0; y < height; y++) {
-//      imRef(im, x, y) = d[y];
-//    }
-//    delete [] d;
-//  }
-
-//  // transform along rows
-//  for (int y = 0; y < height; y++) {
-//    for (int x = 0; x < width; x++) {
-//      f[x] = imRef(im, x, y);
-//    }
-//    float *d = dt(f, width);
-//    for (int x = 0; x < width; x++) {
-//      imRef(im, x, y) = d[x];
-//    }
-//    delete [] d;
-//  }
-
-//  delete f;
-//}
-
-
-///* dt of binary image using squared distance */
-//static image<float> *dt(image<uchar> *im, uchar on = 1) {
-//  int width = im->width();
-//  int height = im->height();
-
-//  image<float> *out = new image<float>(width, height, false);
-//  for (int y = 0; y < height; y++) {
-//    for (int x = 0; x < width; x++) {
-//      if (imRef(im, x, y) == on)
-//	imRef(out, x, y) = 0;
-//      else
-//	imRef(out, x, y) = INF;
-//    }
-//  }
-
-//  dt(out);
-//  return out;
-//}
-
 /*=============================================================================
  PUBLIC API
  ============================================================================*/
-AtArrayU16*
-at_arrayu8_distance_transform(AtArrayU8* array, uint8_t on){
-  AtArrayU16* out = at_arrayu16_zeros(array->h.dim, array->h.shape);
+void
+at_arrayu8_distance_transform(AtArrayU8* array, uint8_t on, AtArrayU16* out){
   uint64_t i;
   for(i = 0; i < array->h.nelem; i++){
     if(array->data[i] == on) out->data[i] = 0;
     else                     out->data[i] = UINT16_MAX;
   }
   at_arrayu16_dt_2D(out);
-  return out;
 }

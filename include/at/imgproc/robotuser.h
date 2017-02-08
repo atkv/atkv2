@@ -18,14 +18,36 @@
 #if !defined(AT_IMGPROC_H_INSIDE)
 #error "Only <at/imgproc.h> can be included directly."
 #endif
-#ifndef AT_DT_H
-#define AT_DT_H
+#ifndef AT_ROBOTUSER_H
+#define AT_ROBOTUSER_H
 #include <at/core.h>
 #include <at/imgproc.h>
 AT_BEGIN_DECLS
 
+typedef struct AtRobotUserU8 {
+  AtArrayU16  ** dt;
+  AtArrayU8    * array;
+  AtArrayU8    * mask;
+  AtArrayU8    * diff;
+  AtSeeds      * seeds;
+  AtIFT        * ift;
+  AtGraphArray * g;
+  uint64_t       step;
+  uint64_t       curseed;
+  AtPolicy       policy;
+  AtConnectivity conn;
+  uint8_t        nclasses;
+  uint8_t        finished;
+}AtRobotUserU8;
+
+AtRobotUserU8*
+at_robotuseru8_new_from_array(AtArrayU8* array, AtArrayU8 *mask, uint64_t maxseeds, AtAdjacency adjacency, AtWeighting weighting, AtPolicy policy, AtConnectivity conn);
+
 void
-at_arrayu8_distance_transform(AtArrayU8* array, uint8_t on, AtArrayU16* out);
+at_robotuseru8_next(AtRobotUserU8* robotuser);
+
+void
+at_robotuseru8_destroy(AtRobotUserU8** robotuserp);
 
 AT_END_DECLS
 #endif

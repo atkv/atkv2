@@ -5,7 +5,7 @@
 
 static void test_dt(void ** state){
   uint64_t    shape[2] = {4,4};
-  AtArrayU16* dt;
+  AtArrayU16* dt = NULL;
   AtArrayU8*  array;
   uint8_t     data[16]  ={  0,  0,  0,  0,
                             0,  0,  0,  0,
@@ -19,7 +19,8 @@ static void test_dt(void ** state){
   uint8_t i;
 
   array = at_arrayu8_new_with_data(2, shape, data, false);
-  dt    = at_arrayu8_distance_transform(array, 255);
+  dt = at_arrayu16_zeros(2, shape);
+  at_arrayu8_distance_transform(array, 255, dt);
   for(i = 0; i < 16; i++)
     assert_int_equal(gt[i], dt->data[i]);
   at_arrayu8_destroy(&array);

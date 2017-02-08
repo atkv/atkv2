@@ -78,7 +78,7 @@ int main(){
   AtArrayU8   * arrayg   = at_arrayu8_cvt_color(array, AT_RGBA, AT_GRAY);
   AtSeeds     * seeds;
   AtArrayU8   * labels   = at_arrayu8_new(2, array->h.shape);
-  AtIFT       * ift;
+  AtIFT       * ift      = NULL;
   AtGraphArray* g        = at_grapharrayu8_new(arrayg,AT_ADJACENCY_4,at_wdiffabs);
   seedsmask = at_arrayu8_new(2, array->h.shape);
   at_arrayu8_fill(seedsmask,UINT8_MAX);
@@ -95,7 +95,7 @@ int main(){
   // Appyling IFT
   seeds  = at_seeds_from_mask(seedsmask);
   clock_t start = clock(), diff;
-  ift    = at_ift_apply_arrayu8(arrayg,g,at_conn_max,seeds,AT_FIFO);
+  ift    = at_ift_apply_arrayu8(arrayg,g,at_conn_max,seeds,AT_FIFO, ift);
   diff = clock() - start;
   int msec = diff * 1000 / CLOCKS_PER_SEC;
   printf("Time taken %d seconds %d milliseconds\n", msec/1000, msec%1000);

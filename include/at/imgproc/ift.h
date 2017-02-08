@@ -81,7 +81,8 @@ at_ift_apply_arrayu8(AtArrayU8*           array,
                      AtGraphArray*        g,
                      AtConnectivity       connectivity,
                      AtSeeds*             seeds,
-                     AtPolicy             po);
+                     AtPolicy             po,
+                     AtIFT               *ift);
 
 AtSCC*
 at_orfc_core_arrayu8(AtArrayU8     * array,

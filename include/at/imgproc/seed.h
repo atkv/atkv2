@@ -47,7 +47,7 @@ typedef struct AtSeeds{
  * @return
  */
 AtSeeds*
-at_seeds_from_list(uint64_t num_seeds, uint64_t* slist, uint8_t* labels);
+at_seeds_new_from_list(uint64_t num_seeds, uint64_t* slist, uint8_t* labels);
 /**
  * @brief at_seeds_from_mask
  * @param mask
@@ -73,15 +73,6 @@ at_seeds_mask_generate(AtSeeds* seeds, uint8_t dim, uint64_t* shape);
  */
 void
 at_seeds_split(AtSeeds* seeds, AtSeeds** sbackp, AtSeeds** sobjp, uint64_t lblback);
-/**
- * @brief at_seeds_new
- * @param n
- * @param seeds
- * @param labels
- * @return
- */
-AtSeeds*
-at_seeds_new(uint64_t n, uint64_t* seeds, uint8_t* labels);
 
 void
 at_seeds_destroy(AtSeeds** seeds);

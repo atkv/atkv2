@@ -26,7 +26,7 @@ static void
 test_ift(){
   AtArrayU8   * array;
   AtSeeds     * seeds;
-  AtIFT       * ift;
+  AtIFT       * ift = NULL;
   AtGraphArray* g;
 
   // Our input data
@@ -48,8 +48,8 @@ test_ift(){
   // The process
   array = at_arrayu8_new_with_data(2,shape,data,false);               // Creating array
   g     = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_wdiffabs);      // Converting it to graph
-  seeds = at_seeds_from_list(2,slist,slbls);                          // Creating our seeds
-  ift   = at_ift_apply_arrayu8(array,g, at_conn_max, seeds, AT_FIFO); // Applying IFT
+  seeds = at_seeds_new_from_list(2,slist,slbls);                          // Creating our seeds
+  ift   = at_ift_apply_arrayu8(array,g, at_conn_max, seeds, AT_FIFO, ift); // Applying IFT
 
   // Our tests
   for(i = 0; i < 16; i++){
@@ -91,7 +91,7 @@ test_orfc_core(void** state){
                              1,  1,  1,  1};
   array       = at_arrayu8_new_with_data(2, shape, data, false);
   at_wdiffabscalpha.params = &alpha;
-  seeds       = at_seeds_new(2,sindex,slbl);
+  seeds       = at_seeds_new_from_list(2,sindex,slbl);
   g           = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_wdiffabscalpha);
 
   // Our process
@@ -137,7 +137,7 @@ test_orfc_core_multi(void** state){
   uint8_t    slbl[3]  = {0,1,1};
   uint8_t    i;
   at_wdiffabscalpha.params = &alpha;
-  seeds    = at_seeds_new(3,sidx,slbl);
+  seeds    = at_seeds_new_from_list(3,sidx,slbl);
   array    = at_arrayu8_new_with_data(2, shape, data, false);
   g        = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_wdiffabscalpha);
   scc      = at_orfc_core_arrayu8(array, g,at_conn_minr,seeds, 0, AT_FIFO, AT_SCC_TARJAN);
@@ -174,7 +174,7 @@ test_orfc(void** state){
   array                = at_arrayu8_new_with_data(2, shape, data, false);
   uint64_t     sidx[2] = {0,14};
   uint8_t      slbl[2] = {0, 1};
-  AtSeeds     *seeds   = at_seeds_new(2,sidx,slbl);
+  AtSeeds     *seeds   = at_seeds_new_from_list(2,sidx,slbl);
   double alpha = 0.0;
   at_wdiffabscalpha.params = &alpha;
   AtGraphArray*g       = at_grapharrayu8_new(array,AT_ADJACENCY_4,at_wdiffabscalpha);
