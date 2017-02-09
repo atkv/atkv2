@@ -277,7 +277,7 @@ at_imageviewer_set(AtImageViewer* imgv, AtArrayU8* array){
     else colortype = AT_RGBA;
   }
 
-  priv->array   = at_arrayu8_cvt_color(array, colortype, AT_BGRA);
+  priv->array   = at_arrayu8_cvt_color(array, colortype, AT_BGRA, priv->array);
   int stride    = cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32,priv->array->h.shape[1]);
   if(priv->surface) cairo_surface_destroy(priv->surface);
   priv->surface = cairo_image_surface_create_for_data(priv->array->data,CAIRO_FORMAT_ARGB32,priv->array->h.shape[1],priv->array->h.shape[0],stride);

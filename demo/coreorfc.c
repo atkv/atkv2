@@ -78,7 +78,8 @@ int main(int argc, char** argv){
     fprintf(stderr,"\n");
     exit(EXIT_FAILURE);
   }
-  AtArrayU8   * arrayg   = at_arrayu8_cvt_color(array,AT_RGBA,AT_GRAY);
+  AtArrayU8   * arrayg   = NULL;
+  arrayg                 = at_arrayu8_cvt_color(array,AT_RGBA,AT_GRAY, arrayg);
   AtArrayU8   * arraycp  = at_arrayu8_new(array->h.dim, array->h.shape);
   AtArrayU8   * arraygcp = at_arrayu8_new(arrayg->h.dim, arrayg->h.shape);
 

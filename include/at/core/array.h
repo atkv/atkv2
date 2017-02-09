@@ -251,6 +251,14 @@ at_arrayu8_save(AtArrayU8** arrays, char** names, uint8_t num, const char* filen
 AtArrayU8*
 at_array_load(char*** namesp, uint8_t *nump, const char* filename);
 /**
+ * @brief at_arrayu8_set_1d_many
+ * @param ar
+ * @param index
+ * @param value
+ */
+void
+at_arrayu8_set_1d_many(AtArrayU8* ar, uint64_t index, uint8_t* value);
+/**
  * @brief at_arrayu8_set_nd_many
  * @param ar
  * @param coords

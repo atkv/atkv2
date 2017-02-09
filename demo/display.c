@@ -75,10 +75,12 @@ int main(){
   //AtArrayU8 * array    = at_arrayu8_read_jpg("teste.jpg",&error);
   //AtArrayU8 * arrayg   = at_arrayu8_cvt_color(array,AT_RGB, AT_GRAY);
   AtArrayU8   * array    = at_arrayu8_read_png("teste.png",&error);
-  AtArrayU8   * arrayg   = at_arrayu8_cvt_color(array, AT_RGBA, AT_GRAY);
+  AtArrayU8   * arrayg   = NULL;
   AtSeeds     * seeds;
   AtArrayU8   * labels   = at_arrayu8_new(2, array->h.shape);
   AtIFT       * ift      = NULL;
+
+  arrayg = at_arrayu8_cvt_color(array, AT_RGBA, AT_GRAY, arrayg);
   AtGraphArray* g        = at_grapharrayu8_new(arrayg,AT_ADJACENCY_4,at_wdiffabs);
   seedsmask = at_arrayu8_new(2, array->h.shape);
   at_arrayu8_fill(seedsmask,UINT8_MAX);
