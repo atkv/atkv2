@@ -1,28 +1,28 @@
 #include <at/imgproc.h>
 AtArrayU8*
-at_arrayu8_cvt_color(AtArrayU8 *array, AtColorType from, AtColorType to){
-  AtArrayU8* newar;
-  uint8_t*   newardata;
+at_arrayu8_cvt_color(AtArrayU8 *array, AtColorType from, AtColorType to, AtArrayU8* newar){
   uint32_t*  ardata32;
   uint32_t*  newardata32;
   uint64_t   shape[3] = {array->h.shape[0],array->h.shape[1],0};
   uint64_t   nelem32,i,j,k;
   size_t     size;
   uint8_t    dim;
-  switch(to){
-  case AT_GRAY:
-    dim = 2;shape[2]=1;break;
-  case AT_RGB:
-  case AT_BGR:
-    dim = 3;shape[2]=3;break;
-  case AT_ABGR:
-  case AT_ARGB:
-  case AT_BGRA:
-  case AT_RGBA:
-    dim = 3;shape[2]=4;break;
-  }
 
-  newar = at_arrayu8_new(dim,shape);
+  if(!newar){
+    switch(to){
+    case AT_GRAY:
+      dim = 2;shape[2]=1;break;
+    case AT_RGB:
+    case AT_BGR:
+      dim = 3;shape[2]=3;break;
+    case AT_ABGR:
+    case AT_ARGB:
+    case AT_BGRA:
+    case AT_RGBA:
+      dim = 3;shape[2]=4;break;
+    }
+    newar = at_arrayu8_new(dim,shape);
+  }
 
   if(from == to)
     memcpy(newar->data,array->data,array->h.elemsize*array->h.nelem);

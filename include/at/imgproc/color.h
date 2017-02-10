@@ -36,7 +36,7 @@ typedef enum{
 
 
 AtArrayU8*
-at_arrayu8_cvt_color(AtArrayU8* array, AtColorType from, AtColorType to);
+at_arrayu8_cvt_color(AtArrayU8* array, AtColorType from, AtColorType to, AtArrayU8 *out);
 /**
  * @brief at_arrayu8_lut_random
  * @param array

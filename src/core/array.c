@@ -332,6 +332,11 @@ at_array_load(char*** namesp, uint8_t *nump, const char* filename){
 //}
 
 void
+at_arrayu8_set_1d_many(AtArrayU8* ar, uint64_t index, uint8_t* value){
+  memcpy(&ar->data[index],value,sizeof(uint8_t)*ar->h.shape[ar->h.dim-1]);
+}
+
+void
 at_arrayu8_set_nd_many(AtArrayU8* ar, uint64_t *coords, uint8_t* value){
   uint64_t coord = 0;
   uint8_t lim = ar->h.dim-1;
