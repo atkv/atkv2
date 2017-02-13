@@ -321,6 +321,12 @@ at_ift_apply_arrayu8(AtArrayU8     *ar,
   free(r);
   return ift;
 }
+
+AtIFT*
+at_arrayu8_dift(AtIFT* ift, AtSeeds* seeds, ){
+
+}
+
 AtSCC*
 at_orfc_core_arrayu8(AtArrayU8     * array,
                      AtGraphArray  * g,
