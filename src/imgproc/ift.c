@@ -323,7 +323,7 @@ at_ift_apply_arrayu8(AtArrayU8     *ar,
 }
 
 AtIFT*
-at_arrayu8_dift(AtIFT* ift, AtSeeds* seeds, ){
+at_arrayu8_dift(AtIFT* ift, AtSeeds* seeds){
 
 }
 
